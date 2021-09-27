@@ -1,2 +1,3 @@
-# Cled – the climber's editor
-A 3D editor designed for efficient virtual routesetting.
+# Cled
+The **cl**imber's **ed**itor – a 3D editor designed for efficient virtual routesetting.
+
