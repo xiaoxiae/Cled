@@ -6,7 +6,13 @@ using UnityEngine;
 public class PlayerSelection : MonoBehaviour
 {
     public PlayerControl PlayerControl;
-
+    public HoldManager HoldManager;
+    
+    // TODO: a queue of the currenly selected holds
+    // TODO: the index in the given queue where we are right now
+    
+    
+    
     private bool wasSeen;
 
     void Update()
