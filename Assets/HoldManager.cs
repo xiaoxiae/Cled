@@ -25,8 +25,8 @@ public class HoldManager : MonoBehaviour
 {
     public IDictionary<string, Hold> Holds;
 
-    public string ModelsFolder = Path.Combine("Models", "Holds");
-    public string HoldsYamlName = "holds.yaml";
+    public readonly string ModelsFolder = Path.Combine("Models", "Holds");
+    public readonly string HoldsYamlName = "holds.yaml";
 
     void Start()
     {

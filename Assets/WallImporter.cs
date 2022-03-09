@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,11 +14,18 @@ public class WallImporter : MonoBehaviour
     {
         var wallObj = ToGameObject();
         
-        wallObj.AddComponent<MeshRenderer>();
-        wallObj.AddComponent<MeshCollider>();
-
-        wallObj.GetComponent<MeshCollider>().convex = true;
-
+        MeshFilter mf = wallObj.transform.GetChild(0).GetComponent<MeshFilter>();
+        
+        //foreach (Transform child in wallObj.transform)
+        //{
+        //    Debug.Log(child);
+        //}
+        
+        //MeshFilter mf = wallObj.GetComponent<MeshFilter>();
+        
+        MeshCollider collider = wallObj.AddComponent<MeshCollider>();
+        
+        collider.sharedMesh = mf.mesh;
     }
 
     /// <summary>
