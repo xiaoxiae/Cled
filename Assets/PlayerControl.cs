@@ -5,7 +5,7 @@ using UnityEngine;
 public enum Mode
 {
     Normal,
-    Insert
+    Edit
 }
 
 public class PlayerControl : MonoBehaviour
@@ -16,6 +16,6 @@ public class PlayerControl : MonoBehaviour
     {
         // toggle between edit and normal with e press
         if (Input.GetKeyDown(KeyCode.E))
-            CurrentMode = CurrentMode == Mode.Insert ? Mode.Normal : Mode.Insert;
+            CurrentMode = CurrentMode == Mode.Edit ? Mode.Normal : Mode.Edit;
     }
 }

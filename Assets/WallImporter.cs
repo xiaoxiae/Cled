@@ -16,15 +16,7 @@ public class WallImporter : MonoBehaviour
         
         MeshFilter mf = wallObj.transform.GetChild(0).GetComponent<MeshFilter>();
         
-        //foreach (Transform child in wallObj.transform)
-        //{
-        //    Debug.Log(child);
-        //}
-        
-        //MeshFilter mf = wallObj.GetComponent<MeshFilter>();
-        
         MeshCollider collider = wallObj.AddComponent<MeshCollider>();
-        
         collider.sharedMesh = mf.mesh;
     }
 

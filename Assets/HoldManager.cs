@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Dummiesman;
@@ -11,19 +12,19 @@ using Color = System.Drawing.Color;
 /// </summary>
 public class Hold
 {
-    public Color? Color { get; set; }
+    [CanBeNull] public Color? Color { get; set; }
     [CanBeNull] public string Type;
     [CanBeNull] public string Manufacturer;
     [CanBeNull] public string[] Labels;
 }
 
 /// <summary>
-/// A class that handles various hold-related things, such as loading them, filtering them
-/// and creating hold objects out of them.
+/// A class that handles various hold-related things, such as loading them, filtering them,
+/// managing the ones that are selected and creating hold objects out of them.
 /// </summary>
 public class HoldManager : MonoBehaviour
 {
-    public IDictionary<string, Hold> Holds;
+    private IDictionary<string, Hold> _holds;
 
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
@@ -34,9 +35,22 @@ public class HoldManager : MonoBehaviour
 
         var deserializer = new DeserializerBuilder().Build();
 
-        Holds = deserializer.Deserialize<Dictionary<string, Hold>>(yml);
+        _holds = deserializer.Deserialize<Dictionary<string, Hold>>(yml);
+    }
 
-        // var obj = ToGameObject(Holds.Keys.ToArray()[0]);
+    /// <summary>
+    /// Return a set of hold IDs, given a filter delegate.
+    /// </summary>
+    /// <returns></returns>
+    public string[] Filter(Func<Hold, bool> filter)
+    {
+        List<string> result = new List<string>();
+        
+        foreach (string holdId in _holds.Keys)
+            if (filter(_holds[holdId]))
+                result.Add(holdId);
+
+        return result.ToArray();
     }
 
     /// <summary>
