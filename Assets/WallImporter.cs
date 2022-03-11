@@ -15,7 +15,6 @@ public class WallImporter : MonoBehaviour
         var wallObj = ToGameObject();
         
         MeshFilter mf = wallObj.transform.GetChild(0).GetComponent<MeshFilter>();
-        
         MeshCollider collider = wallObj.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
     }

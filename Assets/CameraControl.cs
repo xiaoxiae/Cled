@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MouseLook : MonoBehaviour
+public class CameraControl : MonoBehaviour
 {
 	public PlayerControl PlayerControl;
 	public float mouseSensitivity = 100f;
 	public Transform playerBody;
 
-	private float yRotation = 0f;
+	private float yRotation;
     public float SlowMultiplier = 0.6f;
 
     void Start()
