@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
@@ -27,10 +28,7 @@ public class CameraControl : MonoBehaviour
 			mouseY *= SlowMultiplier;
 		}
 		
-		yRotation -= mouseY;
-		yRotation = Mathf.Clamp(yRotation, -90f, +90f);
-		
-		transform.localRotation = Quaternion.Euler(yRotation, 0f, 0f);
+		transform.Rotate(-Vector3.right * mouseY, Space.Self);
 		playerBody.Rotate(Vector3.up * mouseX);
     }
 }
