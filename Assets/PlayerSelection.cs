@@ -51,14 +51,13 @@ public class PlayerSelection : MonoBehaviour
             pointerObjectRotation = (pointerObjectRotation + x) % (2 * (float)Math.PI);
         }
         
-        // in insert mode, do stuff with placing the hold
-        if (PlayerControl.CurrentMode == Mode.Edit)
+        // cast a ray directly in front of the camera
+        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit hit;
+    
+        if (Physics.Raycast(ray, out hit))
         {
-            // cast a ray directly in front of the camera
-            var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-            RaycastHit hit;
-        
-            if (Physics.Raycast(ray, out hit))
+            if (PlayerControl.CurrentMode == Mode.Edit)
             {
                 pointerObject.transform.Rotate(0.1f, 0f, 0f);
                 
@@ -66,11 +65,6 @@ public class PlayerSelection : MonoBehaviour
                 pointerObject.transform.position = Vector3.Lerp(pointerObject.transform.position, hit.point,
                     pointerObject.activeSelf ? 0.55f : 1f);
                 
-                // TODO: store the rotation internally
-                // rotate the vector around the axis of the hit normal
-
-
-                // https://docs.unity3d.com/ScriptReference/Transform.LookAt.html
                 var currentNormal = Vector3.Lerp(previousPointerObjectNormal, hit.normal, 0.3f);
                 
                 // rotate the world "up" around the hit normal by some degrees
@@ -83,11 +77,24 @@ public class PlayerSelection : MonoBehaviour
             }
             else
             {
-                pointerObject.SetActive(false);
+                var hitObject = hit.collider.gameObject;
+
+                if (StateManager.IsHold(hitObject))
+                {
+                    if (!hitObject.GetComponent<Outline>())
+                    {
+                        var outline = hitObject.AddComponent<Outline>();
+
+                        outline.OutlineMode = Outline.Mode.OutlineAll;
+                        outline.OutlineColor = Color.white;
+                        outline.OutlineWidth = 15f;
+                    }
+                }
+                else
+                    pointerObject.SetActive(false);
+            
             }
         }
-        
-        // in normal mode, highlight selected hold
         else
         {
             pointerObject.SetActive(false);

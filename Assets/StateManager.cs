@@ -9,4 +9,6 @@ public class StateManager : MonoBehaviour
     {
         _placedHolds.Add(hold);
     }
+
+    public bool IsHold(GameObject hold) => _placedHolds.Contains(hold);
 }
