@@ -652,6 +652,7 @@ MonoBehaviour:
   PlayerControl: {fileID: 665042418}
   HoldManager: {fileID: 894126832}
   StateManager: {fileID: 628524354}
+  mouseSensitivity: 5
 --- !u!4 &1265103545
 Transform:
   m_ObjectHideFlags: 0

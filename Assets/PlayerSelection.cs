@@ -1,5 +1,7 @@
+using System;
 using System.Numerics;
 using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
 public class PlayerSelection : MonoBehaviour
@@ -11,9 +13,17 @@ public class PlayerSelection : MonoBehaviour
     private string[] _selected;
     private int _selectedIndex;
 
-    private GameObject pointerObject = null;
-    private Vector3 previousLook = Vector3.zero;
+    // the current hold object
+    private GameObject pointerObject;
+    
+    // where the pointer object looked previously
+    private Vector3 previousPointerObjectNormal = Vector3.zero;
 
+    // the angle of the pointer object (from 0 to 2 pi)
+    private float pointerObjectRotation = 0;
+
+	public float mouseSensitivity = 1f;
+    
     private bool wasSeen; 
     void Start()
     {
@@ -26,13 +36,19 @@ public class PlayerSelection : MonoBehaviour
 
     void Update()
     {
-        // TODO: only do this when in edit mode
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && PlayerControl.CurrentMode == Mode.Edit)
         {
             pointerObject.layer = 0;
             StateManager.AddHold(pointerObject);
             pointerObject = Instantiate(pointerObject);
             pointerObject.layer = 2;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && PlayerControl.CurrentMode == Mode.Edit)
+        {
+            float x = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+
+            pointerObjectRotation = (pointerObjectRotation + x) % (2 * (float)Math.PI);
         }
         
         // in insert mode, do stuff with placing the hold
@@ -52,14 +68,18 @@ public class PlayerSelection : MonoBehaviour
                 
                 // TODO: store the rotation internally
                 // rotate the vector around the axis of the hit normal
-                
+
+
                 // https://docs.unity3d.com/ScriptReference/Transform.LookAt.html
-                var currentLook = Vector3.Lerp(previousLook, hit.point + hit.normal * 100, 0.3f);
+                var currentNormal = Vector3.Lerp(previousPointerObjectNormal, hit.normal, 0.3f);
                 
-                pointerObject.transform.LookAt(currentLook, Vector3.up);
+                // rotate the world "up" around the hit normal by some degrees
+                var upVector = Quaternion.AngleAxis(Mathf.Rad2Deg * pointerObjectRotation, hit.normal) * Vector3.up;
+                
+                pointerObject.transform.LookAt(currentNormal + hit.point, upVector);
                 pointerObject.SetActive(true);
 
-                previousLook = currentLook;
+                previousPointerObjectNormal = currentNormal;
             }
             else
             {
