@@ -5,7 +5,6 @@ public class CameraControl : MonoBehaviour
 {
 	public PlayerControl PlayerControl;
 	public float mouseSensitivity = 100f;
-	public Transform playerBody;
 
 	private float yRotation;
     public float SlowMultiplier = 0.6f;
@@ -28,7 +27,22 @@ public class CameraControl : MonoBehaviour
 			mouseY *= SlowMultiplier;
 		}
 		
-		transform.Rotate(-Vector3.right * mouseY, Space.Self);
-		playerBody.Rotate(Vector3.up * mouseX);
+		// turn up/down relative to self
+		transform.Rotate(Vector3.right * -mouseY, Space.Self);
+		
+		// rotate left/right around relative to world
+		transform.Rotate(Vector3.up * mouseX, Space.World);
+		
+		// clamp +- 90
+		// please don't ask
+		if (Math.Abs(transform.localRotation.eulerAngles.z - 180.0) < 0.1)
+		{
+			var angle = Vector3.Angle(transform.forward, Vector3.down);
+
+			if (angle > 90)
+				angle = -(180 - angle);
+			
+			transform.Rotate(Vector3.right * -angle, Space.Self);
+		}
     }
 }

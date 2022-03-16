@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44658822, g: 0.49642307, b: 0.5748253, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657832, g: 0.49641222, b: 0.57481664, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -278,6 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Controller: {fileID: 665042415}
   PlayerControl: {fileID: 665042418}
+  CameraControl: {fileID: 963194229}
   Speed: 3
   GravityMultiplier: 1
   SlowMultiplier: 0.6
@@ -618,7 +619,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerControl: {fileID: 665042418}
   mouseSensitivity: 100
-  playerBody: {fileID: 665042416}
   SlowMultiplier: 0.6
 --- !u!1 &1265103543
 GameObject:

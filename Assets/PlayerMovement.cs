@@ -6,12 +6,13 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController Controller;
     public PlayerControl PlayerControl;
-    
+    public CameraControl CameraControl;
+
     public float Speed = 5f;
-    
+
     public float GravityMultiplier = 1;
     public float SlowMultiplier = 0.6f;
-    
+
     private float gravity;
 
     void Update()
@@ -26,15 +27,22 @@ public class PlayerMovement : MonoBehaviour
         else
             move = transform.right * x + transform.forward * z;
 
+        // ensure that we're pointing towards where the camera is 
+        // not elegant but functional
+        move = CameraControl.transform.TransformDirection(move);
+        var mag = move.magnitude;
+        move.y = 0;
+        move = move.normalized * mag;
+
         gravity += 0.981f * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.LeftControl))
             move *= SlowMultiplier;
-        
+
         // reset gravity if grounded
         if (Controller.isGrounded)
             gravity = 0;
-        
+
         Controller.Move(move * Speed * Time.deltaTime + gravity * Vector3.down * GravityMultiplier);
     }
 }
