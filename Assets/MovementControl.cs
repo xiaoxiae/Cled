@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class MovementControl : MonoBehaviour
 {
     public CharacterController Controller;
-    public PlayerControl PlayerControl;
+    public PlayerSelection PlayerSelection;
     public CameraControl CameraControl;
 
     public float Speed = 5f;
@@ -22,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
         // don't move when shift is pressed in edit mode -- holds turn
         Vector3 move;
-        if (Input.GetKey(KeyCode.LeftShift) && PlayerControl.CurrentMode == Mode.Edit)
+        if (Input.GetKey(KeyCode.LeftShift) && PlayerSelection.CurrentMode == Mode.Holding)
             move = Vector3.zero;
         else
             move = transform.right * x + transform.forward * z;

@@ -10,7 +10,7 @@ using Color = System.Drawing.Color;
 /// <summary>
 /// A class for storing the information about the given hold.
 /// </summary>
-public class Hold
+public class HoldInformation
 {
     [CanBeNull] public Color? Color { get; set; }
     [CanBeNull] public string Type;
@@ -19,12 +19,27 @@ public class Hold
 }
 
 /// <summary>
+/// A class for storing both the hold information and the hold model.
+/// </summary>
+public class Hold
+{
+    public GameObject Model;
+    public HoldInformation HoldInformation;
+
+    public Hold(GameObject model, HoldInformation holdInformation)
+    {
+        Model = model;
+        HoldInformation = holdInformation;
+    }
+}
+
+/// <summary>
 /// A class that handles various hold-related things, such as loading them, filtering them,
 /// managing the ones that are selected and creating hold objects out of them.
 /// </summary>
 public class HoldManager : MonoBehaviour
 {
-    private IDictionary<string, Hold> _holds;
+    private IDictionary<string, Hold> _holds = new Dictionary<string, Hold>();
 
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
@@ -34,21 +49,29 @@ public class HoldManager : MonoBehaviour
         string yml = File.ReadAllText(Path.Combine(ModelsFolder, HoldsYamlName));
 
         var deserializer = new DeserializerBuilder().Build();
+        
+        var _holdInformation = deserializer.Deserialize<Dictionary<string, HoldInformation>>(yml);
 
-        _holds = deserializer.Deserialize<Dictionary<string, Hold>>(yml);
+        foreach (var pair in _holdInformation)
+        {
+            var hold = new Hold(ToGameObject(pair.Key), pair.Value);
+            hold.Model.SetActive(false);
+
+            _holds[pair.Key] = hold;
+        }
     }
 
     /// <summary>
-    /// Return a set of hold IDs, given a filter delegate.
+    /// Return a set of holds, given a filter delegate.
     /// </summary>
     /// <returns></returns>
-    public string[] Filter(Func<Hold, bool> filter)
+    public Hold[] Filter(Func<HoldInformation, bool> filter)
     {
-        List<string> result = new List<string>();
+        List<Hold> result = new List<Hold>();
         
         foreach (string holdId in _holds.Keys)
-            if (filter(_holds[holdId]))
-                result.Add(holdId);
+            if (filter(_holds[holdId].HoldInformation))
+                result.Add(_holds[holdId]);
 
         return result.ToArray();
     }
@@ -56,7 +79,7 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Generate a 3D object from the given hold.
     /// </summary>
-    public GameObject ToGameObject(string id)
+    private GameObject ToGameObject(string id)
     {
         FileStream modelStream = File.OpenRead(GetHoldModelPath(id));
         FileStream textureStream = File.OpenRead(GetHoldMaterialPath(id));

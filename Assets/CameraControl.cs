@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// A class for controlling the movement of the camera.
+/// </summary>
 public class CameraControl : MonoBehaviour
 {
-	public PlayerControl PlayerControl;
+	public PlayerSelection PlayerSelection;
 	public float mouseSensitivity = 100f;
 
 	private float yRotation;
@@ -13,10 +16,17 @@ public class CameraControl : MonoBehaviour
     {
 	    Cursor.lockState = CursorLockMode.Locked;
     }
+    
+    /// <summary>
+    /// Look at a certain point.
+    /// </summary>
+    public void LookAt(Vector3 point) {
+		transform.LookAt(point);
+    }
 
     void Update() {
 		// don't move when shift is pressed in edit mode (holds turn)
-		if (Input.GetKey(KeyCode.LeftShift) && PlayerControl.CurrentMode == Mode.Edit) return;
+		if (Input.GetKey(KeyCode.LeftShift) && PlayerSelection.CurrentMode == Mode.Holding) return;
 		
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
