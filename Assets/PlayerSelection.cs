@@ -7,7 +7,7 @@ public enum Mode
 {
     Normal, // the usual mode that we're in
     Holding, // when we're holding a hold
-    Route, //
+    Route, // when we're looking at an entire route
 }
 
 public class PlayerSelection : MonoBehaviour
@@ -15,7 +15,8 @@ public class PlayerSelection : MonoBehaviour
     public HoldManager HoldManager;
     public StateManager StateManager;
     public CameraControl CameraControl;
-    public SelectionManager SelectionManager;
+    public HighlightManager HighlightManager;
+    public RouteManager RouteManager;
 
     public Mode CurrentMode = Mode.Normal;
 
@@ -49,16 +50,16 @@ public class PlayerSelection : MonoBehaviour
         {
             var hitObject = hit.collider.gameObject;
 
-            // if we hit an object that isn't highlighted, deselect everything
-            if (!SelectionManager.IsSelected(hitObject))
-                SelectionManager.DeselectAll();
+            // if we hit an object that isn't highlighted, dehighlight everything
+            if (!HighlightManager.IsHighlighted(hitObject))
+                HighlightManager.UnhighlightAll();
 
             switch (CurrentMode)
             {
                 case Mode.Holding:
                     StateManager.EnableHeld();
                     
-                    // when in holding mode, move the selected hold accordingly
+                    // when in holding mode, move the held hold accordingly
                     StateManager.InterpolateHeldToHit(hit);
                     
                     // place held hold and go to normal mode 
@@ -75,8 +76,8 @@ public class PlayerSelection : MonoBehaviour
                 {
                     if (StateManager.IsPlacedHold(hitObject))
                     {
-                        // attempt to outline hold if in normal mode
-                        SelectionManager.Select(hitObject);
+                        // highlight hold if in normal mode
+                        HighlightManager.Highlight(hitObject);
 
                         // when left clicking a hold in normal mode, snap back to holding mode
                         if (Input.GetMouseButtonDown(0))
@@ -97,7 +98,7 @@ public class PlayerSelection : MonoBehaviour
             switch (CurrentMode)
             {
                 case Mode.Normal:
-                    SelectionManager.DeselectAll();
+                    HighlightManager.UnhighlightAll();
                     break;
                 case Mode.Holding:
                     StateManager.DisableHeld();
