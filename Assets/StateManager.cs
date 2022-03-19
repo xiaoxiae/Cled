@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -102,7 +103,7 @@ public class StateManager : MonoBehaviour
     /// <summary>
     /// Add a hold to the state manager.
     /// </summary>
-    private void Place(GameObject model, HoldState state)
+    public void Place(GameObject model, HoldState state)
     {
         _placedHolds.Add(model, state);
         model.layer = 0; // don't ignore the object when placed
@@ -111,9 +112,12 @@ public class StateManager : MonoBehaviour
     /// <summary>
     /// Remove the hold from the state manager.
     /// </summary>
-    private void Unplace(GameObject model)
+    public void Unplace(GameObject model, bool destroy = false)
     {
         _placedHolds.Remove(model);
+        
+        if (destroy)
+            Destroy(model);
     }
 
     /// <summary>

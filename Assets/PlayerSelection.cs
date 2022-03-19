@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
 public enum Mode
@@ -16,10 +14,14 @@ public class PlayerSelection : MonoBehaviour
     public StateManager StateManager;
     public CameraControl CameraControl;
     public HighlightManager HighlightManager;
+
     public RouteManager RouteManager;
+
+    private Route _selectedRoute;
 
     public Mode CurrentMode = Mode.Normal;
 
+    // TODO: do this a different way
     private Hold[] _selected;
 
     public float mouseSensitivity = 1f;
@@ -46,62 +48,130 @@ public class PlayerSelection : MonoBehaviour
         var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         RaycastHit hit;
 
+        // TODO: split commands to hit -- wall, hit -- route and no hit
         if (Physics.Raycast(ray, out hit))
         {
             var hitObject = hit.collider.gameObject;
 
-            // if we hit an object that isn't highlighted, dehighlight everything
-            if (!HighlightManager.IsHighlighted(hitObject))
-                HighlightManager.UnhighlightAll();
-
             switch (CurrentMode)
             {
                 case Mode.Holding:
+                    // make sure that the hold is enabled when holding
                     StateManager.EnableHeld();
-                    
+
                     // when in holding mode, move the held hold accordingly
                     StateManager.InterpolateHeldToHit(hit);
-                    
-                    // place held hold and go to normal mode 
+
+                    // left click: place held hold and go to normal mode 
                     if (Input.GetMouseButtonDown(0))
                     {
                         StateManager.InterpolateHeldToHit(hit, 0);
-                            
+
                         StateManager.PutDown();
                         CurrentMode = Mode.Normal;
                     }
 
                     break;
+
                 case Mode.Normal:
-                {
+                    // when in normal mode and not hovering a hold, deselect all
+                    if (!HighlightManager.IsHighlighted(hitObject))
+                        HighlightManager.UnhighlightAll();
+
+                    // if hovering a hold
                     if (StateManager.IsPlacedHold(hitObject))
                     {
                         // highlight hold if in normal mode
-                        HighlightManager.Highlight(hitObject);
+                        HighlightManager.Highlight(hitObject, HighlightType.Primary);
 
-                        // when left clicking a hold in normal mode, snap back to holding mode
+                        // when left clicking, snap back to holding mode
                         if (Input.GetMouseButtonDown(0))
                         {
                             CurrentMode = Mode.Holding;
 
                             StateManager.PickUp(hitObject);
+                            HighlightManager.Unhighlight(hitObject);
+
                             CameraControl.LookAt(hitObject.transform.position);
+                        }
+
+                        Route route = RouteManager.GetRouteWithHold(hitObject);
+
+                        // b/t for bottom/top marks
+                        if (Input.GetKey(KeyCode.B))
+                            route.ToggleStarting(hitObject);
+
+                        if (Input.GetKey(KeyCode.T))
+                            route.ToggleEnding(hitObject);
+
+                        // r/del for deleting holds
+                        if (Input.GetKey(KeyCode.R) || Input.GetKey(KeyCode.Delete))
+                            StateManager.Unplace(hitObject, true);
+
+                        // right click for route mode
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            _selectedRoute = RouteManager.GetRouteWithHold(hitObject);
+                            CurrentMode = Mode.Route;
+
+                            HighlightManager.Highlight(_selectedRoute, HighlightType.Secondary);
                         }
                     }
 
                     break;
-                }
+
+                case Mode.Route:
+                    // if hovering a hold
+                    // TODO: duplicated code
+                    if (StateManager.IsPlacedHold(hitObject))
+                    {
+                        // highlight hold if in normal mode
+                        HighlightManager.Highlight(hitObject, HighlightType.Primary);
+
+                        // when left clicking, snap back to holding mode
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            CurrentMode = Mode.Holding;
+
+                            StateManager.PickUp(hitObject);
+                            HighlightManager.Unhighlight(hitObject);
+
+                            CameraControl.LookAt(hitObject.transform.position);
+                        }
+
+                        Route route = RouteManager.GetRouteWithHold(hitObject);
+
+                        // b/t for bottom/top marks
+                        if (Input.GetKey(KeyCode.B))
+                            route.ToggleStarting(hitObject);
+
+                        if (Input.GetKey(KeyCode.T))
+                            route.ToggleEnding(hitObject);
+
+                        // r/del for deleting holds
+                        if (Input.GetKey(KeyCode.R) || Input.GetKey(KeyCode.Delete))
+                            StateManager.Unplace(hitObject, true);
+
+                        // right click for route mode
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            _selectedRoute = RouteManager.GetRouteWithHold(hitObject);
+                            CurrentMode = Mode.Route;
+                        }
+                    }
+
+                    break;
             }
         }
         else
         {
             switch (CurrentMode)
             {
-                case Mode.Normal:
-                    HighlightManager.UnhighlightAll();
-                    break;
                 case Mode.Holding:
                     StateManager.DisableHeld();
+                    break;
+                case Mode.Route:
+                    HighlightManager.UnhighlightAll(HighlightType.Primary);
                     break;
             }
         }
@@ -112,6 +182,12 @@ public class PlayerSelection : MonoBehaviour
             // rotate hold on shift press
             if (Input.GetKey(KeyCode.LeftShift))
                 StateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
+        }
+        else if (CurrentMode == Mode.Route)
+        {
+            // TODO: duplicit code
+            HighlightManager.UnhighlightAll(HighlightType.Primary);
+            HighlightManager.Highlight(_selectedRoute, HighlightType.Secondary);
         }
     }
 }

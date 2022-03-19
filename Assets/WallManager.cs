@@ -2,7 +2,7 @@ using System.IO;
 using Dummiesman;
 using UnityEngine;
 
-public class WallImporter : MonoBehaviour
+public class WallManager : MonoBehaviour
 {
     public string WallFolder = Path.Combine("Models", "Wall");
     public string WallObjectName = Path.Combine("wall");
