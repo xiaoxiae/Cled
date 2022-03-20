@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Dummiesman;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class Hold
 /// </summary>
 public class HoldManager : MonoBehaviour
 {
-    private IDictionary<string, Hold> _holds = new Dictionary<string, Hold>();
+    private readonly IDictionary<string, Hold> _holds = new Dictionary<string, Hold>();
 
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
@@ -49,10 +50,10 @@ public class HoldManager : MonoBehaviour
         string yml = File.ReadAllText(Path.Combine(ModelsFolder, HoldsYamlName));
 
         var deserializer = new DeserializerBuilder().Build();
-        
-        var _holdInformation = deserializer.Deserialize<Dictionary<string, HoldInformation>>(yml);
 
-        foreach (var pair in _holdInformation)
+        var holdInformation = deserializer.Deserialize<Dictionary<string, HoldInformation>>(yml);
+
+        foreach (var pair in holdInformation)
         {
             var hold = new Hold(ToGameObject(pair.Key), pair.Value);
             hold.Model.SetActive(false);
@@ -65,16 +66,10 @@ public class HoldManager : MonoBehaviour
     /// Return a set of holds, given a filter delegate.
     /// </summary>
     /// <returns></returns>
-    public Hold[] Filter(Func<HoldInformation, bool> filter)
-    {
-        List<Hold> result = new List<Hold>();
-        
-        foreach (string holdId in _holds.Keys)
-            if (filter(_holds[holdId].HoldInformation))
-                result.Add(_holds[holdId]);
-
-        return result.ToArray();
-    }
+    public Hold[] Filter(Func<HoldInformation, bool> filter)=> (from holdId in _holds.Keys
+            where filter(_holds[holdId].HoldInformation)
+            select _holds[holdId])
+        .ToArray();
 
     /// <summary>
     /// Generate a 3D object from the given hold.
@@ -84,13 +79,13 @@ public class HoldManager : MonoBehaviour
         FileStream modelStream = File.OpenRead(GetHoldModelPath(id));
         FileStream textureStream = File.OpenRead(GetHoldMaterialPath(id));
 
-        GameObject Hold = new OBJLoader().Load(modelStream, textureStream);
-        
-        MeshFilter mf = Hold.transform.GetChild(0).GetComponent<MeshFilter>();
-        MeshCollider collider = Hold.AddComponent<MeshCollider>();
+        GameObject hold = new OBJLoader().Load(modelStream, textureStream);
+
+        MeshFilter mf = hold.transform.GetChild(0).GetComponent<MeshFilter>();
+        MeshCollider collider = hold.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
 
-        return Hold;
+        return hold;
     }
 
     /// <summary>

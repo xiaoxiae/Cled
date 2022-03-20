@@ -15,7 +15,7 @@ public class Route
     private readonly HashSet<GameObject> _starting = new HashSet<GameObject>();
     private readonly HashSet<GameObject> _ending = new HashSet<GameObject>();
     
-    public List<GameObject> Holds => _holds.ToList();
+    public GameObject[] Holds => _holds.ToArray();
 
     /// <summary>
     /// Add a hold to the route.
@@ -31,6 +31,22 @@ public class Route
         _starting.Remove(hold);
         _ending.Remove(hold);
     }
+
+    /// <summary>
+    /// Toggle a hold being in this route.
+    /// </summary>
+    public void ToggleHold(GameObject hold)
+    {
+        if (ContainsHold(hold))
+            RemoveHold(hold);
+        else
+            AddHold(hold);
+    }
+
+    /// <summary>
+    /// Return true if the route contains this hold, else return false.
+    /// </summary>
+    public bool ContainsHold(GameObject hold) => _holds.Contains(hold);
 
     /// <summary>
     /// Toggle a starting hold of the route.
@@ -49,8 +65,11 @@ public class Route
         else
             set.Add(obj);
     }
-        
-    // TODO: starting and ending methods
+
+    /// <summary>
+    /// Return True if the given route is empty.
+    /// </summary>
+    public bool IsEmpty() => _holds.Count == 0;
 }
 
 /// <summary>
@@ -59,6 +78,28 @@ public class Route
 public class RouteManager : MonoBehaviour
 {
     private HashSet<Route> _routes = new HashSet<Route>();
+    
+    /// <summary>
+    /// Toggle a hold being in this route, possibly removing it from other routes.
+    /// </summary>
+    public void ToggleHold(Route route, GameObject hold)
+    {
+        Route originalRoute = GetRouteWithHold(hold);
+        
+        // if we're removing it, simply toggle it
+        if (route == originalRoute)
+            route.ToggleHold(hold);
+
+        // if we're adding it, remove it from the route that it was in
+        else
+        {
+            originalRoute.ToggleHold(hold);
+            route.ToggleHold(hold);
+
+            if (originalRoute.IsEmpty())
+                RemoveRoute(originalRoute);
+        }
+    }
 
     /// <summary>
     /// Return the route with the given hold.
@@ -66,7 +107,7 @@ public class RouteManager : MonoBehaviour
     public Route GetRouteWithHold(GameObject hold)
     {
         foreach (Route route in _routes)
-            if (route.Holds.Contains(hold))
+            if (route.ContainsHold(hold))
                 return route;
 
         // if no such route exists, create it
@@ -76,4 +117,9 @@ public class RouteManager : MonoBehaviour
 
         return newRoute;
     }
+    
+    /// <summary>
+    /// Remove a route from the manager.
+    /// </summary>
+    private void RemoveRoute(Route route) => _routes.Remove(route);
 }

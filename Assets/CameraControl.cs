@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class CameraControl : MonoBehaviour
 {
-	public PlayerSelection PlayerSelection;
+	public EditorController EditorController;
 	public float mouseSensitivity = 100f;
 
 	private float yRotation;
@@ -26,7 +26,7 @@ public class CameraControl : MonoBehaviour
 
     void Update() {
 		// don't move when shift is pressed in edit mode (holds turn)
-		if (Input.GetKey(KeyCode.LeftShift) && PlayerSelection.CurrentMode == Mode.Holding) return;
+		if (Input.GetKey(KeyCode.LeftShift) && EditorController.CurrentMode == Mode.Holding) return;
 		
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

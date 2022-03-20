@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Controller: {fileID: 665042415}
-  PlayerSelection: {fileID: 665042419}
+  EditorController: {fileID: 665042419}
   CameraControl: {fileID: 963194229}
   Speed: 3
   GravityMultiplier: 1
@@ -658,7 +658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b39295cc118d5aa8b992bcaf10b158c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerSelection: {fileID: 665042419}
+  EditorController: {fileID: 665042419}
   mouseSensitivity: 100
   SlowMultiplier: 0.6
 --- !u!1 &1150806008
