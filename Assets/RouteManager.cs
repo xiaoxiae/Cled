@@ -8,14 +8,24 @@ using UnityEngine;
 /// </summary>
 public class Route
 {
-    private readonly HashSet<GameObject> _holds = new HashSet<GameObject>();
+    private readonly HashSet<GameObject> _holds = new();
 
     // TODO: some route name/id/label thingy
 
-    private readonly HashSet<GameObject> _starting = new HashSet<GameObject>();
-    private readonly HashSet<GameObject> _ending = new HashSet<GameObject>();
+    private readonly HashSet<GameObject> _starting = new();
+    private readonly HashSet<GameObject> _ending = new();
     
-    public GameObject[] Holds => _holds.ToArray();
+    public GameObject[] Holds {
+        get
+        {
+            foreach(var hold in _holds.ToArray()) {
+                if (!hold)
+                    RemoveHold(hold);
+            }
+            
+            return _holds.ToArray();
+        }
+    }
 
     /// <summary>
     /// Add a hold to the route.
@@ -78,6 +88,18 @@ public class Route
 public class RouteManager : MonoBehaviour
 {
     private HashSet<Route> _routes = new HashSet<Route>();
+
+    public Route SelectedRoute;
+
+    /// <summary>
+    /// Select the given route.
+    /// </summary>
+    public void SelectRoute(Route route) => SelectedRoute = route;
+    
+    /// <summary>
+    /// Deselect the currently selected route.
+    /// </summary>
+    public void DeselectRoute() => SelectedRoute = null;
     
     /// <summary>
     /// Toggle a hold being in this route, possibly removing it from other routes.

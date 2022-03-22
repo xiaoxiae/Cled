@@ -81,9 +81,11 @@ public class HighlightManager : MonoBehaviour
     public void Unhighlight(GameObject obj)
     {
         if (!IsHighlighted(obj)) return;
-
+        
         _highlighted.Remove(obj);
-        DestroyImmediate(obj.GetComponent<Outline>());
+        
+        if (obj)
+            DestroyImmediate(obj.GetComponent<Outline>());
     }
 
     /// <summary>
@@ -93,8 +95,9 @@ public class HighlightManager : MonoBehaviour
     public void UnhighlightAll(HighlightType? highlightType = null)
     {
         // ToList is used since we're modifying the collection
-        foreach (GameObject key in _highlighted.Keys.ToList())
-            if (highlightType == null || highlightType.Value == _highlighted[key])
-                Unhighlight(key);
+        foreach (GameObject obj in _highlighted.Keys.ToList())
+            if (highlightType == null || highlightType.Value == _highlighted[obj])
+                if (obj)
+                    Unhighlight(obj);
     }
 }

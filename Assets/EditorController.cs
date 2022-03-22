@@ -17,8 +17,6 @@ public class EditorController : MonoBehaviour
 
     public RouteManager RouteManager;
 
-    private Route _selectedRoute;
-
     public Mode CurrentMode = Mode.Normal;
 
     // TODO: do this a different way
@@ -37,6 +35,31 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
+    /// Called each update at the very beginning.
+    /// </summary>
+    void CombinedBehaviorBefore()
+    {
+        // toggle between holding and normal with e press
+        // also go from Route to Holding
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            CurrentMode = CurrentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
+
+            if (CurrentMode == Mode.Normal)
+                StateManager.SetUnheld(true);
+            else
+            {
+                StateManager.SetHeld(_selected[0]);
+                RouteManager.DeselectRoute();  // TODO: this is not pretty
+            }
+        }
+
+        // always secondarily highlight the route
+        if (CurrentMode == Mode.Route)
+            HighlightManager.Highlight(RouteManager.SelectedRoute, HighlightType.Secondary);
+    }
+
+    /// <summary>
     /// Called each update when nothing was hit.
     /// </summary>
     void NoHitBehavior()
@@ -44,12 +67,14 @@ public class EditorController : MonoBehaviour
         switch (CurrentMode)
         {
             case Mode.Holding:
+                HighlightManager.UnhighlightAll();
                 StateManager.DisableHeld();
                 break;
             case Mode.Normal:
                 HighlightManager.UnhighlightAll();
                 break;
             case Mode.Route:
+                HighlightManager.UnhighlightAll(HighlightType.Primary);
                 break;
         }
     }
@@ -61,13 +86,15 @@ public class EditorController : MonoBehaviour
     {
         switch (CurrentMode)
         {
+            case Mode.Holding:
+                HighlightManager.UnhighlightAll();
+                HoldingHitControls(hit);
+                break;
             case Mode.Normal:
                 HighlightManager.UnhighlightAll();
                 break;
-            case Mode.Holding:
-                HoldingHitControls(hit);
-                break;
             case Mode.Route:
+                HighlightManager.UnhighlightAll(HighlightType.Primary);
                 break;
         }
     }
@@ -79,24 +106,27 @@ public class EditorController : MonoBehaviour
     {
         switch (CurrentMode)
         {
+            case Mode.Holding:
+                HighlightManager.UnhighlightAll();
+                HoldingHitControls(hit);
+                break;
             case Mode.Normal:
-                // if some other hold is highlighted, highlight this one
+                // if some other hold is highlighted, unhighlight it
                 if (!HighlightManager.IsHighlighted(hold))
                     HighlightManager.UnhighlightAll();
 
                 NormalRouteHoldHitControls(hold);
-
-                break;
-            case Mode.Holding:
-                HoldingHitControls(hit);
                 break;
             case Mode.Route:
+                // if some other hold is highlighted, unhighlight it
+                if (!HighlightManager.IsHighlighted(hold))
+                    HighlightManager.UnhighlightAll(HighlightType.Primary);
+                
                 NormalRouteHoldHitControls(hold);
                 
                 // CTRL + left click toggles a hold to be in the route
                 if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
-                    RouteManager.ToggleHold(_selectedRoute, hold);
-                    
+                    RouteManager.ToggleHold(RouteManager.SelectedRoute, hold);
                 break;
         }
     }
@@ -115,39 +145,10 @@ public class EditorController : MonoBehaviour
     }
     
     /// <summary>
-    /// Called each update at the very beginning.
-    /// </summary>
-    void CombinedBehaviorBefore()
-    {
-        // toggle between holding and normal with e press
-        // also go from Route to Holding
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            CurrentMode = CurrentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
-
-            if (CurrentMode == Mode.Normal)
-                StateManager.SetUnheld(true);
-            else
-                StateManager.SetHeld(_selected[0]);
-        }
-
-        // always unhighlight the primary and highlight the route when in route mode
-        // TODO: not entirely elegant, since we're depeatedly destroying and adding the outline back
-        if (CurrentMode == Mode.Route)
-        {
-            HighlightManager.UnhighlightAll(HighlightType.Primary);
-            HighlightManager.Highlight(_selectedRoute, HighlightType.Secondary);
-        }
-    }
-
-    /// <summary>
-    /// Controls for holding mode when a hold is hit or not.
+    /// Controls for holding mode when a hold/wall is hit.
     /// </summary>
     void HoldingHitControls(RaycastHit hit)
     {
-        // no highlighting in edit mode!
-        HighlightManager.UnhighlightAll();
-
         // make sure that the hold is enabled when holding
         StateManager.EnableHeld();
 
@@ -162,10 +163,17 @@ public class EditorController : MonoBehaviour
             StateManager.PutDown();
             CurrentMode = Mode.Normal;
         }
+        
+        // r/del - delete the held hold and switch to normal mode
+        if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
+        {
+            StateManager.SetUnheld(true);
+            CurrentMode = Mode.Normal;
+        }
     }
 
     /// <summary>
-    /// Normal and route mode share a large set of controls (when a hold is hit).
+    /// Called when normal and route hit a hold.
     /// </summary>
     void NormalRouteHoldHitControls(GameObject hold)
     {
@@ -173,13 +181,13 @@ public class EditorController : MonoBehaviour
         HighlightManager.Highlight(hold, HighlightType.Primary);
 
         // when left clicking, snap back to holding mode and pick it up
-        // CTRL + left click behaves differently in route mode - not entirely elegant but works
-        if (Input.GetMouseButtonDown(0) && (CurrentMode == Mode.Normal || !Input.GetKey(KeyCode.LeftControl)))
+        // CTRL + left click behaves differently in route mode, so it's forbidden altogether
+        if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl))
         {
             CurrentMode = Mode.Holding;
+            RouteManager.DeselectRoute();  // TODO: this is not pretty
 
             StateManager.PickUp(hold);
-            HighlightManager.Unhighlight(hold);
 
             CameraControl.LookAt(hold.transform.position);
         }
@@ -187,22 +195,31 @@ public class EditorController : MonoBehaviour
         Route route = RouteManager.GetRouteWithHold(hold);
 
         // b/t for bottom/top marks
-        if (Input.GetKey(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B))
             route.ToggleStarting(hold);
 
-        if (Input.GetKey(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.T))
             route.ToggleEnding(hold);
-
-        // r/del for deleting holds
-        if (Input.GetKey(KeyCode.R) || Input.GetKey(KeyCode.Delete))
+        
+        // r/del - delete hold
+        if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
             StateManager.Unplace(hold, true);
-
+        
+        // if we delete the current hold and the route has no more holds, switch to normal mode
+        if (route.Holds.Length == 0)
+            CurrentMode = Mode.Normal;
+        
         // right click for route mode
         if (Input.GetMouseButtonDown(1))
         {
-            _selectedRoute = RouteManager.GetRouteWithHold(hold);
-            HighlightManager.UnhighlightAll();
-            CurrentMode = Mode.Route;
+            var clickedRoute = RouteManager.GetRouteWithHold(hold);
+
+            if (RouteManager.SelectedRoute != clickedRoute)
+            {
+                RouteManager.SelectRoute(clickedRoute);
+                HighlightManager.UnhighlightAll();
+                CurrentMode = Mode.Route;
+            }
         }
     }
 

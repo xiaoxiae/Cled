@@ -66,7 +66,7 @@ public class StateManager : MonoBehaviour
     public void SetUnheld(bool destroy = false)
     {
         if (destroy)
-            Destroy(_heldObject);
+            DestroyImmediate(_heldObject);
 
         _heldObject = null;
     }
@@ -117,7 +117,7 @@ public class StateManager : MonoBehaviour
         _placedHolds.Remove(model);
         
         if (destroy)
-            Destroy(model);
+            DestroyImmediate(model);
     }
 
     /// <summary>
