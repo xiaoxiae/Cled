@@ -315,11 +315,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f97a3163190221a838be3de766a09076, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Controller: {fileID: 665042415}
-  EditorController: {fileID: 665042419}
-  CameraControl: {fileID: 963194229}
-  Speed: 3
-  GravityMultiplier: 1
+  controller: {fileID: 665042415}
+  editorController: {fileID: 665042419}
+  cameraControl: {fileID: 963194229}
+  speed: 5
+  gravityMultiplier: 1
 --- !u!114 &665042419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,12 +332,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39ae387beb299f924991939ade316936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoldManager: {fileID: 1579647979}
-  StateManager: {fileID: 1150806010}
-  CameraControl: {fileID: 963194229}
-  HighlightManager: {fileID: 674212781}
-  RouteManager: {fileID: 651512647}
-  CurrentMode: 0
+  holdManager: {fileID: 1579647979}
+  stateManager: {fileID: 1150806010}
+  cameraControl: {fileID: 963194229}
+  highlightManager: {fileID: 674212781}
+  routeManager: {fileID: 651512647}
+  currentMode: 0
   mouseSensitivity: 5
 --- !u!1 &674212779
 GameObject:
@@ -667,7 +667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b39295cc118d5aa8b992bcaf10b158c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EditorController: {fileID: 665042419}
+  editorController: {fileID: 665042419}
   mouseSensitivity: 100
 --- !u!1 &1150806008
 GameObject:
@@ -801,7 +801,7 @@ GameObject:
   - component: {fileID: 2070913821}
   - component: {fileID: 2070913820}
   m_Layer: 2
-  m_Name: PlayerModel
+  m_Name: Player Model
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -24,8 +24,8 @@ public class HoldInformation
 /// </summary>
 public class HoldBlueprint
 {
-    public GameObject Model;
-    public HoldInformation HoldInformation;
+    public readonly GameObject Model;
+    public readonly HoldInformation HoldInformation;
 
     public HoldBlueprint(GameObject model, HoldInformation holdInformation)
     {
@@ -82,8 +82,8 @@ public class HoldManager : MonoBehaviour
         GameObject hold = new OBJLoader().Load(modelStream, textureStream);
 
         MeshFilter mf = hold.transform.GetChild(0).GetComponent<MeshFilter>();
-        MeshCollider collider = hold.AddComponent<MeshCollider>();
-        collider.sharedMesh = mf.mesh;
+        MeshCollider meshCollider = hold.AddComponent<MeshCollider>();
+        meshCollider.sharedMesh = mf.mesh;
 
         return hold;
     }

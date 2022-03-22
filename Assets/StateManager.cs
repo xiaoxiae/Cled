@@ -29,7 +29,7 @@ public class StateManager : MonoBehaviour
     /// <summary>
     /// Start holding a hold from a hold object (copying it over).
     /// </summary>
-    public void SetHeld(HoldBlueprint holdBlueprint, HoldState holdState = new HoldState())
+    public void SetHeld(HoldBlueprint holdBlueprint, HoldState holdState = new())
     {
         SetHeld(Instantiate(holdBlueprint.Model), holdState);
     }
@@ -37,7 +37,7 @@ public class StateManager : MonoBehaviour
     /// <summary>
     /// Start holding a GameObject directly (no copying over).
     /// </summary>
-    public void SetHeld(GameObject model, HoldState holdState = new HoldState())
+    public void SetHeld(GameObject model, HoldState holdState = new())
     {
         _heldObject = model;
         _heldObjectState = holdState;
