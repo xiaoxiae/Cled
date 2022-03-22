@@ -4,16 +4,12 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Information about the given hold's state.
+/// Information about the given hold's state when it's placed on the wall.
+/// Used by various classes to smoothly continue editing it.
 /// </summary>
 public struct HoldState
 {
     public float Rotation;
-
-    public HoldState(float rotation = 0)
-    {
-        Rotation = rotation;
-    }
 }
 
 /// <summary>
