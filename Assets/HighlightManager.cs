@@ -16,7 +16,7 @@ public enum HighlightType
 /// </summary>
 public class HighlightManager : MonoBehaviour
 {
-    private readonly Dictionary<GameObject, HighlightType> _highlighted = new Dictionary<GameObject, HighlightType>();
+    private readonly Dictionary<GameObject, HighlightType> _highlighted = new();
 
     /// <summary>
     /// Return true if the given object is highlighted.

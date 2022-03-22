@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 
 /// <summary>
@@ -59,15 +58,61 @@ public class Route
     public bool ContainsHold(GameObject hold) => _holds.Contains(hold);
 
     /// <summary>
-    /// Toggle a starting hold of the route.
+    /// Return true if the hold is a starting one, else false.
     /// </summary>
-    public void ToggleStarting(GameObject hold) => ToggleInCollection(hold, _starting);
-    
+    public bool IsStarting(GameObject hold) => _starting.Contains(hold);
+
+    /// <summary>
+    /// Return true if the hold is an ending one, else false.
+    /// </summary>
+    public bool IsEnding(GameObject hold) => _ending.Contains(hold);
+
     /// <summary>
     /// Toggle a starting hold of the route.
     /// </summary>
-    public void ToggleEnding(GameObject hold) => ToggleInCollection(hold, _ending);
+    public void ToggleStarting(GameObject hold)
+    {
+        ToggleInCollection(hold, _starting);
 
+        if (IsStarting(hold))
+        {
+            // TODO: instantiate a child (the marker of a starting hold)
+            // GameObject child = GameObject.Instantiate(hold);
+            // child.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            // child.transform.parent = hold.transform;
+        }
+        else
+        {
+            // TODO: remove the child
+            // Destroy(hold.transform.GetChild(numChildren - 1).gameObject);
+        }
+    }
+
+
+    /// <summary>
+    /// Toggle a starting hold of the route.
+    /// </summary>
+    public void ToggleEnding(GameObject hold)
+    {
+        ToggleInCollection(hold, _ending);
+
+        if (IsEnding(hold))
+        {
+            // TODO: instantiate a child (the marker of a starting hold)
+            // GameObject child = GameObject.Instantiate(hold);
+            // child.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            // child.transform.parent = hold.transform;
+        }
+        else
+        {
+            // TODO: remove the child
+            // Destroy(hold.transform.GetChild(numChildren - 1).gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Toggle the object being in the given set.
+    /// </summary>
     private void ToggleInCollection<T>(T obj, HashSet<T> set)
     {
         if (set.Contains(obj))
@@ -79,7 +124,7 @@ public class Route
     /// <summary>
     /// Return True if the given route is empty.
     /// </summary>
-    public bool IsEmpty() => _holds.Count == 0;
+    public bool IsEmpty() => Holds.Length == 0;
 }
 
 /// <summary>
@@ -111,6 +156,8 @@ public class RouteManager : MonoBehaviour
         // if we're removing it, simply toggle it
         if (route == originalRoute)
             route.ToggleHold(hold);
+        
+        // TODO: starting/ending markers
 
         // if we're adding it, remove it from the route that it was in
         else
@@ -120,6 +167,8 @@ public class RouteManager : MonoBehaviour
 
             if (originalRoute.IsEmpty())
                 RemoveRoute(originalRoute);
+        
+            // TODO: starting/ending markers
         }
     }
 

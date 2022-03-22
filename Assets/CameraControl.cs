@@ -37,7 +37,7 @@ public class CameraControl : MonoBehaviour
 		transform.Rotate(Vector3.up * mouseX, Space.World);
 		
 		// clamp +- 90
-		// please don't ask
+		// please don't ask, I don't know
 		if (Math.Abs(transform.localRotation.eulerAngles.z - 180.0) < 0.1)
 		{
 			var angle = Vector3.Angle(transform.forward, Vector3.down);

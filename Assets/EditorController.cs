@@ -20,7 +20,7 @@ public class EditorController : MonoBehaviour
     public Mode CurrentMode = Mode.Normal;
 
     // TODO: do this a different way
-    private Hold[] _selected;
+    private HoldBlueprint[] _selected;
 
     public float mouseSensitivity = 1f;
 
@@ -127,6 +127,7 @@ public class EditorController : MonoBehaviour
                 // CTRL + left click toggles a hold to be in the route
                 if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
                     RouteManager.ToggleHold(RouteManager.SelectedRoute, hold);
+
                 break;
         }
     }
@@ -206,7 +207,7 @@ public class EditorController : MonoBehaviour
             StateManager.Unplace(hold, true);
         
         // if we delete the current hold and the route has no more holds, switch to normal mode
-        if (route.Holds.Length == 0)
+        if (route.IsEmpty())
             CurrentMode = Mode.Normal;
         
         // right click for route mode

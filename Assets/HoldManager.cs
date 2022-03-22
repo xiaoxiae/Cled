@@ -22,12 +22,12 @@ public class HoldInformation
 /// <summary>
 /// A class for storing both the hold information and the hold model.
 /// </summary>
-public class Hold
+public class HoldBlueprint
 {
     public GameObject Model;
     public HoldInformation HoldInformation;
 
-    public Hold(GameObject model, HoldInformation holdInformation)
+    public HoldBlueprint(GameObject model, HoldInformation holdInformation)
     {
         Model = model;
         HoldInformation = holdInformation;
@@ -40,7 +40,7 @@ public class Hold
 /// </summary>
 public class HoldManager : MonoBehaviour
 {
-    private readonly IDictionary<string, Hold> _holds = new Dictionary<string, Hold>();
+    private readonly IDictionary<string, HoldBlueprint> _holds = new Dictionary<string, HoldBlueprint>();
 
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
@@ -55,7 +55,7 @@ public class HoldManager : MonoBehaviour
 
         foreach (var pair in holdInformation)
         {
-            var hold = new Hold(ToGameObject(pair.Key), pair.Value);
+            var hold = new HoldBlueprint(ToGameObject(pair.Key), pair.Value);
             hold.Model.SetActive(false);
 
             _holds[pair.Key] = hold;
@@ -66,7 +66,7 @@ public class HoldManager : MonoBehaviour
     /// Return a set of holds, given a filter delegate.
     /// </summary>
     /// <returns></returns>
-    public Hold[] Filter(Func<HoldInformation, bool> filter)=> (from holdId in _holds.Keys
+    public HoldBlueprint[] Filter(Func<HoldInformation, bool> filter)=> (from holdId in _holds.Keys
             where filter(_holds[holdId].HoldInformation)
             select _holds[holdId])
         .ToArray();

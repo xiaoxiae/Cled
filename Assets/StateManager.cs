@@ -17,7 +17,7 @@ public struct HoldState
 /// </summary>
 public class StateManager : MonoBehaviour
 {
-    private readonly Dictionary<GameObject, HoldState> _placedHolds = new Dictionary<GameObject, HoldState>();
+    private readonly Dictionary<GameObject, HoldState> _placedHolds = new();
 
     // the held object (state)
     private GameObject _heldObject;
@@ -29,9 +29,9 @@ public class StateManager : MonoBehaviour
     /// <summary>
     /// Start holding a hold from a hold object (copying it over).
     /// </summary>
-    public void SetHeld(Hold hold, HoldState holdState = new HoldState())
+    public void SetHeld(HoldBlueprint holdBlueprint, HoldState holdState = new HoldState())
     {
-        SetHeld(Instantiate(hold.Model), holdState);
+        SetHeld(Instantiate(holdBlueprint.Model), holdState);
     }
 
     /// <summary>
