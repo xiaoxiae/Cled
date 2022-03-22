@@ -10,7 +10,6 @@ public class CameraControl : MonoBehaviour
 	public float mouseSensitivity = 100f;
 
 	private float yRotation;
-    public float SlowMultiplier = 0.6f;
 
     void Start()
     {
@@ -30,12 +29,6 @@ public class CameraControl : MonoBehaviour
 		
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-
-		if (Input.GetKey(KeyCode.LeftControl))
-		{
-			mouseX *= SlowMultiplier;
-			mouseY *= SlowMultiplier;
-		}
 		
 		// turn up/down relative to self
 		transform.Rotate(Vector3.right * -mouseY, Space.Self);

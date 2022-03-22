@@ -9,7 +9,6 @@ public class MovementControl : MonoBehaviour
     public float Speed = 5f;
 
     public float GravityMultiplier = 1;
-    public float SlowMultiplier = 0.6f;
 
     private float gravity;
 
@@ -33,9 +32,6 @@ public class MovementControl : MonoBehaviour
         move = move.normalized * mag;
 
         gravity += 0.981f * Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.LeftControl))
-            move *= SlowMultiplier;
 
         // reset gravity if grounded
         if (Controller.isGrounded)
