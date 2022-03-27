@@ -13,11 +13,11 @@ using Color = System.Drawing.Color;
 /// </summary>
 public class HoldInformation
 {
-    public Color? Color { get; set; }
-    public string Type;
-    public string Manufacturer;
-    public string[] Labels;
-    public DateTime? Date;
+    public Color color;
+    public string type;
+    public string manufacturer;
+    public string[] labels;
+    public DateTime date;
 }
 
 /// <summary>
@@ -67,7 +67,7 @@ public class HoldManager : MonoBehaviour
     /// Return a set of holds, given a filter delegate.
     /// </summary>
     /// <returns></returns>
-    public HoldBlueprint[] Filter(Func<HoldInformation, bool> filter)=> (from holdId in _holds.Keys
+    public HoldBlueprint[] Filter(Func<HoldInformation, bool> filter) => (from holdId in _holds.Keys
             where filter(_holds[holdId].HoldInformation)
             select _holds[holdId])
         .ToArray();
