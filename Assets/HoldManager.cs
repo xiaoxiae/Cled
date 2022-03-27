@@ -13,10 +13,11 @@ using Color = System.Drawing.Color;
 /// </summary>
 public class HoldInformation
 {
-    [CanBeNull] public Color? Color { get; set; }
-    [CanBeNull] public string Type;
-    [CanBeNull] public string Manufacturer;
-    [CanBeNull] public string[] Labels;
+    public Color? Color { get; set; }
+    public string Type;
+    public string Manufacturer;
+    public string[] Labels;
+    public DateTime? Date;
 }
 
 /// <summary>
