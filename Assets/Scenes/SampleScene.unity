@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657832, g: 0.49641222, b: 0.57481664, a: 1}
+  m_IndirectSpecularColor: {r: 0.44658822, g: 0.49642307, b: 0.5748253, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdManager: {fileID: 1579647979}
-  stateManager: {fileID: 1150806010}
+  HoldStateManager: {fileID: 1150806010}
   cameraControl: {fileID: 963194229}
   highlightManager: {fileID: 674212781}
   routeManager: {fileID: 651512647}
@@ -680,7 +680,7 @@ GameObject:
   - component: {fileID: 1150806009}
   - component: {fileID: 1150806010}
   m_Layer: 0
-  m_Name: State Manager
+  m_Name: Hold State Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -710,7 +710,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1150806008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5290f67828ea163c09cab3218488372e, type: 3}
+  m_Script: {fileID: 11500000, guid: ec50801c244def2c8a5eb19bcaa37549, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1579647977

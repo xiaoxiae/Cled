@@ -11,7 +11,7 @@ public enum Mode
 public class EditorController : MonoBehaviour
 {
     public HoldManager holdManager;
-    public StateManager stateManager;
+    public HoldStateManager HoldStateManager;
     public CameraControl cameraControl;
     public HighlightManager highlightManager;
     public RouteManager routeManager;
@@ -45,10 +45,10 @@ public class EditorController : MonoBehaviour
             currentMode = currentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
 
             if (currentMode == Mode.Normal)
-                stateManager.SetUnheld(true);
+                HoldStateManager.SetUnheld(true);
             else
             {
-                stateManager.SetHeld(_selected[0]);
+                HoldStateManager.SetHeld(_selected[0]);
                 routeManager.DeselectRoute();  // TODO: this is not pretty
             }
         }
@@ -67,7 +67,7 @@ public class EditorController : MonoBehaviour
         {
             case Mode.Holding:
                 highlightManager.UnhighlightAll();
-                stateManager.DisableHeld();
+                HoldStateManager.DisableHeld();
                 break;
             case Mode.Normal:
                 highlightManager.UnhighlightAll();
@@ -140,7 +140,7 @@ public class EditorController : MonoBehaviour
         {
             // rotate hold on shift press
             if (Input.GetKey(KeyCode.LeftShift))
-                stateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
+                HoldStateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
         }
     }
     
@@ -150,24 +150,24 @@ public class EditorController : MonoBehaviour
     void HoldingHitControls(RaycastHit hit)
     {
         // make sure that the hold is enabled when holding
-        stateManager.EnableHeld();
+        HoldStateManager.EnableHeld();
 
         // when in holding mode, move the held hold accordingly
-        stateManager.InterpolateHeldToHit(hit);
+        HoldStateManager.InterpolateHeldToHit(hit);
 
         // left click: place held hold and go to normal mode 
         if (Input.GetMouseButtonDown(0))
         {
-            stateManager.InterpolateHeldToHit(hit, 0);
+            HoldStateManager.InterpolateHeldToHit(hit, 0);
 
-            stateManager.PutDown();
+            HoldStateManager.PutDown();
             currentMode = Mode.Normal;
         }
         
         // r/del - delete the held hold and switch to normal mode
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
-            stateManager.SetUnheld(true);
+            HoldStateManager.SetUnheld(true);
             currentMode = Mode.Normal;
         }
     }
@@ -187,7 +187,7 @@ public class EditorController : MonoBehaviour
             currentMode = Mode.Holding;
             routeManager.DeselectRoute();  // TODO: this is not pretty
 
-            stateManager.PickUp(hold);
+            HoldStateManager.PickUp(hold);
 
             cameraControl.LookAt(hold.transform.position);
         }
@@ -203,7 +203,7 @@ public class EditorController : MonoBehaviour
         
         // r/del - delete hold
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
-            stateManager.Unplace(hold, true);
+            HoldStateManager.Unplace(hold, true);
         
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())
@@ -234,7 +234,7 @@ public class EditorController : MonoBehaviour
         {
             var hitObject = hit.collider.gameObject;
 
-            if (stateManager.IsPlacedHold(hitObject))
+            if (HoldStateManager.IsPlacedHold(hitObject))
                 HoldHitBehavior(hit, hitObject);
             else
                 WallHitBehavior(hit);

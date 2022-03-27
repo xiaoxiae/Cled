@@ -15,7 +15,7 @@ public struct HoldState
 /// <summary>
 /// Manages the state of the holds on the wall (even the one held).
 /// </summary>
-public class StateManager : MonoBehaviour
+public class HoldStateManager : MonoBehaviour
 {
     private readonly Dictionary<GameObject, HoldState> _placedHolds = new();
 
