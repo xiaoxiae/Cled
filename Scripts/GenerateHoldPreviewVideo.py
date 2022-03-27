@@ -1,4 +1,4 @@
-"""A standalone script that generates a preview animation of the hold.
+"""A standalone script that generates a preview video of the hold.
 
 https://docs.blender.org/api/current/bpy.types.Object.html
 https://docs.blender.org/api/current/bpy.types.RenderSettings.html
@@ -65,20 +65,25 @@ hold.rotation_euler[0] = 0
 fit_to_object(camera, hold)
 obj.scale = (0.75, 0.75, 0.75)
 
-rotation_steps = 240
+rotation_steps = 120
 rotation_angle = 360
 
 bpy.context.view_layer.update()
 
 bpy.context.scene.render.film_transparent = True
+bpy.context.scene.render.image_settings.file_format = "JPEG"
+bpy.context.scene.render.image_settings.quality = 80
+
+bpy.context.scene.render.resolution_x = 1280
+bpy.context.scene.render.resolution_y = 720
 
 try:
-    frames_format = os.path.join("/tmp", f"{tmp_name}*.png")
     frames = []
+    frames_format = os.path.join("/tmp", f"{tmp_name}*.jpg")
     for step in range(rotation_steps):
         hold.rotation_euler[2] = radians(step * (rotation_angle / rotation_steps))
 
-        frames.append(os.path.join("/tmp", f"{tmp_name}{step:03}.png"))
+        frames.append(os.path.join("/tmp", f"{tmp_name}{step:03}.jpg"))
 
         bpy.context.scene.render.filepath = frames[-1]
         bpy.ops.render.render(write_still=True)
