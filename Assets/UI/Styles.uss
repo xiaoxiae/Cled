@@ -1,0 +1,22 @@
+.ButtonStyle {
+    font-size: 40px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=142e2f6cb21f4d153a44b542c2944a27&type=3#NotInter-Regular');
+    height: 6%;
+}
+
+.Spacer {
+    height: 65px;
+    flex-grow: 0;
+}
+
+.SmallSpacer {
+    height: 30px;
+}

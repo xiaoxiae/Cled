@@ -1,5 +1,5 @@
 <p align="center" width="100%">
-<img width="50%" src="https://raw.githubusercontent.com/Climber-Apps/Cled/master/logo.svg">
+<img width="50%" src="https://raw.githubusercontent.com/Climber-Apps/Cled/master/Assets/UI/Logo.svg">
 </p>
 
 <p align="center" width="100%">
