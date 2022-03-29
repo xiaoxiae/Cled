@@ -123,8 +123,8 @@ public class EditorController : MonoBehaviour
                 
                 NormalRouteHoldHitControls(hold);
                 
-                // CTRL + left click toggles a hold to be in the route
-                if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
+                // CTRL+LMB or SHIFT+LMB click toggles a hold to be in the route
+                if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
                     routeManager.ToggleHold(routeManager.SelectedRoute, hold);
 
                 break;
@@ -181,8 +181,8 @@ public class EditorController : MonoBehaviour
         highlightManager.Highlight(hold, HighlightType.Primary);
 
         // when left clicking, snap back to holding mode and pick it up
-        // CTRL + left click behaves differently in route mode, so it's forbidden altogether
-        if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl))
+        // CTRL+LMB and SHIFT+LMB click behaves differently in route mode, so it's forbidden altogether
+        if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
             currentMode = Mode.Holding;
             routeManager.DeselectRoute();  // TODO: this is not pretty
