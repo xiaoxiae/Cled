@@ -1,4 +1,4 @@
-.ButtonStyle {
+.button-style {
     font-size: 40px;
     margin-left: 10px;
     margin-right: 10px;
@@ -12,11 +12,11 @@
     height: 6%;
 }
 
-.Spacer {
+.spacer {
     height: 65px;
     flex-grow: 0;
 }
 
-.SmallSpacer {
+.small-spacer {
     height: 30px;
 }
