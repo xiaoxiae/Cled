@@ -223,7 +223,7 @@ public class EditorController : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         CombinedBehaviorBefore();
         

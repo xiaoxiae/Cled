@@ -10,11 +10,6 @@ public class CameraControl : MonoBehaviour
 	public float mouseSensitivity = 100f;
 
 	private float _yRotation;
-
-    void Start()
-    {
-	    Cursor.lockState = CursorLockMode.Locked;
-    }
     
     /// <summary>
     /// Look at a certain point.
