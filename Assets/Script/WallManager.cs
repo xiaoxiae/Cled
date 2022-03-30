@@ -2,42 +2,33 @@ using System.IO;
 using Dummiesman;
 using UnityEngine;
 
+using static PreferencesManager;
+
 public class WallManager : MonoBehaviour
 {
-    public string WallFolder = Path.Combine("Models", "Wall");
-    public string WallObjectName = Path.Combine("wall");
+    public GameObject Wall { get; set; }
     
-    void Start()
+    /// <summary>
+    /// Generate the wall object from the given path.
+    /// </summary>
+    public void InitializeFromPath(string path)
     {
-        var wallObj = ToGameObject();
+        var wallFolder = Path.GetDirectoryName(path);
+        var wallObjectName = Path.GetFileNameWithoutExtension(path);
         
-        MeshFilter mf = wallObj.transform.GetChild(0).GetComponent<MeshFilter>();
-        MeshCollider collider = wallObj.AddComponent<MeshCollider>();
+        var modelStream = File.OpenRead(Path.Combine(wallFolder, wallObjectName + ".obj"));
+        var materialsPath = Path.Combine(wallFolder, wallObjectName + ".mtl");
+        
+        if (!File.Exists(materialsPath))
+            Wall = new OBJLoader().Load(modelStream);
+        else
+        {
+            var textureStream = File.OpenRead(materialsPath);
+            Wall = new OBJLoader().Load(modelStream, textureStream);
+        }
+
+        MeshFilter mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
+        MeshCollider collider = Wall.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
     }
-
-    /// <summary>
-    /// Generate a 3D object from the given hold.
-    /// </summary>
-    public GameObject ToGameObject()
-    {
-        var modelStream = File.OpenRead(GetWallModelPath());
-
-        var materialsPath = GetWallMaterialPath();
-        
-        if (!File.Exists(materialsPath)) return new OBJLoader().Load(modelStream);
-        
-        var textureStream = File.OpenRead(GetWallMaterialPath());
-        return new OBJLoader().Load(modelStream, textureStream);
-    }
-
-    /// <summary>
-    /// Return the path of the .obj file of the wall.
-    /// </summary>
-    private string GetWallModelPath() => Path.Combine(WallFolder, WallObjectName + ".obj");
-
-    /// <summary>
-    /// Return the path of the .mtl file of the wall.
-    /// </summary>
-    private string GetWallMaterialPath() => Path.Combine(WallFolder, WallObjectName + ".mtl");
 }

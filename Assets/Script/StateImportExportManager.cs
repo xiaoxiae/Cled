@@ -6,12 +6,7 @@ public class StateImportExportManager : MonoBehaviour
 {
     public HoldStateManager holdStateManager;
     public RouteManager routeManager;
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public WallManager wallManager;
     
     /// <summary>
     /// Export the state from the given path.

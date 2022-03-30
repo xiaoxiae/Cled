@@ -15,6 +15,8 @@ public class EditorController : MonoBehaviour
     public CameraControl cameraControl;
     public HighlightManager highlightManager;
     public RouteManager routeManager;
+    public WallManager WallManager;
+    public StateImportExportManager StateImportExportManager;
 
     public Mode currentMode = Mode.Normal;
 
@@ -31,6 +33,13 @@ public class EditorController : MonoBehaviour
     void Start()
     {
         Invoke("tmpSelectHolds", 1);
+
+        // initialize the states from preference manager
+        // TODO: this should probably go to some different class
+        if (PreferencesManager.LastOpenBlockPath != "")
+            StateImportExportManager.Import(PreferencesManager.LastOpenBlockPath);
+        else if (PreferencesManager.CurrentBlockModelPath != "")
+            WallManager.InitializeFromPath(PreferencesManager.CurrentBlockModelPath);
     }
 
     /// <summary>
