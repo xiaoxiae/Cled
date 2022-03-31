@@ -7,7 +7,7 @@
         <ui:VisualElement name="spacer" class="spacer" />
         <ui:Button text="Continue" display-tooltip-when-elided="true" name="continue-button" class="button-style" />
         <ui:VisualElement name="spacer" class="small-spacer" />
-        <ui:Button text="&lt;b&gt;New&lt;/b&gt; wall" display-tooltip-when-elided="true" name="new-button" enable-rich-text="true" class="button-style" />
+        <ui:Button text="&lt;b&gt;New&lt;/b&gt; wall" display-tooltip-when-elided="true" name="new-button" class="button-style" />
         <ui:Button text="&lt;b&gt;Load&lt;/b&gt; wall" display-tooltip-when-elided="true" name="load-button" class="button-style" />
         <ui:VisualElement name="spacer" class="small-spacer" />
         <ui:Button text="Settings" display-tooltip-when-elided="true" name="settings-button" class="button-style" />

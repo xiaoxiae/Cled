@@ -9,7 +9,6 @@
     padding-top: 15px;
     padding-bottom: 15px;
     -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=142e2f6cb21f4d153a44b542c2944a27&type=3#NotInter-Regular');
-    height: 6%;
 }
 
 .spacer {
@@ -33,8 +32,4 @@
     padding-bottom: 10px;
     -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=142e2f6cb21f4d153a44b542c2944a27&type=3#NotInter-Regular');
     height: 6%;
-}
-
-.mini-spacer {
-    height: 15px;
 }

@@ -1,0 +1,47 @@
+.button {
+    height: auto;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 20px;
+    margin-top: 8px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.dropdown {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    -unity-text-align: middle-center;
+    height: 50%;
+}
+
+.large-hspace {
+    width: 75px;
+}
+
+.med-hspace {
+    width: 45px;
+}
+
+.hfill {
+    flex-grow: 1;
+}
+
+.label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    justify-content: center;
+}

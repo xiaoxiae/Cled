@@ -1,11 +1,40 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="top-bar" style="flex-direction: row; height: 30px;">
-        <ui:VisualElement style="height: 100%;">
-            <ui:Button text="Button" display-tooltip-when-elided="true" focusable="true" style="flex-shrink: 1; height: 15px; flex-grow: 0; font-size: 7px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;" />
-            <ui:Button text="Button" display-tooltip-when-elided="true" style="flex-shrink: 1;" />
+    <Style src="project://database/Assets/UI/HoldPickerStyles.uss?fileID=7433441132597879392&amp;guid=f9e5f7af09447e40b9c52f2530526553&amp;type=3#HoldPickerStyles" />
+    <Style src="project://database/Assets/UI/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=ef2d91682ed6ad164a012ae9e0f7c156&amp;type=3#GlobalStyles" />
+    <ui:VisualElement class="semi-transparent-background" style="flex-grow: 1; align-items: center; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 80%; height: 80%;">
+            <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center;">
+                <ui:VisualElement style="height: 100%;">
+                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="true" class="button-style button" />
+                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" class="button-style button" />
+                </ui:VisualElement>
+                <ui:VisualElement name="hfill" class="hfill" />
+                <ui:Label text="Color" display-tooltip-when-elided="true" class="label" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="color-dropdown" class="dropdown" />
+                <ui:VisualElement name="med-hspace" class="med-hspace" />
+                <ui:Label text="Type" display-tooltip-when-elided="true" class="label" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="type-dropdown" class="dropdown" />
+                <ui:VisualElement name="med-hspace" class="med-hspace" />
+                <ui:Label text="Labels" display-tooltip-when-elided="true" class="label" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="labels-dropdown" class="dropdown" />
+                <ui:VisualElement name="med-hspace" class="med-hspace" />
+                <ui:Label text="Manager" display-tooltip-when-elided="true" class="label" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="manager-dropdown" class="dropdown" />
+            </ui:VisualElement>
+            <ui:ScrollView name="hold-grid" style="flex-grow: 1;" />
+            <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center;">
+                <ui:Label text="Total holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-hold-counter" class="label" />
+                <ui:VisualElement name="large-hspace" class="large-hspace" />
+                <ui:Label text="Filtered holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-hold-counter" class="label" />
+                <ui:VisualElement name="hfill" class="hfill" />
+                <ui:Label text="Total selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-selected-hold-counter" class="label" />
+                <ui:VisualElement name="large-hspace" class="large-hspace" />
+                <ui:Label text="Filtered selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtred-selected-hold-counter" class="label" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:DropdownField label="Test" index="-1" choices="System.Collections.Generic.List`1[System.String]" style="flex-shrink: 0; flex-grow: 0; justify-content: flex-start; width: auto; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px; font-size: 8px;" />
     </ui:VisualElement>
-    <ui:ScrollView name="hold-grid" style="flex-grow: 1;" />
-    <ui:VisualElement name="bot-bar" style="height: 50px;" />
 </ui:UXML>

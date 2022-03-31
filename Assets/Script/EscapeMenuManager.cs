@@ -8,8 +8,6 @@ public class EscapeMenuManager : MonoBehaviour
 {
     public StateImportExportManager StateImportExportManager;
 
-    public GameObject EscapeMenu;
-
     private bool _forceSave;
     private bool _forceSaveAs;
 
@@ -42,7 +40,7 @@ public class EscapeMenuManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        root = EscapeMenu.GetComponent<UIDocument>().rootVisualElement;
+        root = GetComponent<UIDocument>().rootVisualElement;
 
         _saveButton = root.Q<Button>("save-button");
         _saveButton.SetEnabled(false);
@@ -131,6 +129,7 @@ public class EscapeMenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            // TODO: if it's not toggled - some other menu might be on
             if (Time.timeScale == 0)
             {
                 Time.timeScale = 1;
