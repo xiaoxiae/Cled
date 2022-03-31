@@ -1,28 +1,33 @@
-"""A standalone script that generates a preview video of the hold.
+"""A standalone script that generates a preview video of a hold.
 
 https://docs.blender.org/api/current/bpy.types.Object.html
 https://docs.blender.org/api/current/bpy.types.RenderSettings.html
 """
 
 import os
-import bpy
+import bpy, bmesh
 import argparse
 import tempfile
 
-from math import radians
 from subprocess import Popen
+from PIL import Image
+from math import radians
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("input", help="The path to the model to generate the preview for.")
 parser.add_argument("output", help="The path of the resulting file.")
+parser.add_argument("-c", "--color", help="The background color. Defaults to '0.5 0.5 0.5 1'.", type=lambda x: tuple(map(float, x.strip().split())), default=(0.5, 0.5, 0.5, 1))
+parser.add_argument("-q", "--quality", help="The resulting image quality. Defaults to 60.", type=int, default=60)
+parser.add_argument("-s", "--size", help="The resulting image size. Defaults to 1000 (by 1000).", type=int, default=1000)
+parser.add_argument("-n", "--number", help="The number of images to take. defaults to 120.", type=int, default=120)
+parser.add_argument("-f", "--framerate", help="The video framerate. Defaults to 60.", type=int, default=60)
+parser.add_argument("-l", "--light", help="The intensity of the distance of the light to the object. Defaults to 7.", type=int, default=7)
 
 arguments = parser.parse_args()
 
 # load the hold
 bpy.ops.import_scene.obj(filepath=arguments.input)
-
-LIGHT_DISTANCE = 5
 
 camera = None
 hold = None
@@ -38,14 +43,15 @@ for obj in bpy.data.objects:
     elif obj.name.lower() == "camera":
         camera = obj
 
-    # move light somewhere better
     elif obj.name.lower() == "light":
         light = obj
-        light.location = (LIGHT_DISTANCE, -LIGHT_DISTANCE, LIGHT_DISTANCE)
+        # move light somewhere better
+        light.location = (arguments.light, -arguments.light, arguments.light)
 
 
-def fit_to_object(camera, obj):
+def fit_to_object(obj):
     """Zoom the camera to fit the entire object."""
+    bpy.ops.object.select_all(action='DESELECT')
     obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
 
@@ -55,31 +61,47 @@ def remove_files(files):
     for file in files:
         os.remove(file)
 
-
 tmp_name = next(tempfile._get_candidate_names())
+
+# the sensor should be rectangular
+bpy.data.cameras["Camera"].sensor_width=36
+bpy.data.cameras["Camera"].sensor_height=36
+
+# add a background color using the plane
+bpy.ops.mesh.primitive_plane_add()
+
+color = arguments.color
+if len(arguments.color) == 3:
+    color = tuple(list(arguments.color) + [1])
+
+for obj in bpy.data.objects:
+    if obj.name.lower() == "plane":
+        mat = bpy.data.materials.new(name="Material")
+        obj.data.materials.append(mat)
+        bpy.context.object.active_material.diffuse_color = color
 
 # this is not 0 for some reason
 hold.rotation_euler[0] = 0
 
 # fit the view to the entire hold + scale it down a bit
-fit_to_object(camera, hold)
-obj.scale = (0.75, 0.75, 0.75)
+fit_to_object(hold)
+obj.scale = (0.85, 0.85, 0.85)
 
-rotation_steps = 120
+rotation_steps = arguments.number
 rotation_angle = 360
 
 bpy.context.view_layer.update()
 
-bpy.context.scene.render.film_transparent = True
 bpy.context.scene.render.image_settings.file_format = "JPEG"
-bpy.context.scene.render.image_settings.quality = 80
+bpy.context.scene.render.image_settings.quality = arguments.quality
 
-bpy.context.scene.render.resolution_x = 1280
-bpy.context.scene.render.resolution_y = 720
+bpy.context.scene.render.resolution_x = arguments.size
+bpy.context.scene.render.resolution_y = arguments.size
 
 try:
     frames = []
     frames_format = os.path.join("/tmp", f"{tmp_name}*.jpg")
+
     for step in range(rotation_steps):
         hold.rotation_euler[2] = radians(step * (rotation_angle / rotation_steps))
 
@@ -92,7 +114,7 @@ try:
         [
             "ffmpeg",
             "-framerate",
-            "60",
+            str(arguments.framerate),
             "-pattern_type",
             "glob",
             "-i",
