@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="top-bar" style="flex-direction: row; height: 30px;">
+        <ui:VisualElement style="height: 100%;">
+            <ui:Button text="Button" display-tooltip-when-elided="true" focusable="true" style="flex-shrink: 1; height: 15px; flex-grow: 0; font-size: 7px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;" />
+            <ui:Button text="Button" display-tooltip-when-elided="true" style="flex-shrink: 1;" />
+        </ui:VisualElement>
+        <ui:DropdownField label="Test" index="-1" choices="System.Collections.Generic.List`1[System.String]" style="flex-shrink: 0; flex-grow: 0; justify-content: flex-start; width: auto; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px; font-size: 8px;" />
+    </ui:VisualElement>
+    <ui:ScrollView name="hold-grid" style="flex-grow: 1;" />
+    <ui:VisualElement name="bot-bar" style="height: 50px;" />
+</ui:UXML>
