@@ -2,8 +2,6 @@ using System.IO;
 using Dummiesman;
 using UnityEngine;
 
-using static PreferencesManager;
-
 public class WallManager : MonoBehaviour
 {
     public GameObject Wall { get; set; }

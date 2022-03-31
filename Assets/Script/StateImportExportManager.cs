@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StateImportExportManager : MonoBehaviour
@@ -9,18 +7,22 @@ public class StateImportExportManager : MonoBehaviour
     public WallManager wallManager;
     
     /// <summary>
-    /// Export the state from the given path.
+    /// Import the state from the given path.
+    /// 
+    /// Return true if successful, else false.
     /// </summary>
-    public void Import(string path)
+    public bool Import(string path)
     {
-        
+        return false;
     }
 
     /// <summary>
     /// Export the state to the given path.
+    /// 
+    /// Return true if successful, else false.
     /// </summary>
-    public void Export(string path)
+    public bool Export(string path)
     {
-        
+        return false;
     }
 }

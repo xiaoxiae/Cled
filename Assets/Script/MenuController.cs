@@ -1,49 +1,54 @@
 using System.IO;
+using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
-using SimpleFileBrowser;
 using UnityEngine.SceneManagement;
-using static PreferencesManager;
 
 public class MenuController : MonoBehaviour
 {
     void Start()
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
-        
+
         var continueButton = root.Q<Button>("continue-button");
-        
-        if (LastOpenBlockPath == "" || !File.Exists(LastOpenBlockPath))
+
+        if (PreferencesManager.LastOpenWallPath == "" || !File.Exists(PreferencesManager.LastOpenWallPath))
             continueButton.SetEnabled(false);
         else
             continueButton.clicked += () => SceneManager.LoadScene("WallScene");
-        
+
         var loadButton = root.Q<Button>("load-button");
-        loadButton.clicked += () => FileBrowser.ShowLoadDialog(onLoadBlock, null, FileBrowser.PickMode.Files);
-        
+        loadButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open", "", "", false, onLoadWall);
+
         var newButton = root.Q<Button>("new-button");
-        newButton.clicked += () => FileBrowser.ShowLoadDialog(onOpenNewBlock, null, FileBrowser.PickMode.Files);
+        newButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open", "", "", false, onOpenNewWall);
 
         var quitButton = root.Q<Button>("quit-button");
         quitButton.clicked += Application.Quit;
     }
-    
+
     /// <summary>
-    /// Called when loading a block.
+    /// Called when loading an existing wall.
     /// </summary>
-    void onLoadBlock(string[] paths)
+    void onLoadWall(string[] paths)
     {
-        LastOpenBlockPath = paths[0];
+        if (paths.Length == 0)
+            return;
+
+        PreferencesManager.LastOpenWallPath = paths[0];
         SceneManager.LoadScene("WallScene");
     }
 
     /// <summary>
-    /// Called when opening a new block.
+    /// Called when opening a new wall.
     /// </summary>
-    void onOpenNewBlock(string[] paths)
+    void onOpenNewWall(string[] paths)
     {
-        CurrentBlockModelPath = paths[0];
-        LastOpenBlockPath = null;
+        if (paths.Length == 0)
+            return;
+
+        PreferencesManager.CurrentWallModelPath = paths[0];
+        PreferencesManager.LastOpenWallPath = null;
         SceneManager.LoadScene("WallScene");
     }
 }

@@ -1,58 +1,146 @@
+using SFB;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
 public class EscapeMenuManager : MonoBehaviour
 {
+    public StateImportExportManager StateImportExportManager;
+
     public GameObject EscapeMenu;
-    
+
     private bool _forceSave;
     private bool _forceSaveAs;
+
+    private VisualElement root;
 
     /// <summary>
     /// Forces a save when either main menu or quit is called.
     /// Should ideally be called after the wall has been modified and the user wanted to quit before it was saved.
     /// </summary>
-    private void ForceSave() => _forceSave = true;
-    
+    public void ForceSave() => SetForceSave(true);
+
+    private void SetForceSave(bool state)
+    {
+        _forceSave = state;
+        _saveButton.SetEnabled(state);
+    }
+
     /// <summary>
-    /// Forces a save when either main menu or quit is called.
-    /// Should be called if the wall is not saved at all.
+    /// Forces a save as when either main menu or quit is called.
+    /// Should be called if the wall is not saved at all after loading the editor scene.
     /// </summary>
-    private void ForceSaveAs() => _forceSaveAs = true;
-    
+    public void ForceSaveAs() => _forceSaveAs = true;
+
+    private Button _saveButton;
+    private Button _saveAsButton;
+    private Button _mainMenuButton;
+    private Button _quitButton;
+
     void Start()
     {
-        EscapeMenu.SetActive(false);
-	    Cursor.lockState = CursorLockMode.Locked;
-        
-        var root = EscapeMenu.GetComponent<UIDocument>().rootVisualElement;
-        
-        // TODO: disable if _forceSave is false
-        // TODO: should set _forceSave to true
-        var saveButton = root.Q<Button>("save-button");
-        
-        // TODO: should set _forceSaveAs to true
-        var saveAsButton = root.Q<Button>("save-as-button");
-        
-        var mainMenuButton = root.Q<Button>("main-menu-button");
-        
-        var quitButton = root.Q<Button>("quit-button");
+        Cursor.lockState = CursorLockMode.Locked;
+
+        root = EscapeMenu.GetComponent<UIDocument>().rootVisualElement;
+
+        _saveButton = root.Q<Button>("save-button");
+        _saveButton.SetEnabled(false);
+        _saveButton.clicked += () => Save();
+
+        _saveAsButton = root.Q<Button>("save-as-button");
+        _saveAsButton.clicked += () => SaveAs();
+
+        _mainMenuButton = root.Q<Button>("main-menu-button");
+        _mainMenuButton.clicked += MainMenu;
+
+        _quitButton = root.Q<Button>("quit-button");
+        _quitButton.clicked += Quit;
+
+        root.visible = false;
+    }
+
+    /// <summary>
+    /// Attempt to save, returning true if it worked, else false.
+    /// </summary>
+    private bool Save()
+    {
+        if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
+            // TODO: some error message if export failed
+            return false;
+
+        SetForceSave(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Attempt to save as, returning true if it worked, else false.
+    /// </summary>
+    private bool SaveAs()
+    {
+        var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "", "");
+
+        if (path != "")
+        {
+            if (!StateImportExportManager.Export(path))
+                // TODO: some error message if export failed
+                return false;
+
+            SetForceSave(false);
+            _forceSaveAs = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Attempt to return to the main menu, possibly warning about things not being saved.
+    /// </summary>
+    private void MainMenu()
+    {
+        if (EnsureSaved())
+            SceneManager.LoadScene("MainMenuScene");
+    }
+
+    /// <summary>
+    /// Attempt to quit, possibly warning about things not being saved.
+    /// </summary>
+    private void Quit()
+    {
+        if (EnsureSaved())
+            Application.Quit();
+    }
+
+    /// <summary>
+    /// Ensure that things are saved. Return true if they are after the function call.
+    /// </summary>
+    /// <returns></returns>
+    private bool EnsureSaved()
+    {
+        if (_forceSaveAs)
+            return false; // TODO: dialogue for that it's not saved as anything
+
+        if (_forceSave)
+            return false; // TODO: dialogue for that there are unsaved changes
+
+        return true;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
             if (Time.timeScale == 0)
             {
                 Time.timeScale = 1;
-                EscapeMenu.SetActive(false);
+                root.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
             else
             {
                 Time.timeScale = 0;
-                EscapeMenu.SetActive(true);
+                root.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
         }

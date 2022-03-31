@@ -221,7 +221,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &540951512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,7 +309,7 @@ GameObject:
   - component: {fileID: 665042415}
   - component: {fileID: 665042417}
   - component: {fileID: 665042419}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -387,6 +387,7 @@ MonoBehaviour:
   routeManager: {fileID: 651512647}
   WallManager: {fileID: 244077567}
   StateImportExportManager: {fileID: 1935898423}
+  EscapeMenuManager: {fileID: 2074881591}
   currentMode: 0
   mouseSensitivity: 5
 --- !u!1 &674212779
@@ -632,7 +633,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -893,7 +894,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935898421}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1058,4 +1059,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3b2a465da2e1393aff033df4210f60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StateImportExportManager: {fileID: 1935898423}
   EscapeMenu: {fileID: 540951511}
