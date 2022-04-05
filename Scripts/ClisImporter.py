@@ -7,9 +7,16 @@ It also exports the holds to ../Models/Holds/.
 import os
 import argparse
 import shutil
-from subprocess import Popen 
+import hashlib
+from subprocess import Popen
 from yaml import load, dump
 from yaml import CLoader as Loader, CDumper as Dumper
+
+def get_file_hashsum(path, characters=12):
+    """Return the hashsum of the file contents."""
+    with open(path) as f:
+        return hashlib.sha256(f.read().encode("utf-8")).hexdigest()[:12]
+
 
 cwd = os.getcwd()
 
@@ -27,6 +34,9 @@ arguments = parser.parse_args()
 from_dir = os.path.join(cwd, arguments.path)
 to_dir = os.path.join("..", "Models", "Holds")
 
+if not os.path.exists(to_dir):
+    os.makedirs(to_dir)
+
 shutil.copy(os.path.join(from_dir, "holds.yaml"), os.path.join(to_dir, "holds.yaml"))
 
 # read the YAML and copy the contents of the folders
@@ -34,7 +44,14 @@ with open(os.path.join(from_dir, "holds.yaml")) as f:
     data = load(f.read(), Loader=Loader)
 
 for key in data:
-    hold_folder = os.path.join(from_dir, key)
+    # find the folder with the key
+    for file in os.listdir(from_dir):
+        objfile = os.path.join(from_dir, file, "model.obj")
+
+        if os.path.exists(objfile) and get_file_hashsum(objfile) == key:
+            break
+
+    hold_folder = os.path.join(from_dir, file)
 
     # copy over the model and its texture files
     for file in ["model.obj", "model.mtl", "model.jpg"]:
@@ -45,8 +62,9 @@ for key in data:
 
         shutil.copy(os.path.join(hold_folder, file), dest_file)
 
-        # generate the preview for the hold
-        Popen(["GenerateHoldPreview.py", dest_file, dest_file_stub + ".mp4"]).communicate()
+        if ext == ".obj":
+            # generate the preview for the hold
+            Popen(["python3", "GenerateHoldPreviewVideo.py", dest_file, dest_file_stub + ".mp4"]).communicate()
 
         # replace the path to the texture in the mtl file so it's relative to Unity root
         if ext == ".mtl":
@@ -60,5 +78,6 @@ for key in data:
             with open(dest_file, "w") as f:
                 f.write(contents)
 
-# TODO: remove models that were not found
+# TODO: warn about models that were not found
 # TODO: only copy files that were not in already
+# TODO: warn about models that were found but should not have been
