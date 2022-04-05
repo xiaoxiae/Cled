@@ -21,14 +21,13 @@ public class HoldPickerManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
-            // TODO: if it's not toggled - some other menu might be on
-            if (Time.timeScale == 0)
+            if (Time.timeScale == 0 && root.visible)
             {
                 Time.timeScale = 1;
                 root.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            else
+            else if (Time.timeScale == 1 && !root.visible)
             {
                 Time.timeScale = 0;
                 root.visible = true;
