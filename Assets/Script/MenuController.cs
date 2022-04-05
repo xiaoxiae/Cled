@@ -32,7 +32,7 @@ public class MenuController : MonoBehaviour
     /// </summary>
     void onLoadWall(string[] paths)
     {
-        if (paths.Length == 0)
+        if (paths.Length == 0 || paths[0] == "")
             return;
 
         PreferencesManager.LastOpenWallPath = paths[0];
@@ -44,7 +44,7 @@ public class MenuController : MonoBehaviour
     /// </summary>
     void onOpenNewWall(string[] paths)
     {
-        if (paths.Length == 0)
+        if (paths.Length == 0 || paths[0] == "")
             return;
 
         PreferencesManager.CurrentWallModelPath = paths[0];
