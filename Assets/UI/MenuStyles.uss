@@ -9,6 +9,10 @@
     padding-top: 15px;
     padding-bottom: 15px;
     -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=142e2f6cb21f4d153a44b542c2944a27&type=3#NotInter-Regular');
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .spacer {

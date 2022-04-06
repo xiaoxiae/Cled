@@ -20,17 +20,23 @@ public class HoldInformation
 }
 
 /// <summary>
-/// A class for storing both the hold information and the hold model.
+/// A class for storing both the hold information and the actual hold instantiation (model, path to preview and image, etc.).
 /// </summary>
 public class HoldBlueprint
 {
     public readonly GameObject Model;
     public readonly HoldInformation HoldInformation;
 
-    public HoldBlueprint(GameObject model, HoldInformation holdInformation)
+    public readonly string PreviewVideoPath;
+    public readonly string PreviewImagePath;
+
+    public HoldBlueprint(GameObject model, HoldInformation holdInformation, string previewImagePath,
+        string previewVideoPath)
     {
         Model = model;
         HoldInformation = holdInformation;
+        PreviewImagePath = previewImagePath;
+        PreviewVideoPath = previewVideoPath;
     }
 }
 
@@ -55,7 +61,13 @@ public class HoldManager : MonoBehaviour
 
         foreach (var pair in holdInformation)
         {
-            var hold = new HoldBlueprint(ToGameObject(pair.Key), pair.Value);
+            var hold = new HoldBlueprint(
+                ToGameObject(pair.Key),
+                pair.Value,
+                GetHoldPreviewImagePath(pair.Key),
+                GetHoldPreviewVideoPath(pair.Key)
+            );
+
             hold.Model.SetActive(false);
 
             _holds[pair.Key] = hold;
@@ -88,13 +100,11 @@ public class HoldManager : MonoBehaviour
         return hold;
     }
 
-    /// <summary>
-    /// Return the path of the .obj file of the hold.
-    /// </summary>
+    private string GetHoldPreviewVideoPath(string id) => Path.Combine(ModelsFolder, id + "-preview.webm");
+
+    private string GetHoldPreviewImagePath(string id) => Path.Combine(ModelsFolder, id + "-preview.jpg");
+
     private string GetHoldModelPath(string id) => Path.Combine(ModelsFolder, id + ".obj");
 
-    /// <summary>
-    /// Return the path of the .mtl file of the hold.
-    /// </summary>
     private string GetHoldMaterialPath(string id) => Path.Combine(ModelsFolder, id + ".mtl");
 }
