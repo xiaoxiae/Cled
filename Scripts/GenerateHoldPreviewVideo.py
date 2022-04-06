@@ -17,12 +17,48 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("input", help="The path to the model to generate the preview for.")
 parser.add_argument("output", help="The path of the resulting file.")
-parser.add_argument("-c", "--color", help="The background color. Defaults to '0.5 0.5 0.5 1'.", type=lambda x: tuple(map(float, x.strip().split())), default=(0.5, 0.5, 0.5, 1))
-parser.add_argument("-q", "--quality", help="The resulting image quality. Defaults to 60.", type=int, default=60)
-parser.add_argument("-s", "--size", help="The resulting image size. Defaults to 1000 (by 1000).", type=int, default=1000)
-parser.add_argument("-n", "--number", help="The number of images to take. defaults to 120.", type=int, default=120)
-parser.add_argument("-f", "--framerate", help="The video framerate. Defaults to 60.", type=int, default=60)
-parser.add_argument("-l", "--light", help="The intensity of the distance of the light to the object. Defaults to 7.", type=int, default=7)
+parser.add_argument(
+    "-c",
+    "--color",
+    help="The background color. Defaults to '0.5 0.5 0.5 1'.",
+    type=lambda x: tuple(map(float, x.strip().split())),
+    default=(0.5, 0.5, 0.5, 1),
+)
+parser.add_argument(
+    "-q",
+    "--quality",
+    help="The resulting image quality. Defaults to 60.",
+    type=int,
+    default=60,
+)
+parser.add_argument(
+    "-s",
+    "--size",
+    help="The resulting image size. Defaults to 1000 (by 1000).",
+    type=int,
+    default=1000,
+)
+parser.add_argument(
+    "-n",
+    "--number",
+    help="The number of images to take. defaults to 120.",
+    type=int,
+    default=120,
+)
+parser.add_argument(
+    "-f",
+    "--framerate",
+    help="The video framerate. Defaults to 60.",
+    type=int,
+    default=60,
+)
+parser.add_argument(
+    "-l",
+    "--light",
+    help="The intensity of the distance of the light to the object. Defaults to 7.",
+    type=int,
+    default=7,
+)
 
 arguments = parser.parse_args()
 
@@ -37,9 +73,6 @@ for obj in bpy.data.objects:
     if obj.name.lower() == "cube":
         bpy.data.objects.remove(obj, do_unlink=True)
 
-    elif obj.name.lower() == "model":
-        hold = obj
-
     elif obj.name.lower() == "camera":
         camera = obj
 
@@ -48,10 +81,13 @@ for obj in bpy.data.objects:
         # move light somewhere better
         light.location = (arguments.light, -arguments.light, arguments.light)
 
+    else:
+        hold = obj
+
 
 def fit_to_object(obj):
     """Zoom the camera to fit the entire object."""
-    bpy.ops.object.select_all(action='DESELECT')
+    bpy.ops.object.select_all(action="DESELECT")
     obj.select_set(True)
     bpy.ops.view3d.camera_to_view_selected()
 
@@ -61,11 +97,12 @@ def remove_files(files):
     for file in files:
         os.remove(file)
 
+
 tmp_name = next(tempfile._get_candidate_names())
 
 # the sensor should be rectangular
-bpy.data.cameras["Camera"].sensor_width=36
-bpy.data.cameras["Camera"].sensor_height=36
+bpy.data.cameras["Camera"].sensor_width = 36
+bpy.data.cameras["Camera"].sensor_height = 36
 
 # add a background color using the plane
 bpy.ops.mesh.primitive_plane_add()
@@ -110,6 +147,8 @@ try:
         bpy.context.scene.render.filepath = frames[-1]
         bpy.ops.render.render(write_still=True)
 
+    # we're exporting to webm because the Linux editor doesn't support too many formats
+    # https://docs.unity3d.com/Manual/VideoSources-FileCompatibility.html
     Popen(
         [
             "ffmpeg",
@@ -120,9 +159,11 @@ try:
             "-i",
             frames_format,
             "-c:v",
-            "libx264",
-            "-pix_fmt",
-            "yuv420p",
+            "libvpx",
+            "-b:v",
+            "1M",
+            "-c:a",
+            "libvorbis",
             arguments.output,
         ]
     ).communicate()
