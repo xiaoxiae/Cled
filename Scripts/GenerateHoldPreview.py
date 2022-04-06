@@ -1,4 +1,4 @@
-"""A standalone script that generates a preview video of a hold.
+"""A standalone script that generates a preview video and image of a hold.
 
 https://docs.blender.org/api/current/bpy.types.Object.html
 https://docs.blender.org/api/current/bpy.types.RenderSettings.html
@@ -8,6 +8,7 @@ import os
 import bpy, bmesh
 import argparse
 import tempfile
+import shutil
 
 from subprocess import Popen
 from PIL import Image
@@ -16,7 +17,7 @@ from math import radians
 parser = argparse.ArgumentParser()
 
 parser.add_argument("input", help="The path to the model to generate the preview for.")
-parser.add_argument("output", help="The path of the resulting file.")
+parser.add_argument("output", help="The path of the resulting file (excluding extensions).")
 parser.add_argument(
     "-c",
     "--color",
@@ -147,6 +148,9 @@ try:
         bpy.context.scene.render.filepath = frames[-1]
         bpy.ops.render.render(write_still=True)
 
+        if step == 0:
+            shutil.copy(frames[-1], arguments.output + "-preview.jpg")
+
     # we're exporting to webm because the Linux editor doesn't support too many formats
     # https://docs.unity3d.com/Manual/VideoSources-FileCompatibility.html
     Popen(
@@ -164,7 +168,7 @@ try:
             "1M",
             "-c:a",
             "libvorbis",
-            arguments.output,
+            arguments.output + "-preview.webm",
         ]
     ).communicate()
 except KeyboardInterrupt:

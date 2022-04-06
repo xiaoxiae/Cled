@@ -1,4 +1,4 @@
-"""Imports the models from the Clis project, generating their preview animation in the process.
+"""Imports the models from the Clis project, generating their preview animation and image in the process.
 
 Note that this script expects to be in Scripts/ folder of the Unity project.
 It also exports the holds to ../Models/Holds/.
@@ -66,7 +66,7 @@ for key in data:
 
         if ext == ".obj":
             # generate the preview for the hold
-            Popen(["python3", "GenerateHoldPreviewVideo.py", src_file, dest_file_stub + ".webm"]).communicate()
+            Popen(["python3", "GenerateHoldPreview.py", src_file, dest_file_stub]).communicate()
 
         # replace the path to the texture in the mtl file so it's relative to Unity root
         if ext == ".mtl":
