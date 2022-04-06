@@ -137,7 +137,7 @@ bpy.context.scene.render.resolution_y = arguments.size
 
 try:
     frames = []
-    frames_format = os.path.join("/tmp", f"{tmp_name}*.jpg")
+    frames_glob = os.path.join("/tmp", f"{tmp_name}*.jpg")
 
     for step in range(rotation_steps):
         hold.rotation_euler[2] = radians(step * (rotation_angle / rotation_steps))
@@ -157,7 +157,7 @@ try:
             "-pattern_type",
             "glob",
             "-i",
-            frames_format,
+            frames_glob,
             "-c:v",
             "libvpx",
             "-b:v",
