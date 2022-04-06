@@ -57,14 +57,16 @@ for key in data:
     for file in ["model.obj", "model.mtl", "model.jpg"]:
         _, ext = os.path.splitext(file)
 
+        src_file = os.path.join(hold_folder, file)
+
         dest_file_stub = os.path.join(to_dir, key)
         dest_file = dest_file_stub + ext
 
-        shutil.copy(os.path.join(hold_folder, file), dest_file)
+        shutil.copy(src_file, dest_file)
 
         if ext == ".obj":
             # generate the preview for the hold
-            Popen(["python3", "GenerateHoldPreviewVideo.py", dest_file, dest_file_stub + ".mp4"]).communicate()
+            Popen(["python3", "GenerateHoldPreviewVideo.py", src_file, dest_file_stub + ".mp4"]).communicate()
 
         # replace the path to the texture in the mtl file so it's relative to Unity root
         if ext == ".mtl":
