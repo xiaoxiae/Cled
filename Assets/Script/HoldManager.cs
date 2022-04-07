@@ -51,6 +51,8 @@ public class HoldManager : MonoBehaviour
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
 
+    public int HoldCount => _holds.Keys.Count;
+
     void Start()
     {
         string yml = File.ReadAllText(Path.Combine(ModelsFolder, HoldsYamlName));

@@ -5,8 +5,8 @@
         <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 85%; height: 85%;">
             <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center;">
                 <ui:VisualElement style="height: 100%; flex-grow: 0; flex-shrink: 1;">
-                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="true" class="button-style button" />
-                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" class="button-style button" style="flex-grow: 1;" />
+                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="true" name="deselect-filtered-button" class="button-style button" />
+                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" class="button-style button" style="flex-grow: 1;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="hfill" class="hfill" />
                 <ui:Label text="Color" display-tooltip-when-elided="true" class="label" />
@@ -18,12 +18,12 @@
                 <ui:Label text="Labels" display-tooltip-when-elided="true" class="label" />
                 <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="labels-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
-                <ui:Label text="Manager" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="manager-dropdown" class="dropdown" />
+                <ui:Label text="Manufacturer" display-tooltip-when-elided="true" class="label" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="manufacturerdropdown" class="dropdown" />
             </ui:VisualElement>
             <ui:ScrollView name="hold-grid-container" style="margin-left: 0; margin-right: 0; margin-top: 40px; margin-bottom: 40px; height: auto;">
                 <ui:VisualElement name="hold-grid" style="flex-grow: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
-                    <ui:VisualElement style="height: 100px;" />
+                    <ui:VisualElement style="width: 20%; height: auto; -unity-background-scale-mode: stretch-to-fill;" />
                 </ui:VisualElement>
             </ui:ScrollView>
             <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center;">
