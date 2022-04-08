@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Button = UnityEngine.UIElements.Button;
 using Cursor = UnityEngine.Cursor;
 
 public class HoldPickerManager : MonoBehaviour
@@ -11,7 +11,10 @@ public class HoldPickerManager : MonoBehaviour
     private VisualElement _root;
     private VisualElement _grid;
 
+    // a dictionary for storing each visual element's state
     private Dictionary<VisualElement, bool> _gridStateDictionary;
+
+    // a dictionary for mapping hold blueprints to grid tiles
     private Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary;
 
     private Button _deselectAllButton;
@@ -23,8 +26,11 @@ public class HoldPickerManager : MonoBehaviour
     private Label _totalSelectedHoldCounter;
     private Label _filteredSelectedHoldCounter;
 
+    private DropdownField _colorDropdown;
+
     public HoldManager HoldManager;
 
+    private HoldBlueprint[] _allHolds;
     private HoldBlueprint[] _currentlyFilteredHolds;
 
     private long _timestampHackLastPressed;
@@ -38,6 +44,26 @@ public class HoldPickerManager : MonoBehaviour
     private const float GridElementSpacing = 10;
     private const float GridElementBorderRoundness = 10;
 
+    /// <summary>
+    /// Return the currently picked holds.
+    /// </summary>
+    public List<HoldBlueprint> GetPickedHolds() =>
+        _currentlyFilteredHolds.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
+
+    // is set when the picks change
+    // is important in the editor, because the hold that was previously selected could possibly not be
+    private bool _dirty = false;
+    
+    /// <summary>
+    /// Return true if the picked holds changed.
+    /// </summary>
+    public bool HasPickedChanged => _dirty;
+
+    /// <summary>
+    /// Set that the picked holds are currently unchanged.
+    /// </summary>
+    public bool SetPicked => _dirty = false;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -46,9 +72,6 @@ public class HoldPickerManager : MonoBehaviour
         _root.visible = false;
 
         _grid = _root.Q<VisualElement>("hold-grid");
-
-        _gridStateDictionary = new Dictionary<VisualElement, bool>();
-        _holdToGridDictionary = new Dictionary<HoldBlueprint, VisualElement>();
 
         _deselectFilteredButton = _root.Q<Button>("deselect-filtered-button");
         _deselectFilteredButton.clicked += () =>
@@ -66,23 +89,76 @@ public class HoldPickerManager : MonoBehaviour
 
         _filteredHoldCounter = _root.Q<Label>("filtered-hold-counter");
 
+        _colorDropdown = _root.Q<DropdownField>("color-dropdown");
+        // TODO: this here
+        // _colorDropdown.RegisterCallback<DropdownMenuAction>(_ => FillGrid());
+
         _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
         _filteredSelectedHoldCounter = _root.Q<Label>("filtered-selected-hold-counter");
 
         // TODO: this is not very good -- do this when holds are loaded
-        Invoke("tmpFill", 1);
+        Invoke("tmpFill", 1.5f);
     }
 
     /// <summary>
-    /// TODO: all of this somewhere else!
+    /// TODO: all of this should move to a proper function called after all holds are loaded
     /// </summary>
     void tmpFill()
     {
-        _currentlyFilteredHolds = HoldManager.Filter(_ => true);
+        _allHolds = HoldManager.Filter(_ => true);
 
         _totalHoldCounter.text = HoldManager.HoldCount.ToString();
 
-        FillGrid(_currentlyFilteredHolds);
+        _colorDropdown.choices = HoldManager.AllColors().Select(x => x.ToString()).ToList();
+
+        _gridStateDictionary = new Dictionary<VisualElement, bool>();
+        _holdToGridDictionary = new Dictionary<HoldBlueprint, VisualElement>();
+
+        _currentlyFilteredHolds = new HoldBlueprint[] { };
+
+        // create a visual element for each hold
+        foreach (HoldBlueprint blueprint in _allHolds)
+        {
+            var item = new VisualElement();
+
+            _holdToGridDictionary[blueprint] = item;
+            _gridStateDictionary[item] = false;
+
+            Deselect(item);
+
+            item.style.width = GridElementSize;
+            item.style.height = GridElementSize;
+
+            item.style.borderBottomWidth = BorderThickness;
+            item.style.borderTopWidth = BorderThickness;
+            item.style.borderLeftWidth = BorderThickness;
+            item.style.borderRightWidth = BorderThickness;
+
+            item.RegisterCallback<ClickEvent>(evt =>
+            {
+                // TODO: this is a hack for a bug in Linux Unity
+                // https://forum.unity.com/threads/registercallback-clickevent-triggers-twice-on-linux-only.1111474/
+                if (evt.timestamp - _timestampHackLastPressed > timestampHackDuration)
+                    ToggleSelect(item);
+
+                _timestampHackLastPressed = evt.timestamp;
+            });
+
+            item.style.marginBottom = GridElementSpacing;
+            item.style.marginLeft = GridElementSpacing;
+            item.style.marginRight = GridElementSpacing;
+            item.style.marginTop = GridElementSpacing;
+
+            item.style.borderBottomLeftRadius = GridElementBorderRoundness;
+            item.style.borderBottomRightRadius = GridElementBorderRoundness;
+            item.style.borderTopLeftRadius = GridElementBorderRoundness;
+            item.style.borderTopRightRadius = GridElementBorderRoundness;
+
+            item.style.backgroundImage =
+                new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));
+        }
+
+        FillGrid(_allHolds);
     }
 
     /// <summary>
@@ -97,7 +173,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         _totalSelectedHoldCounter.text =
             _gridStateDictionary.Values.Count(value => value).ToString();
-        
+
         _filteredSelectedHoldCounter.text =
             _currentlyFilteredHolds.Count(value => _gridStateDictionary[_holdToGridDictionary[value]]).ToString();
     }
@@ -108,7 +184,7 @@ public class HoldPickerManager : MonoBehaviour
     void Select(VisualElement item)
     {
         // do nothing if it is already selected
-        if (_gridStateDictionary.ContainsKey(item) && _gridStateDictionary[item])
+        if (_gridStateDictionary[item])
             return;
 
         item.style.borderBottomColor = _selectedBorderColor;
@@ -127,7 +203,7 @@ public class HoldPickerManager : MonoBehaviour
     void Deselect(VisualElement item)
     {
         // do nothing if it is already deselected
-        if (_gridStateDictionary.ContainsKey(item) && !_gridStateDictionary[item])
+        if (!_gridStateDictionary[item])
             return;
 
         item.style.borderBottomColor = _deselectedBorderColor;
@@ -152,67 +228,17 @@ public class HoldPickerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Update the status of the grid item (if it was selected/deselected).
-    /// Essentially the reverse of toggle.
-    /// </summary>
-    /// <param name="item"></param>
-    void UpdateItemStatus(VisualElement item)
-    {
-        if (_gridStateDictionary[item])
-            Select(item);
-        else
-            Deselect(item);
-    }
-
-    /// <summary>
     /// Fill the grid with a selection of the holds.
     /// </summary>
     void FillGrid(HoldBlueprint[] holdBlueprints)
     {
+        foreach (HoldBlueprint blueprint in _currentlyFilteredHolds)
+            _grid.Remove(_holdToGridDictionary[blueprint]);
+
         foreach (HoldBlueprint blueprint in holdBlueprints)
-        {
-            var item = new VisualElement();
+            _grid.Add(_holdToGridDictionary[blueprint]);
 
-            _holdToGridDictionary[blueprint] = item;
-
-            item.style.width = GridElementSize;
-            item.style.height = GridElementSize;
-
-            item.style.borderBottomWidth = BorderThickness;
-            item.style.borderTopWidth = BorderThickness;
-            item.style.borderLeftWidth = BorderThickness;
-            item.style.borderRightWidth = BorderThickness;
-
-            if (_gridStateDictionary.ContainsKey(item))
-                UpdateItemStatus(item);
-            else
-                Deselect(item);
-
-            item.RegisterCallback<ClickEvent>(evt =>
-            {
-                // TODO: this is a hack for a bug in Linux Unity
-                // https://forum.unity.com/threads/registercallback-clickevent-triggers-twice-on-linux-only.1111474/
-                if (evt.timestamp - _timestampHackLastPressed > timestampHackDuration)
-                    ToggleSelect(item);
-
-                _timestampHackLastPressed = evt.timestamp;
-            });
-
-            item.style.marginBottom = GridElementSpacing;
-            item.style.marginLeft = GridElementSpacing;
-            item.style.marginRight = GridElementSpacing;
-            item.style.marginTop = GridElementSpacing;
-
-            item.style.borderBottomLeftRadius = GridElementBorderRoundness;
-            item.style.borderBottomRightRadius = GridElementBorderRoundness;
-            item.style.borderTopLeftRadius = GridElementBorderRoundness;
-            item.style.borderTopRightRadius = GridElementBorderRoundness;
-
-            item.style.backgroundImage =
-                new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));
-
-            _grid.Add(item);
-        }
+        _currentlyFilteredHolds = holdBlueprints;
 
         UpdateFilterCounters();
     }

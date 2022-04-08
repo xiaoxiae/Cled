@@ -10,16 +10,16 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="hfill" class="hfill" />
                 <ui:Label text="Color" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="color-dropdown" class="dropdown" />
+                <ui:DropdownField name="color-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Type" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="type-dropdown" class="dropdown" />
+                <ui:DropdownField name="type-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Labels" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="labels-dropdown" class="dropdown" />
+                <ui:DropdownField name="labels-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Manufacturer" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="manufacturerdropdown" class="dropdown" />
+                <ui:DropdownField name="manufacturerdropdown" class="dropdown" />
             </ui:VisualElement>
             <ui:ScrollView name="hold-grid-container" style="margin-left: 0; margin-right: 0; margin-top: 40px; margin-bottom: 40px; height: auto;">
                 <ui:VisualElement name="hold-grid" style="flex-grow: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
@@ -28,16 +28,20 @@
             </ui:ScrollView>
             <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center;">
                 <ui:Label text="Total holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label round" />
-                <ui:Label text="0" display-tooltip-when-elided="true" name="total-hold-counter" class="label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-hold-counter" class="changing-label" />
                 <ui:VisualElement name="large-hspace" class="large-hspace" />
                 <ui:Label text="Filtered holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
-                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-hold-counter" class="label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-hold-counter" class="changing-label" />
                 <ui:VisualElement name="hfill" class="hfill" />
                 <ui:Label text="Total selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
-                <ui:Label text="0" display-tooltip-when-elided="true" name="total-selected-hold-counter" class="label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-selected-hold-counter" class="changing-label" />
                 <ui:VisualElement name="large-hspace" class="large-hspace" />
                 <ui:Label text="Filtered selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label" />
-                <ui:Label text="0" display-tooltip-when-elided="true" name="filtred-selected-hold-counter" class="label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-selected-hold-counter" class="changing-label" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

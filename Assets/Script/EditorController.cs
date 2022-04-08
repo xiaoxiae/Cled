@@ -12,6 +12,7 @@ public class EditorController : MonoBehaviour
 {
     public HoldManager holdManager;
     public HoldStateManager HoldStateManager;
+    public HoldPickerManager HoldPickerManager;
     public CameraControl cameraControl;
     public HighlightManager highlightManager;
     public RouteManager routeManager;
@@ -21,8 +22,8 @@ public class EditorController : MonoBehaviour
 
     public Mode currentMode = Mode.Normal;
 
-    // TODO: do this a different way
-    private HoldBlueprint[] _selected;
+    // TODO: better name
+    private HoldBlueprint _currentlySelectedHold;
 
     // a flag for when hold started to be held
     // used to immediately move it to hit ray
@@ -30,17 +31,10 @@ public class EditorController : MonoBehaviour
 
     public float mouseSensitivity = 1f;
 
-    void tmpSelectHolds()
-    {
-        _selected = holdManager.Filter(_ => true);
-    }
-
     void Start()
     {
-        Invoke("tmpSelectHolds", 1);
-
         // initialize the states from preference manager
-        // TODO: this should be a different class
+        // TODO: this should likely be a different class
         if (PreferencesManager.LastOpenWallPath != "")
             StateImportExportManager.Import(PreferencesManager.LastOpenWallPath);
         else if (PreferencesManager.CurrentWallModelPath != "")
@@ -65,9 +59,16 @@ public class EditorController : MonoBehaviour
                 HoldStateManager.SetUnheld(true);
             else
             {
-                HoldStateManager.SetHeld(_selected[0]);
-                routeManager.DeselectRoute(); // TODO: this is not pretty
-                _startedBeingHeld = true;
+                // ensure that the currently held hold is still in the picker menu
+                // if it isn't sound a warning and don't thange the mode
+                // TODO: here
+                // if (EnsureCurrentlySelectedHold())
+                // {
+
+                    HoldStateManager.SetHeld(_currentlySelectedHold);
+                    routeManager.DeselectRoute(); // TODO: this is not pretty
+                    _startedBeingHeld = true;
+                // }
             }
         }
 
@@ -160,6 +161,22 @@ public class EditorController : MonoBehaviour
             // rotate hold on shift press
             if (Input.GetKey(KeyCode.LeftShift))
                 HoldStateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
+
+            var mouseDelta = Input.mouseScrollDelta.y;
+            
+            if (mouseDelta != 0)
+            {
+                var selectedHolds = HoldPickerManager.GetPickedHolds();
+                
+                // if the picked holds contain the one in hand, simply go up/down the list
+                if (selectedHolds.Contains(_currentlySelectedHold))
+                {
+                    int newIndex = (selectedHolds.IndexOf(_currentlySelectedHold) + (mouseDelta < 0 ? -1 : 1) + selectedHolds.Count) % selectedHolds.Count;
+                    _currentlySelectedHold = selectedHolds[newIndex];
+                    
+                    HoldStateManager.SetHeld(_currentlySelectedHold);
+                }
+            }
         }
     }
 
@@ -171,7 +188,7 @@ public class EditorController : MonoBehaviour
         // make sure that the hold is enabled when holding
         HoldStateManager.EnableHeld();
 
-        // when in holding mode, move the held hold accordingly
+        // when in holding mode, move the held hold accordingly (if we just started)
         if (_startedBeingHeld)
         {
             HoldStateManager.InterpolateHeldToHit(hit, 0);

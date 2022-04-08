@@ -51,7 +51,27 @@ public class HoldManager : MonoBehaviour
     public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
 
+    /// <summary>
+    /// Return the total number of loaded holds.
+    /// </summary>
     public int HoldCount => _holds.Keys.Count;
+
+    /// <summary>
+    /// Return all possible hold colors.
+    /// </summary>
+    /// <returns></returns>
+    public Color[] AllColors()
+    {
+        var set = new HashSet<Color>();
+        
+        foreach (var bp in _holds.Values)
+        {
+            var info = bp.HoldInformation;
+            set.Add(info.color);
+        }
+
+        return set.ToArray();
+    }
 
     void Start()
     {

@@ -426,6 +426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdManager: {fileID: 1579647979}
   HoldStateManager: {fileID: 1150806010}
+  HoldPickerManager: {fileID: 693249231}
   cameraControl: {fileID: 963194229}
   highlightManager: {fileID: 674212781}
   routeManager: {fileID: 651512647}

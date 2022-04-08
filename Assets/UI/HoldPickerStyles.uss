@@ -49,9 +49,26 @@
     -unity-text-align: middle-center;
     white-space: normal;
     justify-content: center;
-    background-color: rgb(164, 164, 164);
+    background-color: rgb(137, 137, 137);
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
+}
+
+.changing-label {
+    font-size: 20px;
+    -unity-font-style: normal;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    justify-content: center;
+    background-color: rgba(188, 188, 188, 255);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.small-hspace {
+    width: 10px;
 }
