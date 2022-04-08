@@ -22,8 +22,7 @@ public class EditorController : MonoBehaviour
 
     public Mode currentMode = Mode.Normal;
 
-    // TODO: better name
-    private HoldBlueprint _currentlySelectedHold;
+    private HoldBlueprint _currentlyPickedHold;
 
     // a flag for when hold started to be held
     // used to immediately move it to hit ray
@@ -45,9 +44,28 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
+    /// Ensure that the currently picked hold is still picked.
+    /// If it isn't, pick some other one from the selected ones.
+    /// 
+    /// If there are no selected ones, return false.
+    /// </summary>
+    private bool EnsurePickedHold()
+    {
+        var pickedHolds = HoldPickerManager.GetPickedHolds();
+
+        if (pickedHolds.Count == 0)
+            return false;
+
+        if (!pickedHolds.Contains(_currentlyPickedHold))
+            _currentlyPickedHold = pickedHolds[0];
+
+        return true;
+    }
+
+    /// <summary>
     /// Called each update at the very beginning.
     /// </summary>
-    void CombinedBehaviorBefore()
+    private void CombinedBehaviorBefore()
     {
         // toggle between holding and normal with e press
         // also go from Route to Holding
@@ -59,16 +77,19 @@ public class EditorController : MonoBehaviour
                 HoldStateManager.SetUnheld(true);
             else
             {
-                // ensure that the currently held hold is still in the picker menu
-                // if it isn't sound a warning and don't thange the mode
-                // TODO: here
-                // if (EnsureCurrentlySelectedHold())
-                // {
-
-                    HoldStateManager.SetHeld(_currentlySelectedHold);
+                if (EnsurePickedHold())
+                {
+                    HoldStateManager.SetHeld(_currentlyPickedHold);
                     routeManager.DeselectRoute(); // TODO: this is not pretty
                     _startedBeingHeld = true;
-                // }
+                }
+                else
+                {
+                    // if the currently picked hold is not picked anymore, don't switch to edit mode and
+                    // display a dialogue instead
+                    // TODO: dialogue
+                    currentMode = currentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
+                }
             }
         }
 
@@ -166,15 +187,17 @@ public class EditorController : MonoBehaviour
             
             if (mouseDelta != 0)
             {
-                var selectedHolds = HoldPickerManager.GetPickedHolds();
+                var pickedHolds = HoldPickerManager.GetPickedHolds();
                 
                 // if the picked holds contain the one in hand, simply go up/down the list
-                if (selectedHolds.Contains(_currentlySelectedHold))
+                if (pickedHolds.Contains(_currentlyPickedHold))
                 {
-                    int newIndex = (selectedHolds.IndexOf(_currentlySelectedHold) + (mouseDelta < 0 ? -1 : 1) + selectedHolds.Count) % selectedHolds.Count;
-                    _currentlySelectedHold = selectedHolds[newIndex];
+                    int newIndex = (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) + pickedHolds.Count) % pickedHolds.Count;
+                    _currentlyPickedHold = pickedHolds[newIndex];
                     
-                    HoldStateManager.SetHeld(_currentlySelectedHold);
+                    HoldStateManager.SetUnheld(true);
+                    HoldStateManager.SetHeld(_currentlyPickedHold);
+                    _startedBeingHeld = true;
                 }
             }
         }

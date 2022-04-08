@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,14 +9,15 @@ using Cursor = UnityEngine.Cursor;
 
 public class HoldPickerManager : MonoBehaviour
 {
-    private VisualElement _root;
-    private VisualElement _grid;
-
     // a dictionary for storing each visual element's state
     private Dictionary<VisualElement, bool> _gridStateDictionary;
 
     // a dictionary for mapping hold blueprints to grid tiles
     private Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary;
+
+    // UI elements
+    private VisualElement _root;
+    private VisualElement _grid;
 
     private Button _deselectAllButton;
     private Button _deselectFilteredButton;
@@ -27,15 +29,22 @@ public class HoldPickerManager : MonoBehaviour
     private Label _filteredSelectedHoldCounter;
 
     private DropdownField _colorDropdown;
+    private DropdownField _typeDropdown;
+    private DropdownField _labelsDropdown;
+    private DropdownField _manufacturerDropdown;
 
+
+    // hold manager-related things
     public HoldManager HoldManager;
 
     private HoldBlueprint[] _allHolds;
     private HoldBlueprint[] _currentlyFilteredHolds;
 
+    // Linux hack
     private long _timestampHackLastPressed;
     private readonly long timestampHackDuration = 100;
 
+    // styling
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
     private readonly StyleColor _deselectedBorderColor = new(new Color(0.35f, 0.35f, 0.35f));
 
@@ -44,16 +53,18 @@ public class HoldPickerManager : MonoBehaviour
     private const float GridElementSpacing = 10;
     private const float GridElementBorderRoundness = 10;
 
+    private const string noSelectionString = "-";
+
     /// <summary>
     /// Return the currently picked holds.
     /// </summary>
     public List<HoldBlueprint> GetPickedHolds() =>
-        _currentlyFilteredHolds.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
+        _holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
 
     // is set when the picks change
     // is important in the editor, because the hold that was previously selected could possibly not be
-    private bool _dirty = false;
-    
+    private bool _dirty;
+
     /// <summary>
     /// Return true if the picked holds changed.
     /// </summary>
@@ -62,12 +73,43 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Set that the picked holds are currently unchanged.
     /// </summary>
-    public bool SetPicked => _dirty = false;
+    public bool SetPickedUnchanged() => _dirty = false;
 
-    void Start()
+    /// <summary>
+    /// Update the grid according to the dropdown buttons.
+    /// </summary>
+    void UpdateGrid()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        FillGrid(HoldManager.Filter(hold =>
+        {
+            if (!string.IsNullOrEmpty(_colorDropdown.value) && _colorDropdown.value != noSelectionString &&
+                hold.colorName != _colorDropdown.value)
+                return false;
 
+            if (!string.IsNullOrEmpty(_labelsDropdown.value) && _labelsDropdown.value != noSelectionString &&
+                hold.labels.Contains(_labelsDropdown.value))
+                return false;
+
+            if (!string.IsNullOrEmpty(_manufacturerDropdown.value) &&
+                _manufacturerDropdown.value != noSelectionString && hold.manufacturer != _manufacturerDropdown.value)
+                return false;
+
+            if (!string.IsNullOrEmpty(_typeDropdown.value) &&
+                _typeDropdown.value != noSelectionString && hold.manufacturer != _typeDropdown.value)
+                return false;
+
+            return true;
+        }));
+        
+        UpdateSelectCounters();
+    }
+
+    /// <summary>
+    /// Initialize everything.
+    /// Can't be called in the start because the hold manager isn't ready yet.
+    /// </summary>
+    void Initialize()
+    {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
 
@@ -90,26 +132,34 @@ public class HoldPickerManager : MonoBehaviour
         _filteredHoldCounter = _root.Q<Label>("filtered-hold-counter");
 
         _colorDropdown = _root.Q<DropdownField>("color-dropdown");
-        // TODO: this here
-        // _colorDropdown.RegisterCallback<DropdownMenuAction>(_ => FillGrid());
+        _labelsDropdown = _root.Q<DropdownField>("labels-dropdown");
+        _manufacturerDropdown = _root.Q<DropdownField>("manufacturer-dropdown");
+        _typeDropdown = _root.Q<DropdownField>("type-dropdown");
 
         _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
         _filteredSelectedHoldCounter = _root.Q<Label>("filtered-selected-hold-counter");
-
-        // TODO: this is not very good -- do this when holds are loaded
-        Invoke("tmpFill", 1.5f);
-    }
-
-    /// <summary>
-    /// TODO: all of this should move to a proper function called after all holds are loaded
-    /// </summary>
-    void tmpFill()
-    {
         _allHolds = HoldManager.Filter(_ => true);
 
         _totalHoldCounter.text = HoldManager.HoldCount.ToString();
 
-        _colorDropdown.choices = HoldManager.AllColors().Select(x => x.ToString()).ToList();
+        // dropdowns
+        var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
+        var choiceFunctions = new Func<List<string>>[] { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
+
+        for (int i = 0; i < dropdowns.Length; i++)
+        {
+            var allValues = choiceFunctions[i]();
+            allValues.Insert(0, noSelectionString);
+
+            // only add the separator if there are some items
+            if (allValues.Count != 1)
+                allValues.Insert(1, "");
+
+            dropdowns[i].choices = allValues;
+
+            dropdowns[i].index = 0;
+            dropdowns[i].RegisterValueChangedCallback(_ => UpdateGrid());
+        }
 
         _gridStateDictionary = new Dictionary<VisualElement, bool>();
         _holdToGridDictionary = new Dictionary<HoldBlueprint, VisualElement>();
@@ -193,6 +243,8 @@ public class HoldPickerManager : MonoBehaviour
         item.style.borderRightColor = _selectedBorderColor;
 
         _gridStateDictionary[item] = true;
+        
+        _dirty = true;
 
         UpdateSelectCounters();
     }
@@ -212,6 +264,8 @@ public class HoldPickerManager : MonoBehaviour
         item.style.borderRightColor = _deselectedBorderColor;
 
         _gridStateDictionary[item] = false;
+        
+        _dirty = true;
 
         UpdateSelectCounters();
     }
@@ -256,8 +310,16 @@ public class HoldPickerManager : MonoBehaviour
         return tex2D.LoadImage(fileData) ? tex2D : null;
     }
 
+    private bool _initialized;
+
     void Update()
     {
+        if (HoldManager.Ready && !_initialized)
+        {
+            Initialize();
+            _initialized = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
             if (Time.timeScale == 0 && _root.visible)

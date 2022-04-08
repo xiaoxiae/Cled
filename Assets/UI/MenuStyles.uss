@@ -37,3 +37,10 @@
     -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=142e2f6cb21f4d153a44b542c2944a27&type=3#NotInter-Regular');
     height: 6%;
 }
+
+.logo {
+    background-image: url('project://database/Assets/UI/Logo.png?fileID=2800000&guid=b871ba5a9e75096f7a74a76f92f0a1d3&type=3#Logo');
+    width: 500px;
+    height: 200px;
+    -unity-background-scale-mode: stretch-to-fill;
+}

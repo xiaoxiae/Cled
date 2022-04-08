@@ -1,12 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MenuStyles.uss?fileID=7433441132597879392&amp;guid=9e5d2c668ac0c0304a039f559b1da064&amp;type=3#MenuStyles" />
-    <Style src="project://database/Assets/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=ef2d91682ed6ad164a012ae9e0f7c156&amp;type=3#GlobalStyles" />
+    <Style src="project://database/Assets/UI/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=ef2d91682ed6ad164a012ae9e0f7c156&amp;type=3#GlobalStyles" />
     <ui:VisualElement class="semi-transparent-background">
-        <ui:VisualElement name="escape-menu" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/UI/MenuBackground.png?fileID=2800000&amp;guid=a113e95da5b20d0caafe2f99bb64911d&amp;type=3#MenuBackground&apos;); -unity-background-scale-mode: scale-and-crop; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px;">
-            <ui:Button text="Save" name="save-button" class="button-style" />
-            <ui:Button text="Save as" name="save-as-button" class="button-style" />
+        <ui:VisualElement name="escape-menu" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/UI/MenuBackground.png?fileID=2800000&amp;guid=a113e95da5b20d0caafe2f99bb64911d&amp;type=3#MenuBackground&apos;); -unity-background-scale-mode: scale-and-crop; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; border-top-left-radius: 50px; border-bottom-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+            <ui:VisualElement class="logo" />
+            <ui:VisualElement name="spacer" class="small-spacer" />
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:Button text="Save" name="save-button" class="button-style" />
+                <ui:Button text="Save as" name="save-as-button" class="button-style" />
+            </ui:VisualElement>
             <ui:VisualElement name="spacer" class="small-spacer" />
             <ui:Button text="Main Menu" name="main-menu-button" class="button-style" />
+            <ui:Button text="Settings" name="settings-button" class="button-style" />
             <ui:Button text="Quit" name="quit-button" class="button-style" />
         </ui:VisualElement>
     </ui:VisualElement>

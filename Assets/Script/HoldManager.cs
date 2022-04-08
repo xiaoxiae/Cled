@@ -5,18 +5,20 @@ using System.Linq;
 using Dummiesman;
 using UnityEngine;
 using YamlDotNet.Serialization;
-using Color = System.Drawing.Color;
 
 /// <summary>
 /// A class for storing the information about the given hold.
 /// </summary>
 public class HoldInformation
 {
-    public Color color;
+    public string[] color;
     public string type;
     public string manufacturer;
     public string[] labels;
     public DateTime date;
+
+    public string colorName => color[0];
+    public string colorHex => color[1];
 }
 
 /// <summary>
@@ -57,21 +59,45 @@ public class HoldManager : MonoBehaviour
     public int HoldCount => _holds.Keys.Count;
 
     /// <summary>
-    /// Return all possible hold colors.
+    /// Aggregates an attribute from HoldInformation (like all colors, types, etc.).
     /// </summary>
-    /// <returns></returns>
-    public Color[] AllColors()
+    public List<string> AttributeAggregate(Func<HoldInformation, List<string>> aggregateFunction)
     {
-        var set = new HashSet<Color>();
-        
+        var set = new HashSet<string>();
+
         foreach (var bp in _holds.Values)
         {
             var info = bp.HoldInformation;
-            set.Add(info.color);
+
+            foreach (string str in aggregateFunction(info).Where(str => !string.IsNullOrEmpty(str)))
+                set.Add(str);
         }
 
-        return set.ToArray();
+        return set.ToList();
     }
+
+    /// <summary>
+    /// Return all possible hold colors.
+    /// </summary>
+    public List<string> AllColors() => AttributeAggregate(info => new List<string> { info.colorName });
+
+    /// <summary>
+    /// Return all possible hold colors.
+    /// </summary>
+    public List<string> AllTypes() => AttributeAggregate(info => new List<string> { info.type });
+
+    /// <summary>
+    /// Return all possible labels.
+    /// </summary>
+    public List<string> AllLabels() => AttributeAggregate(info => info.labels == null ? new List<string>() : info.labels.ToList());
+
+    /// <summary>
+    /// Return all possible hold manufacturers.
+    /// </summary>
+    public List<string> AllManufacturers() => AttributeAggregate(info => new List<string> { info.manufacturer });
+
+    // it takes a while for the holds to load
+    public bool Ready { get; set; }
 
     void Start()
     {
@@ -94,6 +120,8 @@ public class HoldManager : MonoBehaviour
 
             _holds[pair.Key] = hold;
         }
+
+        Ready = true;
     }
 
     /// <summary>
