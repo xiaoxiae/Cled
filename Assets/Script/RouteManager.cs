@@ -9,7 +9,13 @@ public class Route
 {
     private readonly HashSet<GameObject> _holds = new();
 
-    // TODO: some route name/id/label thingy
+    public int Id;
+    public string Name;
+    
+    // this should be enums somewhere
+    public string Grade;
+    public string Zone;
+    public string Setter;
 
     private readonly HashSet<GameObject> _starting = new();
     private readonly HashSet<GameObject> _ending = new();

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 using Vector3 = UnityEngine.Vector3;
 
 public enum Mode
@@ -12,13 +13,17 @@ public class EditorController : MonoBehaviour
 {
     public HoldManager holdManager;
     public HoldStateManager HoldStateManager;
-    public HoldPickerManager HoldPickerManager;
     public CameraControl cameraControl;
     public HighlightManager highlightManager;
     public RouteManager routeManager;
     public WallManager WallManager;
     public StateImportExportManager StateImportExportManager;
+
+    public HoldPickerManager HoldPickerManager;
     public EscapeMenuManager EscapeMenuManager;
+
+    public UIDocument CurrentModeDocument;
+    private Label _currentModeLabel;
 
     public Mode currentMode = Mode.Normal;
 
@@ -30,8 +35,22 @@ public class EditorController : MonoBehaviour
 
     public float mouseSensitivity = 1f;
 
+    /// <summary>
+    /// Set the current mode, updating the UI mode label in the process.
+    /// </summary>
+    /// <param name="mode"></param>
+    private void SetCurrentMode(Mode mode)
+    {
+        currentMode = mode;
+        _currentModeLabel.text = mode.ToString().ToUpper();
+    }
+
     void Start()
     {
+        var root = CurrentModeDocument.GetComponent<UIDocument>().rootVisualElement;
+
+        _currentModeLabel = root.Q<Label>("current-mode");
+
         // initialize the states from preference manager
         // TODO: this should likely be a different class
         if (PreferencesManager.LastOpenWallPath != "")
@@ -71,7 +90,8 @@ public class EditorController : MonoBehaviour
         // also go from Route to Holding
         if (Input.GetKeyDown(KeyCode.E))
         {
-            currentMode = currentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
+            SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);
+
 
             if (currentMode == Mode.Normal)
                 HoldStateManager.SetUnheld(true);
@@ -88,7 +108,7 @@ public class EditorController : MonoBehaviour
                     // if the currently picked hold is not picked anymore, don't switch to edit mode and
                     // display a dialogue instead
                     // TODO: dialogue
-                    currentMode = currentMode == Mode.Holding ? Mode.Normal : Mode.Holding;
+                    SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);
                 }
             }
         }
@@ -184,17 +204,19 @@ public class EditorController : MonoBehaviour
                 HoldStateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
 
             var mouseDelta = Input.mouseScrollDelta.y;
-            
+
             if (mouseDelta != 0)
             {
                 var pickedHolds = HoldPickerManager.GetPickedHolds();
-                
+
                 // if the picked holds contain the one in hand, simply go up/down the list
                 if (pickedHolds.Contains(_currentlyPickedHold))
                 {
-                    int newIndex = (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) + pickedHolds.Count) % pickedHolds.Count;
+                    int newIndex =
+                        (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) + pickedHolds.Count) %
+                        pickedHolds.Count;
                     _currentlyPickedHold = pickedHolds[newIndex];
-                    
+
                     HoldStateManager.SetUnheld(true);
                     HoldStateManager.SetHeld(_currentlyPickedHold);
                     _startedBeingHeld = true;
@@ -226,14 +248,14 @@ public class EditorController : MonoBehaviour
             HoldStateManager.InterpolateHeldToHit(hit, 0);
 
             HoldStateManager.PutDown();
-            currentMode = Mode.Normal;
+            SetCurrentMode(Mode.Normal);
         }
 
         // r/del - delete the held hold and switch to normal mode
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
             HoldStateManager.SetUnheld(true);
-            currentMode = Mode.Normal;
+            SetCurrentMode(Mode.Normal);
         }
     }
 
@@ -249,7 +271,7 @@ public class EditorController : MonoBehaviour
         // CTRL+LMB and SHIFT+LMB click behaves differently in route mode, so it's forbidden altogether
         if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
-            currentMode = Mode.Holding;
+            SetCurrentMode(Mode.Holding);
             routeManager.DeselectRoute(); // TODO: this is not pretty
 
             HoldStateManager.PickUp(hold);
@@ -272,7 +294,7 @@ public class EditorController : MonoBehaviour
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())
-            currentMode = Mode.Normal;
+            SetCurrentMode(Mode.Normal);
 
         // right click for route mode
         if (Input.GetMouseButtonDown(1))
@@ -283,7 +305,7 @@ public class EditorController : MonoBehaviour
             {
                 routeManager.SelectRoute(clickedRoute);
                 highlightManager.UnhighlightAll();
-                currentMode = Mode.Route;
+                SetCurrentMode(Mode.Route);
             }
         }
     }
