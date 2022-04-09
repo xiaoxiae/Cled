@@ -10,9 +10,10 @@ import argparse
 import tempfile
 import shutil
 
+from typing import *
 from subprocess import Popen
 from PIL import Image
-from math import radians
+from math import radians, sqrt
 
 parser = argparse.ArgumentParser()
 
@@ -118,15 +119,34 @@ for obj in bpy.data.objects:
         obj.data.materials.append(mat)
         bpy.context.object.active_material.diffuse_color = color
 
+        obj.delta_scale = [10000] * 3
+
 # this is not 0 for some reason
 hold.rotation_euler[0] = 0
 
-# fit the view to the entire hold + scale it down a bit
-fit_to_object(hold)
-obj.scale = (0.85, 0.85, 0.85)
-
 rotation_steps = arguments.number
 rotation_angle = 360
+
+def distance_to_origin(l: List):
+    return sqrt(sum([x ** 2 for x in l]))
+
+# determine the optimal camera distance so that the hold is always visible
+max_dist = 0
+max_dist_camera_location = None
+for step in range(rotation_steps + 1):
+    hold.rotation_euler[2] = radians(step * (rotation_angle / rotation_steps))
+
+    fit_to_object(hold)
+
+    if max_dist < distance_to_origin(camera.location):
+        max_dist = distance_to_origin(camera.location)
+        max_dist_camera_location = list(camera.location)
+        print(camera.location, max_dist_camera_location)
+
+# fit the view to the entire hold + scale it down a bit
+camera.location = max_dist_camera_location
+
+hold.delta_scale = (0.85, 0.85, 0.85)
 
 bpy.context.view_layer.update()
 
