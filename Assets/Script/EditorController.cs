@@ -289,7 +289,7 @@ public class EditorController : MonoBehaviour
             route.ToggleEnding(hold);
 
         // r/del - delete hold
-        if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Delete))
             HoldStateManager.Unplace(hold, true);
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
