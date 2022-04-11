@@ -2,31 +2,29 @@
     <Style src="project://database/Assets/UI/HoldPickerStyles.uss?fileID=7433441132597879392&amp;guid=f9e5f7af09447e40b9c52f2530526553&amp;type=3#HoldPickerStyles" />
     <Style src="project://database/Assets/UI/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=ef2d91682ed6ad164a012ae9e0f7c156&amp;type=3#GlobalStyles" />
     <ui:VisualElement class="semi-transparent-background" style="flex-grow: 1; align-items: center; justify-content: center; flex-shrink: 0;">
-        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 85%; height: 85%;">
-            <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center;">
+        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 85%; height: 1000px;">
+            <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center; flex-shrink: 0;">
                 <ui:VisualElement style="height: 100%; flex-grow: 0; flex-shrink: 1;">
-                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="true" name="deselect-filtered-button" class="button-style button" />
-                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" class="button-style button" style="flex-grow: 1;" />
+                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="false" name="deselect-filtered-button" class="button-style button" />
+                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" focusable="false" class="button-style button" style="flex-grow: 1;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="hfill" class="hfill" />
                 <ui:Label text="Color" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="color-dropdown" class="dropdown" />
+                <ui:DropdownField name="color-dropdown" focusable="false" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Type" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="type-dropdown" class="dropdown" />
+                <ui:DropdownField name="type-dropdown" focusable="false" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Labels" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="labels-dropdown" class="dropdown" />
+                <ui:DropdownField name="labels-dropdown" focusable="false" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Manufacturer" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="manufacturer-dropdown" class="dropdown" />
+                <ui:DropdownField name="manufacturer-dropdown" focusable="false" class="dropdown" />
             </ui:VisualElement>
-            <ui:ScrollView name="hold-grid-container" style="margin-left: 0; margin-right: 0; margin-top: 40px; margin-bottom: 40px; height: auto;">
-                <ui:VisualElement name="hold-grid" style="flex-grow: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
-                    <ui:VisualElement style="width: 20%; height: auto; -unity-background-scale-mode: stretch-to-fill;" />
-                </ui:VisualElement>
+            <ui:ScrollView name="hold-grid-container" style="margin-top: 40px; margin-bottom: 40px;">
+                <ui:VisualElement name="hold-grid" style="flex-wrap: wrap; flex-direction: row;" />
             </ui:ScrollView>
-            <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center;">
+            <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center; flex-shrink: 0;">
                 <ui:Label text="Total holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label round" />
                 <ui:VisualElement name="small-hspace" class="small-hspace" />
                 <ui:Label text="0" display-tooltip-when-elided="true" name="total-hold-counter" class="changing-label" />

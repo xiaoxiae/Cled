@@ -62,11 +62,12 @@
     -unity-text-align: middle-center;
     white-space: normal;
     justify-content: center;
-    background-color: rgba(188, 188, 188, 255);
+    background-color: rgb(188, 188, 188);
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
+    width: 45px;
 }
 
 .small-hspace {
