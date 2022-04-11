@@ -61,6 +61,8 @@ public class HoldStateManager : MonoBehaviour
     /// </summary>
     public GameObject[] GetAllHolds => _placedHolds.Keys.ToArray();
 
+    public GameObject GetHeld() => _heldObject;
+
     /// <summary>
     /// Clear out the hold state manager, destroying all objects in the process.
     /// </summary>
@@ -132,7 +134,7 @@ public class HoldStateManager : MonoBehaviour
     /// Enable the currently held item.
     /// </summary>
     public void EnableHeld() => _heldObject.SetActive(true);
-    
+
     /// <summary>
     /// Place the currently held hold.
     /// </summary>
@@ -165,10 +167,10 @@ public class HoldStateManager : MonoBehaviour
     public void Place(GameObject gameObject, HoldBlueprint holdBlueprint, HoldState holdState)
     {
         _placedHolds.Add(gameObject, (holdBlueprint, holdState));
-        
+
         UpdateNormal(holdState.Normal, holdState.Rotation, gameObject);
         UpdatePosition(holdState.Position, gameObject);
-        
+
         gameObject.SetActive(true);
     }
 
@@ -186,17 +188,19 @@ public class HoldStateManager : MonoBehaviour
     /// <summary>
     /// Get the state of the given model object.
     /// </summary>
-    public HoldState GetHoldState(GameObject model) => _placedHolds[model].holdState;
+    public HoldState GetHoldState(GameObject model)
+        => model == _heldObject ? _heldObjectState : _placedHolds[model].holdState;
 
     /// <summary>
     /// Get the holdBlueprint of the given model object.
     /// </summary>
-    public HoldBlueprint GetHoldBlueprint(GameObject model) => _placedHolds[model].holdBlueprint;
+    public HoldBlueprint GetHoldBlueprint(GameObject model)
+        => model == _heldObject ? _heldObjectBlueprint : _placedHolds[model].holdBlueprint;
 
     /// <summary>
     /// Return True if this game object is placed.
     /// </summary>
-    public bool IsPlacedHold(GameObject model) => _placedHolds.ContainsKey(model);
+    public bool IsPlaced(GameObject model) => _placedHolds.ContainsKey(model);
 
     /// <summary>
     /// Smoothly move the currently held hold to the specified point.

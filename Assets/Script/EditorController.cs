@@ -11,11 +11,11 @@ public enum Mode
 
 public class EditorController : MonoBehaviour
 {
-    public HoldManager holdManager;
+    public HoldManager HoldManager;
     public HoldStateManager HoldStateManager;
-    public CameraControl cameraControl;
-    public HighlightManager highlightManager;
-    public RouteManager routeManager;
+    public CameraControl CameraControl;
+    public HighlightManager HighlightManager;
+    public RouteManager RouteManager;
     public WallManager WallManager;
     public StateImportExportManager StateImportExportManager;
 
@@ -29,21 +29,7 @@ public class EditorController : MonoBehaviour
 
     private HoldBlueprint _currentlyPickedHold;
 
-    // a flag for when hold started to be held
-    // used to immediately move it to hit ray
-    private bool _startedBeingHeld;
-
     public float mouseSensitivity = 1f;
-
-    /// <summary>
-    /// Set the current mode, updating the UI mode label in the process.
-    /// </summary>
-    /// <param name="mode"></param>
-    private void SetCurrentMode(Mode mode)
-    {
-        currentMode = mode;
-        _currentModeLabel.text = mode.ToString().ToUpper();
-    }
 
     void Start()
     {
@@ -61,6 +47,19 @@ public class EditorController : MonoBehaviour
             WallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
             EscapeMenuManager.ForceSaveAs();
         }
+    }
+
+    /// <summary>
+    /// Set the current mode, updating the UI mode label in the process.
+    /// </summary>
+    /// <param name="mode"></param>
+    private void SetCurrentMode(Mode mode)
+    {
+        currentMode = mode;
+        _currentModeLabel.text = mode.ToString().ToUpper();
+        
+        if (mode != Mode.Route)
+            RouteManager.DeselectRoute();
     }
 
     /// <summary>
@@ -87,38 +86,36 @@ public class EditorController : MonoBehaviour
     /// </summary>
     private void CombinedBehaviorBefore()
     {
-        // toggle between holding and normal with e press
+        // toggle between holding and normal with e press (or from route to holding)
         // also go from Route to Holding
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // if the would-be-held hold is not picked any more, don't switch to holding mode
-            // and display a warning instead
-            if (currentMode == Mode.Holding || EnsurePickedHold())
+            // however, if the would-be-held hold is not picked any more, don't switch to holding mode
+            // and display a warning message instead (what would we even pick?)
+            if (currentMode != Mode.Holding && !EnsurePickedHold())
+            {
+                // TODO: warning
+            }
+            else
             {
                 SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);
 
                 if (currentMode == Mode.Normal)
+                {
+                    RouteManager.RemoveHold(HoldStateManager.GetHeld());
                     HoldStateManager.SetUnheld(true);
+                }
                 else
                 {
                     if (EnsurePickedHold())
-                    {
                         HoldStateManager.SetHeld(_currentlyPickedHold);
-                        routeManager.DeselectRoute(); // TODO: this is not pretty
-                        _startedBeingHeld = true;
-                    }
                 }
             }
-            else
-            {
-                // TODO: warning
-            }
-                
         }
 
         // always secondarily highlight the route
         if (currentMode == Mode.Route)
-            highlightManager.Highlight(routeManager.SelectedRoute, HighlightType.Secondary);
+            HighlightManager.Highlight(RouteManager.SelectedRoute, HighlightType.Secondary);
     }
 
     /// <summary>
@@ -129,14 +126,14 @@ public class EditorController : MonoBehaviour
         switch (currentMode)
         {
             case Mode.Holding:
-                highlightManager.UnhighlightAll();
+                HighlightManager.UnhighlightAll();
                 HoldStateManager.DisableHeld();
                 break;
             case Mode.Normal:
-                highlightManager.UnhighlightAll();
+                HighlightManager.UnhighlightAll();
                 break;
             case Mode.Route:
-                highlightManager.UnhighlightAll(HighlightType.Primary);
+                HighlightManager.UnhighlightAll(HighlightType.Primary);
                 break;
         }
     }
@@ -149,14 +146,14 @@ public class EditorController : MonoBehaviour
         switch (currentMode)
         {
             case Mode.Holding:
-                highlightManager.UnhighlightAll();
+                HighlightManager.UnhighlightAll();
                 HoldingHitControls(hit);
                 break;
             case Mode.Normal:
-                highlightManager.UnhighlightAll();
+                HighlightManager.UnhighlightAll();
                 break;
             case Mode.Route:
-                highlightManager.UnhighlightAll(HighlightType.Primary);
+                HighlightManager.UnhighlightAll(HighlightType.Primary);
                 break;
         }
     }
@@ -169,20 +166,20 @@ public class EditorController : MonoBehaviour
         switch (currentMode)
         {
             case Mode.Holding:
-                highlightManager.UnhighlightAll();
+                HighlightManager.UnhighlightAll();
                 HoldingHitControls(hit);
                 break;
             case Mode.Normal:
                 // if some other hold is highlighted, unhighlight it
-                if (!highlightManager.IsHighlighted(hold))
-                    highlightManager.UnhighlightAll();
+                if (!HighlightManager.IsHighlighted(hold))
+                    HighlightManager.UnhighlightAll();
 
                 NormalRouteHoldHitControls(hold);
                 break;
             case Mode.Route:
                 // if some other hold is highlighted, unhighlight it
-                if (!highlightManager.IsHighlighted(hold))
-                    highlightManager.UnhighlightAll(HighlightType.Primary);
+                if (!HighlightManager.IsHighlighted(hold))
+                    HighlightManager.UnhighlightAll(HighlightType.Primary);
 
                 NormalRouteHoldHitControls(hold);
 
@@ -190,7 +187,12 @@ public class EditorController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0) &&
                     (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
                 {
-                    routeManager.ToggleHold(routeManager.SelectedRoute, hold);
+                    RouteManager.ToggleHold(RouteManager.SelectedRoute, hold, HoldStateManager.GetHoldBlueprint(hold));
+                    
+                    // if the route has no more holds, switch to normal mode
+                    if (RouteManager.SelectedRoute.IsEmpty())
+                        SetCurrentMode(Mode.Normal);
+                    
                     EscapeMenuManager.ForceSave();
                 }
 
@@ -215,7 +217,6 @@ public class EditorController : MonoBehaviour
             {
                 var pickedHolds = HoldPickerManager.GetPickedHolds();
 
-
                 // if the picked holds contain the one in hand, simply go up/down the list
                 int newIndex;
                 if (pickedHolds.Contains(_currentlyPickedHold))
@@ -224,11 +225,16 @@ public class EditorController : MonoBehaviour
                 else
                     newIndex = 0;
 
-                _currentlyPickedHold = pickedHolds[newIndex];
+                // if only one hold is selected, it is quite pointless to swap the holds
+                if (pickedHolds.Count != 1)
+                {
+                    _currentlyPickedHold = pickedHolds[newIndex];
 
-                HoldStateManager.SetUnheld(true);
-                HoldStateManager.SetHeld(_currentlyPickedHold);
-                _startedBeingHeld = true;
+                    RouteManager.RemoveHold(HoldStateManager.GetHeld());
+                    HoldStateManager.SetUnheld(true);
+
+                    HoldStateManager.SetHeld(_currentlyPickedHold);
+                }
             }
         }
     }
@@ -242,13 +248,7 @@ public class EditorController : MonoBehaviour
         HoldStateManager.EnableHeld();
 
         // when in holding mode, move the held hold accordingly (if we just started)
-        if (_startedBeingHeld)
-        {
-            HoldStateManager.InterpolateHeldToHit(hit);
-            _startedBeingHeld = false;
-        }
-        else
-            HoldStateManager.InterpolateHeldToHit(hit);
+        HoldStateManager.InterpolateHeldToHit(hit);
 
         // left click: place held hold and go to normal mode 
         if (Input.GetMouseButtonDown(0))
@@ -263,7 +263,9 @@ public class EditorController : MonoBehaviour
         // r/del - delete the held hold and switch to normal mode
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
+            RouteManager.RemoveHold(HoldStateManager.GetHeld());
             HoldStateManager.SetUnheld(true);
+            
             SetCurrentMode(Mode.Normal);
         }
     }
@@ -274,23 +276,22 @@ public class EditorController : MonoBehaviour
     void NormalRouteHoldHitControls(GameObject hold)
     {
         // highlight the hold we're looking at
-        highlightManager.Highlight(hold, HighlightType.Primary);
+        HighlightManager.Highlight(hold, HighlightType.Primary);
 
         // when left clicking, snap back to holding mode and pick it up
         // CTRL+LMB and SHIFT+LMB click behaves differently in route mode, so it's forbidden altogether
         if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
             SetCurrentMode(Mode.Holding);
-            routeManager.DeselectRoute(); // TODO: this is not pretty
 
             HoldStateManager.PickUp(hold);
 
             EscapeMenuManager.ForceSave();
 
-            cameraControl.LookAt(hold.transform.position);
+            CameraControl.LookAt(hold.transform.position);
         }
 
-        Route route = routeManager.GetRouteWithHold(hold);
+        Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
 
         // b/t for bottom/top marks
         if (Input.GetKeyDown(KeyCode.B))
@@ -309,6 +310,8 @@ public class EditorController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
             HoldStateManager.Unplace(hold, true);
+            RouteManager.RemoveHold(hold);
+            
             EscapeMenuManager.ForceSave();
         }
 
@@ -319,12 +322,12 @@ public class EditorController : MonoBehaviour
         // right click for route mode
         if (Input.GetMouseButtonDown(1))
         {
-            var clickedRoute = routeManager.GetRouteWithHold(hold);
+            var clickedRoute = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
 
-            if (routeManager.SelectedRoute != clickedRoute)
+            if (RouteManager.SelectedRoute != clickedRoute)
             {
-                routeManager.SelectRoute(clickedRoute);
-                highlightManager.UnhighlightAll();
+                RouteManager.SelectRoute(clickedRoute);
+                HighlightManager.UnhighlightAll();
                 SetCurrentMode(Mode.Route);
             }
         }
@@ -336,12 +339,11 @@ public class EditorController : MonoBehaviour
 
         var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out var hit))
         {
             var hitObject = hit.collider.gameObject;
 
-            if (HoldStateManager.IsPlacedHold(hitObject))
+            if (HoldStateManager.IsPlaced(hitObject))
                 HoldHitBehavior(hit, hitObject);
             else
                 WallHitBehavior(hit);

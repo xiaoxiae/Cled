@@ -31,6 +31,9 @@ public class StateImportExportManager : MonoBehaviour
         return deserializer.Deserialize<SerializableWallState>(reader);
     }
 
+    /// <summary>
+    /// Import the preferences (path to holds and to wall).
+    /// </summary>
     public static bool ImportPreferences(string path)
     {
         try
