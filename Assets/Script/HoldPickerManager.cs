@@ -314,6 +314,12 @@ public class HoldPickerManager : MonoBehaviour
 
     void Update()
     {
+        // CTRL+A selects all filtered holds
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
+            foreach (var hold in _currentlyFilteredHolds)
+                Select(_holdToGridDictionary[hold]);
+
+        // initialize after the hold manager is ready 
         if (HoldManager.Ready && !_initialized)
         {
             Initialize();
