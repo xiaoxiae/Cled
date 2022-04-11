@@ -22,7 +22,17 @@ public class EscapeMenuManager : MonoBehaviour
     private void SetForceSave(bool state)
     {
         _forceSave = state;
-        _saveButton.SetEnabled(state);
+
+        // only enable save button if save as is not
+        if (state)
+        {
+            if (!_forceSaveAs)
+                _saveButton.SetEnabled(true);
+        }
+        else
+        {
+            _saveButton.SetEnabled(false);
+        }
     }
 
     /// <summary>
@@ -64,7 +74,6 @@ public class EscapeMenuManager : MonoBehaviour
     private bool Save()
     {
         if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
-            // TODO: some error message if export failed
             return false;
 
         SetForceSave(false);
@@ -76,12 +85,12 @@ public class EscapeMenuManager : MonoBehaviour
     /// </summary>
     private bool SaveAs()
     {
-        var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "", "");
+        var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
+            new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
         if (path != "")
         {
             if (!StateImportExportManager.Export(path))
-                // TODO: some error message if export failed
                 return false;
 
             SetForceSave(false);

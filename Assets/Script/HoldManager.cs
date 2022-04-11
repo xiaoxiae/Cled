@@ -26,15 +26,18 @@ public class HoldInformation
 /// </summary>
 public class HoldBlueprint
 {
+    public readonly string Id;
+
     public readonly GameObject Model;
     public readonly HoldInformation HoldInformation;
 
     public readonly string PreviewVideoPath;
     public readonly string PreviewImagePath;
 
-    public HoldBlueprint(GameObject model, HoldInformation holdInformation, string previewImagePath,
+    public HoldBlueprint(string id, GameObject model, HoldInformation holdInformation, string previewImagePath,
         string previewVideoPath)
     {
+        Id = id;
         Model = model;
         HoldInformation = holdInformation;
         PreviewImagePath = previewImagePath;
@@ -50,7 +53,6 @@ public class HoldManager : MonoBehaviour
 {
     private readonly IDictionary<string, HoldBlueprint> _holds = new Dictionary<string, HoldBlueprint>();
 
-    public readonly string ModelsFolder = Path.Combine("Models", "Holds");
     public readonly string HoldsYamlName = "holds.yaml";
 
     /// <summary>
@@ -61,7 +63,7 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Aggregates an attribute from HoldInformation (like all colors, types, etc.).
     /// </summary>
-    public List<string> AttributeAggregate(Func<HoldInformation, List<string>> aggregateFunction)
+    private List<string> AttributeAggregate(Func<HoldInformation, List<string>> aggregateFunction)
     {
         var set = new HashSet<string>();
 
@@ -89,19 +91,20 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Return all possible labels.
     /// </summary>
-    public List<string> AllLabels() => AttributeAggregate(info => info.labels == null ? new List<string>() : info.labels.ToList());
+    public List<string> AllLabels() =>
+        AttributeAggregate(info => info.labels == null ? new List<string>() : info.labels.ToList());
 
     /// <summary>
     /// Return all possible hold manufacturers.
     /// </summary>
     public List<string> AllManufacturers() => AttributeAggregate(info => new List<string> { info.manufacturer });
 
-    // it takes a while for the holds to load
-    public bool Ready { get; set; }
-
-    void Start()
+    /// <summary>
+    /// Read holds from the preferences manager path.
+    /// </summary>
+    void Awake()
     {
-        string yml = File.ReadAllText(Path.Combine(ModelsFolder, HoldsYamlName));
+        string yml = File.ReadAllText(Path.Combine(PreferencesManager.CurrentHoldModelsPath, HoldsYamlName));
 
         var deserializer = new DeserializerBuilder().Build();
 
@@ -110,6 +113,7 @@ public class HoldManager : MonoBehaviour
         foreach (var pair in holdInformation)
         {
             var hold = new HoldBlueprint(
+                pair.Key,
                 ToGameObject(pair.Key),
                 pair.Value,
                 GetHoldPreviewImagePath(pair.Key),
@@ -120,8 +124,6 @@ public class HoldManager : MonoBehaviour
 
             _holds[pair.Key] = hold;
         }
-
-        Ready = true;
     }
 
     /// <summary>
@@ -132,6 +134,11 @@ public class HoldManager : MonoBehaviour
             where filter(_holds[holdId].HoldInformation)
             select _holds[holdId])
         .ToArray();
+
+    /// <summary>
+    /// Get the hold blueprint associated with the given hold ID.
+    /// </summary>
+    public HoldBlueprint GetHoldBlueprint(string id) => _holds[id];
 
     /// <summary>
     /// Generate a 3D object from the given hold.
@@ -150,11 +157,15 @@ public class HoldManager : MonoBehaviour
         return hold;
     }
 
-    private string GetHoldPreviewVideoPath(string id) => Path.Combine(ModelsFolder, id + "-preview.webm");
+    private string GetHoldPreviewVideoPath(string id)
+        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + "-preview.webm");
 
-    private string GetHoldPreviewImagePath(string id) => Path.Combine(ModelsFolder, id + "-preview.jpg");
+    private string GetHoldPreviewImagePath(string id)
+        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + "-preview.jpg");
 
-    private string GetHoldModelPath(string id) => Path.Combine(ModelsFolder, id + ".obj");
+    private string GetHoldModelPath(string id)
+        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + ".obj");
 
-    private string GetHoldMaterialPath(string id) => Path.Combine(ModelsFolder, id + ".mtl");
+    private string GetHoldMaterialPath(string id)
+        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + ".mtl");
 }

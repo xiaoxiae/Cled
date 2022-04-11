@@ -104,11 +104,7 @@ public class HoldPickerManager : MonoBehaviour
         UpdateSelectCounters();
     }
 
-    /// <summary>
-    /// Initialize everything.
-    /// Can't be called in the start because the hold manager isn't ready yet.
-    /// </summary>
-    void Initialize()
+    void Start()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
@@ -311,21 +307,12 @@ public class HoldPickerManager : MonoBehaviour
         return tex2D.LoadImage(fileData) ? tex2D : null;
     }
 
-    private bool _initialized;
-
     void Update()
     {
         // CTRL+A selects all filtered holds
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
-
-        // initialize after the hold manager is ready 
-        if (HoldManager.Ready && !_initialized)
-        {
-            Initialize();
-            _initialized = true;
-        }
 
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {

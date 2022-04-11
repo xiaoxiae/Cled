@@ -1186,6 +1186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdStateManager: {fileID: 1150806010}
+  holdManager: {fileID: 1579647979}
   routeManager: {fileID: 651512647}
   wallManager: {fileID: 244077567}
 --- !u!1 &2070913818

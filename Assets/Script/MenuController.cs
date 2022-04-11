@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
 
@@ -19,7 +19,8 @@ public class MenuController : MonoBehaviour
 
         var loadButton = root.Q<Button>("load-button");
         loadButton.clicked += () =>
-            StandaloneFileBrowser.OpenFilePanelAsync("Load existing project", "", "", false, onLoadWall);
+            StandaloneFileBrowser.OpenFilePanelAsync("Load existing project", "",
+                new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") }, false, onLoadWall);
 
         var newButton = root.Q<Button>("new-button");
         newButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
@@ -37,6 +38,11 @@ public class MenuController : MonoBehaviour
         if (paths.Length == 0 || paths[0] == "")
             return;
 
+        if (!StateImportExportManager.ImportPreferences(paths[0]))
+        {
+            // TODO: complain
+        }
+
         PreferencesManager.LastOpenWallPath = paths[0];
         SceneManager.LoadScene("WallScene");
     }
@@ -50,9 +56,9 @@ public class MenuController : MonoBehaviour
         if (paths.Length == 0 || paths[0] == "")
             return;
 
-        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, onOpenNewHolds);
-
         PreferencesManager.CurrentWallModelPath = paths[0];
+
+        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, onOpenNewHolds);
     }
 
     /// <summary>
@@ -66,6 +72,7 @@ public class MenuController : MonoBehaviour
         PreferencesManager.CurrentHoldModelsPath = paths[0];
 
         PreferencesManager.LastOpenWallPath = null;
+        
         SceneManager.LoadScene("WallScene");
     }
 }
