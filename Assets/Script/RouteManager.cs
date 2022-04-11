@@ -138,9 +138,18 @@ public class Route
 /// </summary>
 public class RouteManager : MonoBehaviour
 {
-    private HashSet<Route> _routes = new HashSet<Route>();
+    private HashSet<Route> _routes = new();
 
     public Route SelectedRoute;
+
+    /// <summary>
+    /// Clear out the route manager, NOT destroying any holds in the process.
+    /// </summary>
+    public void Clear()
+    {
+        _routes = new HashSet<Route>();
+        SelectedRoute = null;
+    }
 
     /// <summary>
     /// Select the given route.

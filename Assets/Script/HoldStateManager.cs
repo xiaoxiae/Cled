@@ -26,6 +26,25 @@ public class HoldStateManager : MonoBehaviour
     private Vector3 _previousHeldObjectNormal = Vector3.zero;
 
     /// <summary>
+    /// Clear out the hold state manager, destroying all objects in the process.
+    /// </summary>
+    public void Clear()
+    {
+        if (_heldObject)
+        {
+            DestroyImmediate(_heldObject);
+            _heldObject = null;
+        }
+        
+        _heldObjectState = new HoldState();
+        
+        foreach(GameObject key in _placedHolds.Keys)
+            DestroyImmediate(key);
+        
+        _placedHolds.Clear();
+    }
+
+    /// <summary>
     /// Start holding a hold from a hold object (copying it over).
     /// </summary>
     public void SetHeld(HoldBlueprint holdBlueprint, HoldState holdState = new())

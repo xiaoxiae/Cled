@@ -50,6 +50,8 @@ public class EditorController : MonoBehaviour
         var root = CurrentModeDocument.GetComponent<UIDocument>().rootVisualElement;
 
         _currentModeLabel = root.Q<Label>("current-mode");
+        
+        SetCurrentMode(Mode.Normal);
 
         // initialize the states from preference manager
         // TODO: this should likely be a different class
@@ -92,7 +94,6 @@ public class EditorController : MonoBehaviour
         {
             SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);
 
-
             if (currentMode == Mode.Normal)
                 HoldStateManager.SetUnheld(true);
             else
@@ -106,7 +107,7 @@ public class EditorController : MonoBehaviour
                 else
                 {
                     // if the currently picked hold is not picked anymore, don't switch to edit mode and
-                    // display a dialogue instead
+                    // display a warning instead
                     // TODO: dialogue
                     SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);
                 }
@@ -184,9 +185,11 @@ public class EditorController : MonoBehaviour
                 NormalRouteHoldHitControls(hold);
 
                 // CTRL+LMB or SHIFT+LMB click toggles a hold to be in the route
-                if (Input.GetMouseButtonDown(0) &&
-                    (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
+                if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
+                {
                     routeManager.ToggleHold(routeManager.SelectedRoute, hold);
+                    EscapeMenuManager.ForceSave();
+                }
 
                 break;
         }
@@ -209,18 +212,19 @@ public class EditorController : MonoBehaviour
             {
                 var pickedHolds = HoldPickerManager.GetPickedHolds();
 
+                
                 // if the picked holds contain the one in hand, simply go up/down the list
+                int newIndex;
                 if (pickedHolds.Contains(_currentlyPickedHold))
-                {
-                    int newIndex =
-                        (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) + pickedHolds.Count) %
-                        pickedHolds.Count;
-                    _currentlyPickedHold = pickedHolds[newIndex];
+                    newIndex = (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) + pickedHolds.Count) % pickedHolds.Count;
+                else
+                    newIndex = 0;
+                
+                _currentlyPickedHold = pickedHolds[newIndex];
 
-                    HoldStateManager.SetUnheld(true);
-                    HoldStateManager.SetHeld(_currentlyPickedHold);
-                    _startedBeingHeld = true;
-                }
+                HoldStateManager.SetUnheld(true);
+                HoldStateManager.SetHeld(_currentlyPickedHold);
+                _startedBeingHeld = true;
             }
         }
     }
@@ -246,9 +250,10 @@ public class EditorController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             HoldStateManager.InterpolateHeldToHit(hit, 0);
-
             HoldStateManager.PutDown();
             SetCurrentMode(Mode.Normal);
+            
+            EscapeMenuManager.ForceSave();
         }
 
         // r/del - delete the held hold and switch to normal mode
@@ -275,6 +280,8 @@ public class EditorController : MonoBehaviour
             routeManager.DeselectRoute(); // TODO: this is not pretty
 
             HoldStateManager.PickUp(hold);
+            
+            EscapeMenuManager.ForceSave();
 
             cameraControl.LookAt(hold.transform.position);
         }
@@ -283,14 +290,23 @@ public class EditorController : MonoBehaviour
 
         // b/t for bottom/top marks
         if (Input.GetKeyDown(KeyCode.B))
+        {
             route.ToggleStarting(hold);
+            EscapeMenuManager.ForceSave();
+        }
 
         if (Input.GetKeyDown(KeyCode.T))
+        {
             route.ToggleEnding(hold);
+            EscapeMenuManager.ForceSave();
+        }
 
         // r/del - delete hold
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Delete))
+        if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
+        {
             HoldStateManager.Unplace(hold, true);
+            EscapeMenuManager.ForceSave();
+        }
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())

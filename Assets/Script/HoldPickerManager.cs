@@ -100,7 +100,7 @@ public class HoldPickerManager : MonoBehaviour
 
             return true;
         }));
-        
+
         UpdateSelectCounters();
     }
 
@@ -144,7 +144,8 @@ public class HoldPickerManager : MonoBehaviour
 
         // dropdowns
         var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
-        var choiceFunctions = new Func<List<string>>[] { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
+        var choiceFunctions = new Func<List<string>>[]
+            { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
 
         for (int i = 0; i < dropdowns.Length; i++)
         {
@@ -243,7 +244,7 @@ public class HoldPickerManager : MonoBehaviour
         item.style.borderRightColor = _selectedBorderColor;
 
         _gridStateDictionary[item] = true;
-        
+
         _dirty = true;
 
         UpdateSelectCounters();
@@ -264,7 +265,7 @@ public class HoldPickerManager : MonoBehaviour
         item.style.borderRightColor = _deselectedBorderColor;
 
         _gridStateDictionary[item] = false;
-        
+
         _dirty = true;
 
         UpdateSelectCounters();

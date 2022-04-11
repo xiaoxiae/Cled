@@ -18,10 +18,12 @@ public class MenuController : MonoBehaviour
             continueButton.clicked += () => SceneManager.LoadScene("WallScene");
 
         var loadButton = root.Q<Button>("load-button");
-        loadButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open", "", "", false, onLoadWall);
+        loadButton.clicked += () =>
+            StandaloneFileBrowser.OpenFilePanelAsync("Load existing project", "", "", false, onLoadWall);
 
         var newButton = root.Q<Button>("new-button");
-        newButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open", "", "", false, onOpenNewWall);
+        newButton.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
+            new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, onOpenNewWall);
 
         var quitButton = root.Q<Button>("quit-button");
         quitButton.clicked += Application.Quit;
@@ -41,13 +43,28 @@ public class MenuController : MonoBehaviour
 
     /// <summary>
     /// Called when opening a new wall.
+    /// Prompts opening holds if successful.
     /// </summary>
     void onOpenNewWall(string[] paths)
     {
         if (paths.Length == 0 || paths[0] == "")
             return;
 
+        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, onOpenNewHolds);
+
         PreferencesManager.CurrentWallModelPath = paths[0];
+    }
+
+    /// <summary>
+    /// Called when opening a new wall.
+    /// </summary>
+    void onOpenNewHolds(string[] paths)
+    {
+        if (paths.Length == 0 || paths[0] == "")
+            return;
+
+        PreferencesManager.CurrentHoldModelsPath = paths[0];
+
         PreferencesManager.LastOpenWallPath = null;
         SceneManager.LoadScene("WallScene");
     }
