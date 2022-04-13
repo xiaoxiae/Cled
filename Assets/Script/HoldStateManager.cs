@@ -59,7 +59,7 @@ public class HoldStateManager : MonoBehaviour
     /// <summary>
     /// Get all currently placed holds.
     /// </summary>
-    public GameObject[] GetAllHolds => _placedHolds.Keys.ToArray();
+    public GameObject[] GetAllHolds() => _placedHolds.Keys.ToArray();
 
     public GameObject GetHeld() => _heldObject;
 
@@ -158,8 +158,12 @@ public class HoldStateManager : MonoBehaviour
     /// <summary>
     /// Place a new hold from the hold blueprint.
     /// </summary>
-    public void Place(HoldBlueprint holdBlueprint, HoldState holdState) =>
-        Place(Instantiate(holdBlueprint.Model), holdBlueprint, holdState);
+    public GameObject Place(HoldBlueprint holdBlueprint, HoldState holdState)
+    {
+        var instance = Instantiate(holdBlueprint.Model);
+        Place(instance, holdBlueprint, holdState);
+        return instance;
+    }
 
     /// <summary>
     /// Place the given hold.

@@ -35,13 +35,11 @@ public class MenuController : MonoBehaviour
     /// </summary>
     void onLoadWall(string[] paths)
     {
-        if (paths.Length == 0 || paths[0] == "")
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
         if (!StateImportExportManager.ImportPreferences(paths[0]))
-        {
-            // TODO: complain
-        }
+            return;
 
         PreferencesManager.LastOpenWallPath = paths[0];
         SceneManager.LoadScene("WallScene");
@@ -53,7 +51,7 @@ public class MenuController : MonoBehaviour
     /// </summary>
     void onOpenNewWall(string[] paths)
     {
-        if (paths.Length == 0 || paths[0] == "")
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
         PreferencesManager.CurrentWallModelPath = paths[0];
@@ -66,7 +64,7 @@ public class MenuController : MonoBehaviour
     /// </summary>
     void onOpenNewHolds(string[] paths)
     {
-        if (paths.Length == 0 || paths[0] == "")
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
         PreferencesManager.CurrentHoldModelsPath = paths[0];

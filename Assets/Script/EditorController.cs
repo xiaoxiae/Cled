@@ -291,18 +291,16 @@ public class EditorController : MonoBehaviour
             CameraControl.LookAt(hold.transform.position);
         }
 
-        Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
-
         // b/t for bottom/top marks
         if (Input.GetKeyDown(KeyCode.B))
         {
-            route.ToggleStarting(hold);
+            RouteManager.ToggleStarting(hold, HoldStateManager.GetHoldBlueprint(hold));
             EscapeMenuManager.ForceSave();
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            route.ToggleEnding(hold);
+            RouteManager.ToggleEnding(hold, HoldStateManager.GetHoldBlueprint(hold));
             EscapeMenuManager.ForceSave();
         }
 
@@ -315,6 +313,8 @@ public class EditorController : MonoBehaviour
             EscapeMenuManager.ForceSave();
         }
 
+        Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
+        
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())
             SetCurrentMode(Mode.Normal);

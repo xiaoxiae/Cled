@@ -71,34 +71,29 @@ public class EscapeMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save, returning true if it worked, else false.
     /// </summary>
-    private bool Save()
+    private void Save()
     {
         if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
-            return false;
+            return;
 
         SetForceSave(false);
-        return true;
     }
 
     /// <summary>
     /// Attempt to save as, returning true if it worked, else false.
     /// </summary>
-    private bool SaveAs()
+    private void SaveAs()
     {
         var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
             new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
-        if (path != "")
-        {
-            if (!StateImportExportManager.Export(path))
-                return false;
+        if (string.IsNullOrEmpty(path)) return;
+        
+        if (!StateImportExportManager.Export(path))
+            return;
 
-            SetForceSave(false);
-            _forceSaveAs = false;
-            return true;
-        }
-
-        return false;
+        SetForceSave(false);
+        _forceSaveAs = false;
     }
 
     /// <summary>

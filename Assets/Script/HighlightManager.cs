@@ -84,7 +84,7 @@ public class HighlightManager : MonoBehaviour
         
         _highlighted.Remove(obj);
         
-        if (obj)
+        if (obj.GetComponent<Outline>() != null)
             DestroyImmediate(obj.GetComponent<Outline>());
     }
 
