@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
 using Cursor = UnityEngine.Cursor;
 
@@ -33,7 +35,6 @@ public class HoldPickerManager : MonoBehaviour
     private DropdownField _labelsDropdown;
     private DropdownField _manufacturerDropdown;
 
-
     // hold manager-related things
     public HoldManager HoldManager;
 
@@ -53,27 +54,16 @@ public class HoldPickerManager : MonoBehaviour
     private const float GridElementSpacing = 10;
     private const float GridElementBorderRoundness = 10;
 
-    private const string noSelectionString = "-";
+    public RenderTexture RenderTexture;
+    public VideoPlayer VideoPlayer;
+
+    private const string NoSelectionString = "-";
 
     /// <summary>
     /// Return the currently picked holds.
     /// </summary>
     public List<HoldBlueprint> GetPickedHolds() =>
         _holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
-
-    // is set when the picks change
-    // is important in the editor, because the hold that was previously selected could possibly not be
-    private bool _dirty;
-
-    /// <summary>
-    /// Return true if the picked holds changed.
-    /// </summary>
-    public bool HasPickedChanged => _dirty;
-
-    /// <summary>
-    /// Set that the picked holds are currently unchanged.
-    /// </summary>
-    public bool SetPickedUnchanged() => _dirty = false;
 
     /// <summary>
     /// Update the grid according to the dropdown buttons.
@@ -82,20 +72,20 @@ public class HoldPickerManager : MonoBehaviour
     {
         FillGrid(HoldManager.Filter(hold =>
         {
-            if (!string.IsNullOrEmpty(_colorDropdown.value) && _colorDropdown.value != noSelectionString &&
+            if (!string.IsNullOrEmpty(_colorDropdown.value) && _colorDropdown.value != NoSelectionString &&
                 hold.colorName != _colorDropdown.value)
                 return false;
 
-            if (!string.IsNullOrEmpty(_labelsDropdown.value) && _labelsDropdown.value != noSelectionString &&
+            if (!string.IsNullOrEmpty(_labelsDropdown.value) && _labelsDropdown.value != NoSelectionString &&
                 hold.labels.Contains(_labelsDropdown.value))
                 return false;
 
             if (!string.IsNullOrEmpty(_manufacturerDropdown.value) &&
-                _manufacturerDropdown.value != noSelectionString && hold.manufacturer != _manufacturerDropdown.value)
+                _manufacturerDropdown.value != NoSelectionString && hold.manufacturer != _manufacturerDropdown.value)
                 return false;
 
             if (!string.IsNullOrEmpty(_typeDropdown.value) &&
-                _typeDropdown.value != noSelectionString && hold.manufacturer != _typeDropdown.value)
+                _typeDropdown.value != NoSelectionString && hold.manufacturer != _typeDropdown.value)
                 return false;
 
             return true;
@@ -146,7 +136,7 @@ public class HoldPickerManager : MonoBehaviour
         for (int i = 0; i < dropdowns.Length; i++)
         {
             var allValues = choiceFunctions[i]();
-            allValues.Insert(0, noSelectionString);
+            allValues.Insert(0, NoSelectionString);
 
             // only add the separator if there are some items
             if (allValues.Count != 1)
@@ -181,6 +171,23 @@ public class HoldPickerManager : MonoBehaviour
             item.style.borderLeftWidth = BorderThickness;
             item.style.borderRightWidth = BorderThickness;
 
+            item.RegisterCallback<MouseOverEvent>(evt =>
+            {
+                VideoPlayer.url = blueprint.PreviewVideoPath;
+                
+                RenderTexture.DiscardContents(); 
+                Graphics.Blit(LoadTexture(blueprint.PreviewImagePath), RenderTexture);
+                
+                item.style.backgroundImage =
+                    new StyleBackground(Background.FromRenderTexture(RenderTexture));
+            });
+            
+            item.RegisterCallback<MouseLeaveEvent>(evt =>
+            {
+                item.style.backgroundImage =
+                    new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));
+            });
+
             item.RegisterCallback<ClickEvent>(evt =>
             {
                 // TODO: this is a hack for a bug in Linux Unity
@@ -207,6 +214,7 @@ public class HoldPickerManager : MonoBehaviour
 
         FillGrid(_allHolds);
     }
+
 
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
@@ -241,8 +249,6 @@ public class HoldPickerManager : MonoBehaviour
 
         _gridStateDictionary[item] = true;
 
-        _dirty = true;
-
         UpdateSelectCounters();
     }
 
@@ -261,8 +267,6 @@ public class HoldPickerManager : MonoBehaviour
         item.style.borderRightColor = _deselectedBorderColor;
 
         _gridStateDictionary[item] = false;
-
-        _dirty = true;
 
         UpdateSelectCounters();
     }

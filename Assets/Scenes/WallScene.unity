@@ -561,6 +561,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HoldManager: {fileID: 1579647979}
+  RenderTexture: {fileID: 8400000, guid: a6c4919686560fc9fb642ff93b22c63e, type: 2}
+  VideoPlayer: {fileID: 1448058875}
 --- !u!114 &693249232
 MonoBehaviour:
   m_ObjectHideFlags: 0
