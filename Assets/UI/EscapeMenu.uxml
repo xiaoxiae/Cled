@@ -5,6 +5,11 @@
         <ui:VisualElement name="escape-menu" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/UI/MenuBackground.png?fileID=2800000&amp;guid=a113e95da5b20d0caafe2f99bb64911d&amp;type=3#MenuBackground&apos;); -unity-background-scale-mode: scale-and-crop; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; border-top-left-radius: 50px; border-bottom-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
             <ui:VisualElement class="logo" />
             <ui:VisualElement name="spacer" class="small-spacer" />
+            <ui:VisualElement name="spacer" class="small-spacer" />
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:Button text="New" name="new-button" class="button-style" />
+                <ui:Button text="Load" name="load-button" class="button-style" />
+            </ui:VisualElement>
             <ui:VisualElement style="flex-direction: row;">
                 <ui:Button text="Save" name="save-button" class="button-style" />
                 <ui:Button text="Save as" name="save-as-button" class="button-style" />

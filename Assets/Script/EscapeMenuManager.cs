@@ -19,6 +19,9 @@ public class EscapeMenuManager : MonoBehaviour
     /// </summary>
     public void ForceSave() => SetForceSave(true);
 
+    /// <summary>
+    /// Set the forceSave attribute to a given state, along with possibly enabling/disabling the save button.
+    /// </summary>
     private void SetForceSave(bool state)
     {
         _forceSave = state;
@@ -46,11 +49,17 @@ public class EscapeMenuManager : MonoBehaviour
     private Button _mainMenuButton;
     private Button _quitButton;
 
-    void Start()
+    void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
         root = GetComponent<UIDocument>().rootVisualElement;
+        
+        var loadButton = root.Q<Button>("load-button");
+        MenuUtilities.AddLoadButtonOperation(loadButton);
+        
+        var newButton = root.Q<Button>("new-button");
+        MenuUtilities.AddNewButtonOperation(newButton);
 
         _saveButton = root.Q<Button>("save-button");
         _saveButton.SetEnabled(false);
@@ -69,31 +78,36 @@ public class EscapeMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to save, returning true if it worked, else false.
+    /// Attempt to save.
     /// </summary>
-    private void Save()
+    private bool Save()
     {
         if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
-            return;
+            return false;
 
         SetForceSave(false);
+        return true;
     }
 
     /// <summary>
-    /// Attempt to save as, returning true if it worked, else false.
+    /// Attempt to save as.
     /// </summary>
-    private void SaveAs()
+    private bool SaveAs()
     {
         var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
             new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
-        if (string.IsNullOrEmpty(path)) return;
+        if (string.IsNullOrEmpty(path))
+            return false;
         
         if (!StateImportExportManager.Export(path))
-            return;
+            return false;
+
+        PreferencesManager.LastOpenWallPath = path;
 
         SetForceSave(false);
         _forceSaveAs = false;
+        return true;
     }
 
     /// <summary>
@@ -106,7 +120,7 @@ public class EscapeMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to quit, possibly warning about things not being saved.
+    /// Attempt to quit.
     /// </summary>
     private void Quit()
     {
@@ -121,10 +135,18 @@ public class EscapeMenuManager : MonoBehaviour
     private bool EnsureSaved()
     {
         if (_forceSaveAs)
-            return false; // TODO: dialogue for that it's not saved as anything
+        {
+            // TODO: popup here
+            
+            return SaveAs();
+        }
 
         if (_forceSave)
-            return false; // TODO: dialogue for that there are unsaved changes
+        {
+            // TODO: popup here
+            
+            return Save();
+        }
 
         return true;
     }

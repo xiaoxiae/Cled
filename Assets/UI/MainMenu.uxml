@@ -8,8 +8,8 @@
         <ui:VisualElement name="spacer" class="spacer" />
         <ui:Button text="Continue" display-tooltip-when-elided="true" name="continue-button" class="button-style" />
         <ui:VisualElement style="flex-direction: row;">
-            <ui:Button text="New" display-tooltip-when-elided="true" name="new-button" class="button-style" />
-            <ui:Button text="Load" display-tooltip-when-elided="true" name="load-button" class="button-style" />
+            <ui:Button text="New" display-tooltip-when-elided="true" name="new-button" tooltip="Test" class="button-style" />
+            <ui:Button text="Load" display-tooltip-when-elided="true" name="load-button" tooltip="Loads stuff." class="button-style" />
         </ui:VisualElement>
         <ui:VisualElement name="spacer" class="small-spacer" />
         <ui:Button text="Settings" display-tooltip-when-elided="true" name="settings-button" class="button-style" />
