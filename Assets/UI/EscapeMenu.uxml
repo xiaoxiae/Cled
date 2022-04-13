@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/MenuStyles.uss?fileID=7433441132597879392&amp;guid=9e5d2c668ac0c0304a039f559b1da064&amp;type=3#MenuStyles" />
     <Style src="project://database/Assets/UI/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=ef2d91682ed6ad164a012ae9e0f7c156&amp;type=3#GlobalStyles" />
     <ui:VisualElement class="semi-transparent-background">
-        <ui:VisualElement name="escape-menu" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/UI/MenuBackground.png?fileID=2800000&amp;guid=a113e95da5b20d0caafe2f99bb64911d&amp;type=3#MenuBackground&apos;); -unity-background-scale-mode: scale-and-crop; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; border-top-left-radius: 50px; border-bottom-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+        <ui:VisualElement name="escape-menu" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/UI/MenuBackground.png?fileID=2800000&amp;guid=a113e95da5b20d0caafe2f99bb64911d&amp;type=3#MenuBackground&apos;); -unity-background-scale-mode: scale-and-crop; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px;">
             <ui:VisualElement class="logo" />
             <ui:VisualElement name="spacer" class="small-spacer" />
             <ui:VisualElement name="spacer" class="small-spacer" />
