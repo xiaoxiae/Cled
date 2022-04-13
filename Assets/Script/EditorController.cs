@@ -234,6 +234,7 @@ public class EditorController : MonoBehaviour
                     HoldStateManager.SetUnheld(true);
 
                     HoldStateManager.SetHeld(_currentlyPickedHold);
+                    HoldStateManager.DisableHeld();
                 }
             }
         }
