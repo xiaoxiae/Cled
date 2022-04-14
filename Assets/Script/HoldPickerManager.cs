@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
@@ -174,14 +176,14 @@ public class HoldPickerManager : MonoBehaviour
             item.RegisterCallback<MouseOverEvent>(evt =>
             {
                 VideoPlayer.url = blueprint.PreviewVideoPath;
-                
-                RenderTexture.DiscardContents(); 
+
+                RenderTexture.DiscardContents();
                 Graphics.Blit(LoadTexture(blueprint.PreviewImagePath), RenderTexture);
-                
+
                 item.style.backgroundImage =
                     new StyleBackground(Background.FromRenderTexture(RenderTexture));
             });
-            
+
             item.RegisterCallback<MouseLeaveEvent>(evt =>
             {
                 item.style.backgroundImage =
@@ -326,14 +328,19 @@ public class HoldPickerManager : MonoBehaviour
             {
                 Time.timeScale = 1;
                 _root.visible = false;
+
                 Cursor.lockState = CursorLockMode.Locked;
             }
+
             else if (Time.timeScale == 1 && !_root.visible)
             {
                 Time.timeScale = 0;
                 _root.visible = true;
+
                 Cursor.lockState = CursorLockMode.None;
             }
+
+            Input.ResetInputAxes();
         }
     }
 }

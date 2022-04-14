@@ -172,6 +172,8 @@ public class EscapeMenuManager : MonoBehaviour
                 _root.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
+            
+            Input.ResetInputAxes();
         }
     }
 }

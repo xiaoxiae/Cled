@@ -5,21 +5,21 @@
         <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 85%; height: 1000px;">
             <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center; flex-shrink: 0;">
                 <ui:VisualElement style="height: 100%; flex-grow: 0; flex-shrink: 1;">
-                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" focusable="false" name="deselect-filtered-button" class="button-style button" />
-                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" focusable="false" class="button-style button" style="flex-grow: 1;" />
+                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" name="deselect-filtered-button" class="button-style button" />
+                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" class="button-style button" style="flex-grow: 1;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="hfill" class="hfill" />
                 <ui:Label text="Color" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="color-dropdown" focusable="false" class="dropdown" />
+                <ui:DropdownField name="color-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Type" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="type-dropdown" focusable="false" class="dropdown" />
+                <ui:DropdownField name="type-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Labels" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="labels-dropdown" focusable="false" class="dropdown" />
+                <ui:DropdownField name="labels-dropdown" class="dropdown" />
                 <ui:VisualElement name="med-hspace" class="med-hspace" />
                 <ui:Label text="Manufacturer" display-tooltip-when-elided="true" class="label" />
-                <ui:DropdownField name="manufacturer-dropdown" focusable="false" class="dropdown" />
+                <ui:DropdownField name="manufacturer-dropdown" class="dropdown" />
             </ui:VisualElement>
             <ui:ScrollView name="hold-grid-container" style="margin-top: 40px; margin-bottom: 40px;">
                 <ui:VisualElement name="hold-grid" style="flex-wrap: wrap; flex-direction: row;" />

@@ -7,17 +7,17 @@
             <ui:VisualElement name="spacer" class="small-spacer" />
             <ui:VisualElement name="spacer" class="small-spacer" />
             <ui:VisualElement style="flex-direction: row;">
-                <ui:Button text="New" name="new-button" class="button-style" />
-                <ui:Button text="Load" name="load-button" class="button-style" />
+                <ui:Button text="New" name="new-button" focusable="false" class="button-style" />
+                <ui:Button text="Load" name="load-button" focusable="false" class="button-style" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-direction: row;">
-                <ui:Button text="Save" name="save-button" class="button-style" />
-                <ui:Button text="Save as" name="save-as-button" class="button-style" />
+                <ui:Button text="Save" name="save-button" focusable="false" class="button-style" />
+                <ui:Button text="Save as" name="save-as-button" focusable="false" class="button-style" />
             </ui:VisualElement>
             <ui:VisualElement name="spacer" class="small-spacer" />
-            <ui:Button text="Main Menu" name="main-menu-button" class="button-style" />
-            <ui:Button text="Settings" name="settings-button" class="button-style" />
-            <ui:Button text="Quit" name="quit-button" class="button-style" />
+            <ui:Button text="Main Menu" name="main-menu-button" focusable="false" class="button-style" />
+            <ui:Button text="Settings" name="settings-button" focusable="false" class="button-style" />
+            <ui:Button text="Quit" name="quit-button" focusable="false" class="button-style" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
