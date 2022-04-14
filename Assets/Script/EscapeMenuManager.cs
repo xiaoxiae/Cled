@@ -11,7 +11,7 @@ public class EscapeMenuManager : MonoBehaviour
     private bool _forceSave;
     private bool _forceSaveAs;
 
-    private VisualElement root;
+    private VisualElement _root;
 
     /// <summary>
     /// Forces a save when either main menu or quit is called.
@@ -53,28 +53,28 @@ public class EscapeMenuManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        root = GetComponent<UIDocument>().rootVisualElement;
+        _root = GetComponent<UIDocument>().rootVisualElement;
         
-        var loadButton = root.Q<Button>("load-button");
+        var loadButton = _root.Q<Button>("load-button");
         MenuUtilities.AddLoadButtonOperation(loadButton);
         
-        var newButton = root.Q<Button>("new-button");
+        var newButton = _root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);
 
-        _saveButton = root.Q<Button>("save-button");
+        _saveButton = _root.Q<Button>("save-button");
         _saveButton.SetEnabled(false);
         _saveButton.clicked += () => Save();
 
-        _saveAsButton = root.Q<Button>("save-as-button");
+        _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
 
-        _mainMenuButton = root.Q<Button>("main-menu-button");
+        _mainMenuButton = _root.Q<Button>("main-menu-button");
         _mainMenuButton.clicked += MainMenu;
 
-        _quitButton = root.Q<Button>("quit-button");
+        _quitButton = _root.Q<Button>("quit-button");
         _quitButton.clicked += Quit;
 
-        root.visible = false;
+        _root.visible = false;
     }
 
     /// <summary>
@@ -129,7 +129,9 @@ public class EscapeMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ensure that things are saved. Return true if they are after the function call.
+    /// Ensure that things are saved by prompting either save or save as dialogues.
+    ///
+    /// Return true if they are after the function call.
     /// </summary>
     /// <returns></returns>
     private bool EnsureSaved()
@@ -155,16 +157,16 @@ public class EscapeMenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (Time.timeScale == 0 && root.visible)
+            if (Time.timeScale == 0 && _root.visible)
             {
                 Time.timeScale = 1;
-                root.visible = false;
+                _root.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            else if (Time.timeScale == 1 && !root.visible)
+            else if (Time.timeScale == 1 && !_root.visible)
             {
                 Time.timeScale = 0;
-                root.visible = true;
+                _root.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
         }
