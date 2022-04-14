@@ -155,6 +155,9 @@ public class EscapeMenuManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
+            EnsureSaved();
+        
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Time.timeScale == 0 && _root.visible)
