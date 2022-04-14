@@ -290,7 +290,9 @@ public class HoldPickerManager : MonoBehaviour
         foreach (HoldBlueprint blueprint in _currentlyFilteredHolds)
             _grid.Remove(_holdToGridDictionary[blueprint]);
 
-        foreach (HoldBlueprint blueprint in holdBlueprints)
+        foreach (HoldBlueprint blueprint in holdBlueprints
+                     .OrderBy(x => x.HoldInformation.colorHex)
+                     .ThenBy(x => x.HoldInformation.type))
             _grid.Add(_holdToGridDictionary[blueprint]);
 
         _currentlyFilteredHolds = holdBlueprints;
