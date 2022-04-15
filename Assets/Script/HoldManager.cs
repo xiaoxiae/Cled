@@ -145,10 +145,7 @@ public class HoldManager : MonoBehaviour
     /// </summary>
     private GameObject ToGameObject(string id)
     {
-        FileStream modelStream = File.OpenRead(GetHoldModelPath(id));
-        FileStream textureStream = File.OpenRead(GetHoldMaterialPath(id));
-
-        GameObject hold = new OBJLoader().Load(modelStream, textureStream);
+        GameObject hold = Utilities.ObjectLoadWrapper(GetHoldModelPath(id), GetHoldMaterialPath(id));
 
         MeshFilter mf = hold.transform.GetChild(0).GetComponent<MeshFilter>();
         MeshCollider meshCollider = hold.AddComponent<MeshCollider>();

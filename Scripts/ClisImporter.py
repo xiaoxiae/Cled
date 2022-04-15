@@ -68,14 +68,12 @@ for key in data:
             # generate the preview for the hold
             Popen(["python3", "GenerateHoldPreview.py", src_file, dest_file_stub]).communicate()
 
-        # replace the path to the texture in the mtl file so it's relative to Unity root
+        # replace the path to the texture in the mtl file
         if ext == ".mtl":
             with open(dest_file) as f:
                 contents = f.read()
 
-            contents = contents.replace(
-                "model.jpg", os.path.join("Models", "Holds", key + ".jpg")
-            )
+            contents = contents.replace("model.jpg", key + ".jpg")
 
             with open(dest_file, "w") as f:
                 f.write(contents)

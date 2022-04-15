@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
@@ -287,7 +284,7 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Fill the grid with a selection of the holds.
     /// </summary>
-    void FillGrid(HoldBlueprint[] holdBlueprints)
+    private void FillGrid(HoldBlueprint[] holdBlueprints)
     {
         foreach (HoldBlueprint blueprint in _currentlyFilteredHolds)
             _grid.Remove(_holdToGridDictionary[blueprint]);
