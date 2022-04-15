@@ -1,0 +1,74 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
+    <ui:VisualElement class="toolbar-panel" style="flex-direction: row; flex-shrink: 0; align-items: center;">
+        <ui:Foldout text="File" value="false" name="file-foldout" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 187px;">
+                <ui:Button display-tooltip-when-elided="true" name="new-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="New" display-tooltip-when-elided="true" name="new-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
+                    <ui:Label text="Ctrl+N" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="open-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Open" display-tooltip-when-elided="true" name="open-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1;" />
+                    <ui:Label text="Ctrl+O" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:VisualElement class="toolbar-separator" />
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Save" display-tooltip-when-elided="true" name="save-label" />
+                    <ui:VisualElement style="flex-grow: 1;" />
+                    <ui:Label text="Ctrl+S" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-as-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Save As" display-tooltip-when-elided="true" name="save-label" />
+                    <ui:VisualElement style="flex-grow: 1;" />
+                    <ui:Label text="Ctrl+Shift+S" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:VisualElement class="toolbar-separator" />
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="preferences-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Preferences" display-tooltip-when-elided="true" name="preferences-label" />
+                    <ui:VisualElement style="flex-grow: 1;" />
+                    <ui:Label display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:VisualElement class="toolbar-separator" />
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="quit-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Quit" display-tooltip-when-elided="true" name="quit-label" />
+                    <ui:VisualElement style="flex-grow: 1;" />
+                    <ui:Label text="Ctrl+Q" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:Foldout>
+        <ui:Foldout text="View" value="false" name="view-foldout" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 172px;">
+                <ui:Toggle label="Routes" name="routes-toggle" />
+            </ui:VisualElement>
+        </ui:Foldout>
+        <ui:Foldout text="Capture" value="false" name="capture-foldout" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 173px;">
+                <ui:Button display-tooltip-when-elided="true" name="new-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Image" display-tooltip-when-elided="true" name="image-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
+                    <ui:Label text="Ctrl+P" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="selected-route-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Selected route" display-tooltip-when-elided="true" name="selected-route-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1;" />
+                    <ui:Label display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:Foldout>
+        <ui:Foldout text="Help" value="false" name="help-foldout" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 74px;">
+                <ui:Button display-tooltip-when-elided="true" name="help-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Controls" display-tooltip-when-elided="true" name="help-label" />
+                </ui:Button>
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="about-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="About" display-tooltip-when-elided="true" name="about-label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:Foldout>
+        <ui:VisualElement class="hfill" />
+        <ui:Label text="Current mode:" display-tooltip-when-elided="true" />
+        <ui:Label text="NORMAL" display-tooltip-when-elided="true" name="current-mode-label" style="-unity-font-style: bold;" />
+    </ui:VisualElement>
+</ui:UXML>

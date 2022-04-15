@@ -18,11 +18,10 @@ public class EditorController : MonoBehaviour
     public RouteManager RouteManager;
     public WallManager WallManager;
     public StateImportExportManager StateImportExportManager;
+    public ToolbarMenuManager ToolbarMenuManager;
 
     public HoldPickerManager HoldPickerManager;
-    public EscapeMenuManager EscapeMenuManager;
 
-    public UIDocument CurrentModeDocument;
     private Label _currentModeLabel;
 
     public Mode currentMode = Mode.Normal;
@@ -33,9 +32,8 @@ public class EditorController : MonoBehaviour
 
     void Start()
     {
-        var root = CurrentModeDocument.GetComponent<UIDocument>().rootVisualElement;
-
-        _currentModeLabel = root.Q<Label>("current-mode");
+        _currentModeLabel = ToolbarMenuManager.GetComponent<UIDocument>().rootVisualElement
+            .Q<Label>("current-mode-label");
 
         SetCurrentMode(Mode.Normal);
 
@@ -45,9 +43,10 @@ public class EditorController : MonoBehaviour
         else if (PreferencesManager.CurrentWallModelPath != "")
         {
             WallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
-            EscapeMenuManager.ForceSaveAs();
+            ToolbarMenuManager.ForceSaveAs();
         }
     }
+
 
     /// <summary>
     /// Set the current mode, updating the UI mode label in the process.
@@ -57,7 +56,7 @@ public class EditorController : MonoBehaviour
     {
         currentMode = mode;
         _currentModeLabel.text = mode.ToString().ToUpper();
-        
+
         if (mode != Mode.Route)
             RouteManager.DeselectRoute();
     }
@@ -188,12 +187,12 @@ public class EditorController : MonoBehaviour
                     (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
                 {
                     RouteManager.ToggleHold(RouteManager.SelectedRoute, hold, HoldStateManager.GetHoldBlueprint(hold));
-                    
+
                     // if the route has no more holds, switch to normal mode
                     if (RouteManager.SelectedRoute.IsEmpty())
                         SetCurrentMode(Mode.Normal);
-                    
-                    EscapeMenuManager.ForceSave();
+
+                    ToolbarMenuManager.ForceSave();
                 }
 
                 break;
@@ -258,7 +257,7 @@ public class EditorController : MonoBehaviour
             HoldStateManager.PutDown();
             SetCurrentMode(Mode.Normal);
 
-            EscapeMenuManager.ForceSave();
+            ToolbarMenuManager.ForceSave();
         }
 
         // r/del - delete the held hold and switch to normal mode
@@ -266,7 +265,7 @@ public class EditorController : MonoBehaviour
         {
             RouteManager.RemoveHold(HoldStateManager.GetHeld());
             HoldStateManager.SetUnheld(true);
-            
+
             SetCurrentMode(Mode.Normal);
         }
     }
@@ -287,7 +286,7 @@ public class EditorController : MonoBehaviour
 
             HoldStateManager.PickUp(hold);
 
-            EscapeMenuManager.ForceSave();
+            ToolbarMenuManager.ForceSave();
 
             CameraControl.LookAt(hold.transform.position);
         }
@@ -296,13 +295,13 @@ public class EditorController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             RouteManager.ToggleStarting(hold, HoldStateManager.GetHoldBlueprint(hold));
-            EscapeMenuManager.ForceSave();
+            ToolbarMenuManager.ForceSave();
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
             RouteManager.ToggleEnding(hold, HoldStateManager.GetHoldBlueprint(hold));
-            EscapeMenuManager.ForceSave();
+            ToolbarMenuManager.ForceSave();
         }
 
         // r/del - delete hold
@@ -310,12 +309,12 @@ public class EditorController : MonoBehaviour
         {
             HoldStateManager.Unplace(hold, true);
             RouteManager.RemoveHold(hold);
-            
-            EscapeMenuManager.ForceSave();
+
+            ToolbarMenuManager.ForceSave();
         }
 
         Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
-        
+
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())
             SetCurrentMode(Mode.Normal);
@@ -340,7 +339,7 @@ public class EditorController : MonoBehaviour
         // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
         if (Time.timeScale == 0)
             return;
-        
+
         CombinedBehaviorBefore();
 
         var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));

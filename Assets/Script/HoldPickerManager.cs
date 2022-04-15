@@ -34,6 +34,8 @@ public class HoldPickerManager : MonoBehaviour
     private DropdownField _labelsDropdown;
     private DropdownField _manufacturerDropdown;
 
+    public StyleSheet globalStyleSheets;
+    
     // hold manager-related things
     public HoldManager HoldManager;
 
@@ -47,11 +49,6 @@ public class HoldPickerManager : MonoBehaviour
     // styling
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
     private readonly StyleColor _deselectedBorderColor = new(new Color(0.35f, 0.35f, 0.35f));
-
-    private const float BorderThickness = 4.5f;
-    private const float GridElementSize = 150;
-    private const float GridElementSpacing = 10;
-    private const float GridElementBorderRoundness = 10;
 
     public RenderTexture RenderTexture;
     public VideoPlayer VideoPlayer;
@@ -161,14 +158,9 @@ public class HoldPickerManager : MonoBehaviour
             _gridStateDictionary[item] = false;
 
             Deselect(item);
-
-            item.style.width = GridElementSize;
-            item.style.height = GridElementSize;
-
-            item.style.borderBottomWidth = BorderThickness;
-            item.style.borderTopWidth = BorderThickness;
-            item.style.borderLeftWidth = BorderThickness;
-            item.style.borderRightWidth = BorderThickness;
+            
+            item.styleSheets.Add(globalStyleSheets);
+            item.AddToClassList("hold-picker-hold");
 
             item.RegisterCallback<MouseOverEvent>(evt =>
             {
@@ -196,16 +188,6 @@ public class HoldPickerManager : MonoBehaviour
 
                 _timestampHackLastPressed = evt.timestamp;
             });
-
-            item.style.marginBottom = GridElementSpacing;
-            item.style.marginLeft = GridElementSpacing;
-            item.style.marginRight = GridElementSpacing;
-            item.style.marginTop = GridElementSpacing;
-
-            item.style.borderBottomLeftRadius = GridElementBorderRoundness;
-            item.style.borderBottomRightRadius = GridElementBorderRoundness;
-            item.style.borderTopLeftRadius = GridElementBorderRoundness;
-            item.style.borderTopRightRadius = GridElementBorderRoundness;
 
             item.style.backgroundImage =
                 new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));

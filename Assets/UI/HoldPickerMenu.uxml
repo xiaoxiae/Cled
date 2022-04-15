@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
+    <ui:VisualElement class="semi-transparent-background" style="flex-grow: 1; align-items: center; justify-content: center; flex-shrink: 0;">
+        <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; width: 85%; height: 1000px;">
+            <ui:VisualElement name="top-bar" style="flex-direction: row; height: 10%; -unity-text-align: upper-left; align-items: center; flex-shrink: 0;">
+                <ui:VisualElement style="height: 100%; flex-grow: 0; flex-shrink: 1;">
+                    <ui:Button text="Deselect Filtered" display-tooltip-when-elided="true" name="deselect-filtered-button" class="hold-picker-button" />
+                    <ui:Button text="Deselect All" display-tooltip-when-elided="true" name="deselect-all-button" class="hold-picker-button" style="flex-grow: 1;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="hfill" class="hfill" />
+                <ui:Label text="Color" display-tooltip-when-elided="true" class="hold-picker-label" />
+                <ui:DropdownField name="color-dropdown" class="hold-picker-dropdown" />
+                <ui:VisualElement name="medium-hspace" class="medium-hspace" />
+                <ui:Label text="Type" display-tooltip-when-elided="true" class="hold-picker-label" />
+                <ui:DropdownField name="type-dropdown" class="hold-picker-dropdown" />
+                <ui:VisualElement name="medium-hspace" class="medium-hspace" />
+                <ui:Label text="Labels" display-tooltip-when-elided="true" class="hold-picker-label" />
+                <ui:DropdownField name="labels-dropdown" class="hold-picker-dropdown" />
+                <ui:VisualElement name="medium-hspace" class="medium-hspace" />
+                <ui:Label text="Manufacturer" display-tooltip-when-elided="true" class="hold-picker-label" />
+                <ui:DropdownField name="manufacturer-dropdown" class="hold-picker-dropdown" />
+            </ui:VisualElement>
+            <ui:ScrollView name="hold-grid-container" style="margin-top: 40px; margin-bottom: 40px;">
+                <ui:VisualElement name="hold-grid" style="flex-wrap: wrap; flex-direction: row;" />
+            </ui:ScrollView>
+            <ui:VisualElement name="bot-bar" style="height: 5%; flex-direction: row; align-items: center; flex-shrink: 0;">
+                <ui:Label text="Total holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label round hold-picker-label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-hold-counter" class="hold-picker-changing-label" />
+                <ui:VisualElement name="large-hspace" class="large-hspace" />
+                <ui:Label text="Filtered holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="label hold-picker-label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-hold-counter" class="hold-picker-changing-label" />
+                <ui:VisualElement name="hfill" class="hfill" />
+                <ui:Label text="Total selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="hold-picker-label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="total-selected-hold-counter" class="hold-picker-changing-label" />
+                <ui:VisualElement name="large-hspace" class="large-hspace" />
+                <ui:Label text="Filtered selected holds:" display-tooltip-when-elided="true" enable-rich-text="true" class="hold-picker-label" />
+                <ui:VisualElement name="small-hspace" class="small-hspace" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="filtered-selected-hold-counter" class="hold-picker-changing-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -17,8 +17,8 @@ public class MenuController : MonoBehaviour
         else
             continueButton.clicked += () => SceneManager.LoadScene("WallScene");
 
-        var loadButton = root.Q<Button>("load-button");
-        MenuUtilities.AddLoadButtonOperation(loadButton);
+        var openButton = root.Q<Button>("open-button");
+        MenuUtilities.AddOpenButtonOperation(openButton);
         
         var newButton = root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);

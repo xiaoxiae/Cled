@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-public class EscapeMenuManager : MonoBehaviour
+public class ToolbarMenuManager : MonoBehaviour
 {
     public StateImportExportManager StateImportExportManager;
 
@@ -51,12 +51,10 @@ public class EscapeMenuManager : MonoBehaviour
 
     void Awake()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-
         _root = GetComponent<UIDocument>().rootVisualElement;
         
-        var loadButton = _root.Q<Button>("load-button");
-        MenuUtilities.AddLoadButtonOperation(loadButton);
+        var openButton = _root.Q<Button>("open-button");
+        MenuUtilities.AddOpenButtonOperation(openButton);
         
         var newButton = _root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);
@@ -68,13 +66,8 @@ public class EscapeMenuManager : MonoBehaviour
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
 
-        _mainMenuButton = _root.Q<Button>("main-menu-button");
-        _mainMenuButton.clicked += MainMenu;
-
         _quitButton = _root.Q<Button>("quit-button");
         _quitButton.clicked += Quit;
-
-        _root.visible = false;
     }
 
     /// <summary>
@@ -160,20 +153,16 @@ public class EscapeMenuManager : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (Time.timeScale == 0 && _root.visible)
+            if (Time.timeScale == 0)
             {
                 Time.timeScale = 1;
-                _root.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            else if (Time.timeScale == 1 && !_root.visible)
+            else if (Time.timeScale == 1)
             {
                 Time.timeScale = 0;
-                _root.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
-            
-            Input.ResetInputAxes();
         }
     }
 }

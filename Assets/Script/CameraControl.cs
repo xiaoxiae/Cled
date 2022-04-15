@@ -19,6 +19,9 @@ public class CameraControl : MonoBehaviour
     }
 
     void Update() {
+        if (Time.timeScale == 0)
+            return;
+        
 		// don't move when shift is pressed in edit mode (holds turn)
 		if (Input.GetKey(KeyCode.LeftShift) && editorController.currentMode == Mode.Holding) return;
 		

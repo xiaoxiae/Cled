@@ -5,20 +5,20 @@ using UnityEngine.UIElements;
 public class MenuUtilities
 {
     /// <summary>
-    /// Attach a load project operation to a button.
+    /// Attach an open project operation to a button.
     /// </summary>
     /// <param name="button"></param>
-    public static void AddLoadButtonOperation(Button button)
+    public static void AddOpenButtonOperation(Button button)
     {
         button.clicked += () =>
-            StandaloneFileBrowser.OpenFilePanelAsync("Load existing project", "",
-                new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, onLoadWall);
+            StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
+                new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
     }
 
     /// <summary>
-    /// Called when loading an existing wall.
+    /// Called when opening an existing wall.
     /// </summary>
-    private static void onLoadWall(string[] paths)
+    private static void OnOpenWall(string[] paths)
     {
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
@@ -33,11 +33,10 @@ public class MenuUtilities
     /// <summary>
     /// Attach a new project operation to a button.
     /// </summary>
-    /// <param name="button"></param>
     public static void AddNewButtonOperation(Button button)
     {
         button.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
-            new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, onOpenNewWall);
+            new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, OnOpenNewWall);
     }
     
 
@@ -45,20 +44,20 @@ public class MenuUtilities
     /// Called when opening a new wall.
     /// Prompts opening holds if successful.
     /// </summary>
-    private static void onOpenNewWall(string[] paths)
+    private static void OnOpenNewWall(string[] paths)
     {
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
         PreferencesManager.CurrentWallModelPath = paths[0];
 
-        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, onOpenNewHolds);
+        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, OnOpenNewHolds);
     }
 
     /// <summary>
     /// Called when opening a new wall.
     /// </summary>
-    private static void onOpenNewHolds(string[] paths)
+    private static void OnOpenNewHolds(string[] paths)
     {
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;

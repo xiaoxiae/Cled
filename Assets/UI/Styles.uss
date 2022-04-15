@@ -1,0 +1,209 @@
+* {
+    --text-color: rgb(0, 0, 0);
+    
+    --button-color: rgb(180, 180, 180);
+    --button-color-hover: rgb(220, 220, 220);
+    --button-color-active: rgb(150, 150, 150);
+
+    --dropdown-color: var(--button-color);
+    --dropdown-color-hover: var(--button-color-hover);
+    --dropdown-color-active: var(--button-color-active);
+    
+    --label-color: rgb(140, 140, 140);
+    --changing-label-color: var(--button-color);
+
+    --panel-color: var(--button-color);
+    --panel-color-hover: var(--button-color-hover);
+    --panel-color-active: var(--button-color-active);
+    
+    --border-color: rgb(0, 0, 0);
+
+    --shortcut-text-color: rgb(100, 100, 100);
+    
+    --large-space: 75px;
+    --medium-space: 45px;
+    --small-space: 15px;
+}
+
+
+Button {
+    background-color: var(--button-color);
+    border-color: rgba(0, 0, 0, 1);
+}
+
+Button:hover {
+    background-color: var(--button-color-hover);
+}
+
+Button:active {
+    background-color: var(--button-color-active);
+}
+
+Dropdown {
+    background-color: var(--dropdown-color);
+}
+
+Dropdown:hover {
+    background-color: var(--dropdown-color-hover);
+}
+
+Dropdown:active {
+    background-color: var(--dropdown-color-active);
+}
+
+.semi-transparent-background {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.cled-logo {
+    background-image: url('project://database/Assets/UI/Logo.png?fileID=2800000&guid=b871ba5a9e75096f7a74a76f92f0a1d3&type=3#Logo');
+    width: 500px;
+    height: 200px;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.hfill {
+    flex-grow: 1;
+}
+
+.small-hspace {
+    width: var(--small-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.medium-hspace {
+    width: var(--medium-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.large-hspace {
+    width: var(--large-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.small-vspace {
+    height: var(--small-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.medium-vspace {
+    height: var(--medium-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.large-vspace {
+    height: var(--large-space);
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.main-menu-button-style {
+    font-size: 37px;
+    margin: 10px;
+    padding: 15px;
+}
+
+Label {
+    background-color: var(--label-color);
+}
+
+.hold-picker-hold {
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    border-width: 5px;
+}
+
+.hold-picker-label {
+    -unity-text-align: middle-center;
+    white-space: normal;
+    justify-content: center;
+    padding: 8px;
+}
+
+.changing-label {
+    background-color: var(--changing-label-color);
+}
+
+.hold-picker-changing-label {
+    -unity-text-align: middle-center;
+    white-space: normal;
+    justify-content: center;
+    background-color: var(--changing-label-color);
+    padding: 8px;
+    width: 45px;
+}
+
+.hold-picker-dropdown {
+    padding: 0px;
+    margin: 8px;
+    width: 100px;
+    -unity-text-align: middle-center;
+}
+
+.hold-picker-button {
+    height: auto;
+    padding: 7px;
+    margin: 8px;
+    flex-grow: 1;
+}
+
+.toolbar-panel Button {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+}
+
+.toolbar-panel Toggle {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+}
+
+.toolbar-panel Toggle { background-color: var(--panel-color); border-width: 0; margin: 0; }
+.toolbar-panel Toggle Label { background-color: var(--panel-color) !important; }
+.toolbar-panel Toggle:hover { background-color: var(--panel-color-hover); }
+.toolbar-panel Toggle:hover Label { background-color: var(--panel-color-hover) !important; }
+.toolbar-panel Toggle:active { background-color: var(--panel-color-active); }
+.toolbar-panel Toggle:active Label { background-color: var(--panel-color-active) !important; }
+
+/* a hack for nicer toolbar foldouts */
+.toolbar-panel > Toggle > Label { flex-grow: 0; }
+
+.toolbar-panel {
+    background-color: var(--panel-color);
+    border-width: 1px;
+    border-color: var(--border-color);
+}
+
+/* a hack for nicer toolbar foldouts */
+.toolbar-panel Label { background-color: var(--panel-color) !important; margin: 3px; padding: 3px; }
+.toolbar-panel Foldout > Toggle > VisualElement > VisualElement { display: none; }
+
+.toolbar-panel Button { background-color: var(--panel-color); border-width: 0px; }
+.toolbar-panel Button Label { background-color: var(--panel-color) !important; }
+.toolbar-panel Button:hover { background-color: var(--panel-color-hover); }
+.toolbar-panel Button:hover Label { background-color: var(--panel-color-hover) !important; }
+.toolbar-panel Button:active { background-color: var(--panel-color-active); }
+.toolbar-panel Button:active Label { background-color: var(--panel-color-active) !important; }
+
+.toolbar-separator {
+    width: 100%;
+    height: 0;
+    border-bottom-width: 1px;    
+    border-color: var(--border-color);
+}
+
+.toolbar-shortcut-label {
+    color: var(--shortcut-text-color) !important;
+}
