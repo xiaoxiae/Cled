@@ -334,8 +334,13 @@ public class EditorController : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
+        // when time stops, don't do anything in the editor
+        // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
+        if (Time.timeScale == 0)
+            return;
+        
         CombinedBehaviorBefore();
 
         var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
