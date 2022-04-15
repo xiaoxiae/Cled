@@ -53,6 +53,8 @@ public class ToolbarMenuManager : MonoBehaviour
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         
+        GetComponent<UIDocument>().sortingOrder = 10;
+        
         var openButton = _root.Q<Button>("open-button");
         MenuUtilities.AddOpenButtonOperation(openButton);
         
@@ -68,6 +70,26 @@ public class ToolbarMenuManager : MonoBehaviour
 
         _quitButton = _root.Q<Button>("quit-button");
         _quitButton.clicked += Quit;
+
+        Foldout[] foldouts = {
+            _root.Q<Foldout>("file-foldout"),
+            _root.Q<Foldout>("view-foldout"),
+            _root.Q<Foldout>("capture-foldout"),
+            _root.Q<Foldout>("help-foldout"),
+        };
+        
+        foreach(Foldout foldout in foldouts)
+            foldout.RegisterValueChangedCallback((evt) =>
+            {
+                if (evt.newValue)
+                {
+                    // close other foldouts
+                    foreach (Foldout f in foldouts)
+                        if (f != foldout)
+                            f.value = false;
+                }
+                    
+            });
     }
 
     /// <summary>
@@ -108,7 +130,7 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private void MainMenu()
     {
-        if (EnsureSaved())
+        if (EnsureQuittingOk())
             SceneManager.LoadScene("MainMenuScene");
     }
 
@@ -117,17 +139,17 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private void Quit()
     {
-        if (EnsureSaved())
+        if (EnsureQuittingOk())
             Application.Quit();
     }
 
     /// <summary>
-    /// Ensure that things are saved by prompting either save or save as dialogues.
+    /// Ensure that terminating the app is ok, either by saving or discarding.
     ///
-    /// Return true if they are after the function call.
+    /// Return true if they are after the function call, else false.
     /// </summary>
     /// <returns></returns>
-    private bool EnsureSaved()
+    private bool EnsureQuittingOk()
     {
         if (_forceSaveAs)
         {
@@ -149,20 +171,6 @@ public class ToolbarMenuManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
-            EnsureSaved();
-        
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (Time.timeScale == 0)
-            {
-                Time.timeScale = 1;
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-            else if (Time.timeScale == 1)
-            {
-                Time.timeScale = 0;
-                Cursor.lockState = CursorLockMode.None;
-            }
-        }
+            EnsureQuittingOk();
     }
 }

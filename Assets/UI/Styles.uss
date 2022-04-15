@@ -15,6 +15,8 @@
     --panel-color: var(--button-color);
     --panel-color-hover: var(--button-color-hover);
     --panel-color-active: var(--button-color-active);
+
+    --popup-color: var(--button-color-hover);
     
     --border-color: rgb(0, 0, 0);
 
@@ -25,7 +27,7 @@
     --small-space: 15px;
 }
 
-
+/* --- BUTTONS --- */
 Button {
     background-color: var(--button-color);
     border-color: rgba(0, 0, 0, 1);
@@ -51,13 +53,6 @@ Dropdown:active {
     background-color: var(--dropdown-color-active);
 }
 
-.semi-transparent-background {
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
 .cled-logo {
     background-image: url('project://database/Assets/UI/Logo.png?fileID=2800000&guid=b871ba5a9e75096f7a74a76f92f0a1d3&type=3#Logo');
     width: 500px;
@@ -69,6 +64,7 @@ Dropdown:active {
     flex-grow: 1;
 }
 
+/* --- SPACERS --- */
 .small-hspace {
     width: var(--small-space);
     flex-grow: 0;
@@ -115,6 +111,7 @@ Label {
     background-color: var(--label-color);
 }
 
+/* --- HOLD PICKER --- */
 .hold-picker-hold {
     width: 150px;
     height: 150px;
@@ -145,7 +142,7 @@ Label {
 .hold-picker-dropdown {
     padding: 0px;
     margin: 8px;
-    width: 100px;
+    width: 130px;
     -unity-text-align: middle-center;
 }
 
@@ -156,12 +153,13 @@ Label {
     flex-grow: 1;
 }
 
-.toolbar-panel Button {
-    flex-direction: row;
-    flex-grow: 1;
-    padding: 0;
-    margin: 0;
-}
+/* --- TOOLBAR --- */ 
+.toolbar-panel Toggle { background-color: var(--panel-color); border-width: 0; margin: 0; }
+.toolbar-panel Toggle Label { background-color: var(--panel-color) !important; }
+.toolbar-panel Toggle:hover { background-color: var(--panel-color-hover); }
+.toolbar-panel Toggle:hover Label { background-color: var(--panel-color-hover) !important; }
+.toolbar-panel Toggle:active { background-color: var(--panel-color-active); }
+.toolbar-panel Toggle:active Label { background-color: var(--panel-color-active) !important; }
 
 .toolbar-panel Toggle {
     flex-direction: row;
@@ -170,14 +168,7 @@ Label {
     margin: 0;
 }
 
-.toolbar-panel Toggle { background-color: var(--panel-color); border-width: 0; margin: 0; }
-.toolbar-panel Toggle Label { background-color: var(--panel-color) !important; }
-.toolbar-panel Toggle:hover { background-color: var(--panel-color-hover); }
-.toolbar-panel Toggle:hover Label { background-color: var(--panel-color-hover) !important; }
-.toolbar-panel Toggle:active { background-color: var(--panel-color-active); }
-.toolbar-panel Toggle:active Label { background-color: var(--panel-color-active) !important; }
-
-/* a hack for nicer toolbar foldouts */
+/* a hack for nicer toolbar toggles */
 .toolbar-panel > Toggle > Label { flex-grow: 0; }
 
 .toolbar-panel {
@@ -197,6 +188,13 @@ Label {
 .toolbar-panel Button:active { background-color: var(--panel-color-active); }
 .toolbar-panel Button:active Label { background-color: var(--panel-color-active) !important; }
 
+.toolbar-panel Button {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+}
+
 .toolbar-separator {
     width: 100%;
     height: 0;
@@ -206,4 +204,17 @@ Label {
 
 .toolbar-shortcut-label {
     color: var(--shortcut-text-color) !important;
+}
+
+/* --- POPUP --- */
+.popup-panel Label { background-color: var(--popup-color); margin: 10px 10px; -unity-text-align: middle-center; }
+.popup-panel Button { background-color: var(--button-color); margin: 0; border-bottom-width: 0; }
+.popup-panel Button:hover { background-color: var(--button-color-hover); }
+
+.popup-button-row { justify-content: center; flex-direction: row; }
+
+.popup-panel {
+    background-color: var(--popup-color);
+    border-width: 1px;
+    border-color: var(--border-color);
 }

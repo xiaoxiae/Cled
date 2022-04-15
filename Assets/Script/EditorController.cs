@@ -11,7 +11,6 @@ public enum Mode
 
 public class EditorController : MonoBehaviour
 {
-    public HoldManager HoldManager;
     public HoldStateManager HoldStateManager;
     public CameraControl CameraControl;
     public HighlightManager HighlightManager;
@@ -19,7 +18,7 @@ public class EditorController : MonoBehaviour
     public WallManager WallManager;
     public StateImportExportManager StateImportExportManager;
     public ToolbarMenuManager ToolbarMenuManager;
-
+    public PopupManager PopupManager;
     public HoldPickerManager HoldPickerManager;
 
     private Label _currentModeLabel;
@@ -51,7 +50,6 @@ public class EditorController : MonoBehaviour
     /// <summary>
     /// Set the current mode, updating the UI mode label in the process.
     /// </summary>
-    /// <param name="mode"></param>
     private void SetCurrentMode(Mode mode)
     {
         currentMode = mode;
@@ -92,9 +90,7 @@ public class EditorController : MonoBehaviour
             // however, if the would-be-held hold is not picked any more, don't switch to holding mode
             // and display a warning message instead (what would we even pick?)
             if (currentMode != Mode.Holding && !EnsurePickedHold())
-            {
-                // TODO: warning
-            }
+                PopupManager.CreateInfoPopup("No holds selected, can't start holding!");
             else
             {
                 SetCurrentMode(currentMode == Mode.Holding ? Mode.Normal : Mode.Holding);

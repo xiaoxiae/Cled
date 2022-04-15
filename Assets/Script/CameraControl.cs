@@ -25,8 +25,8 @@ public class CameraControl : MonoBehaviour
 		// don't move when shift is pressed in edit mode (holds turn)
 		if (Input.GetKey(KeyCode.LeftShift) && editorController.currentMode == Mode.Holding) return;
 		
-		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+		var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+		var mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 		
 		// turn up/down relative to self
 		transform.Rotate(Vector3.right * -mouseY, Space.Self);

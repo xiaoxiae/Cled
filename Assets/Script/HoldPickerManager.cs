@@ -35,6 +35,8 @@ public class HoldPickerManager : MonoBehaviour
     private DropdownField _manufacturerDropdown;
 
     public StyleSheet globalStyleSheets;
+
+    public PauseManager pauseManager;
     
     // hold manager-related things
     public HoldManager HoldManager;
@@ -303,20 +305,15 @@ public class HoldPickerManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
-            if (Time.timeScale == 0 && _root.visible)
+            if (pauseManager.State == PausedState.Regular)
             {
-                Time.timeScale = 1;
                 _root.visible = false;
-
-                Cursor.lockState = CursorLockMode.Locked;
+                pauseManager.Unpause();
             }
-
-            else if (Time.timeScale == 1 && !_root.visible)
+            else if (pauseManager.State == PausedState.Unpaused)
             {
-                Time.timeScale = 0;
                 _root.visible = true;
-
-                Cursor.lockState = CursorLockMode.None;
+                pauseManager.RegularPause();
             }
 
             Input.ResetInputAxes();
