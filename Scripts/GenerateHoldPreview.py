@@ -57,9 +57,9 @@ parser.add_argument(
 parser.add_argument(
     "-l",
     "--light",
-    help="The intensity of the distance of the light to the object. Defaults to 7.",
+    help="The distance of the light to the object, multiplied by camera distance. Defaults to 50.",
     type=int,
-    default=7,
+    default=50,
 )
 
 arguments = parser.parse_args()
@@ -80,8 +80,6 @@ for obj in bpy.data.objects:
 
     elif obj.name.lower() == "light":
         light = obj
-        # move light somewhere better
-        light.location = (arguments.light, -arguments.light, arguments.light)
 
     else:
         hold = obj
@@ -105,6 +103,7 @@ tmp_name = next(tempfile._get_candidate_names())
 # the sensor should be rectangular
 bpy.data.cameras["Camera"].sensor_width = 36
 bpy.data.cameras["Camera"].sensor_height = 36
+bpy.data.cameras["Camera"].clip_start = 0
 
 # add a background color using the plane
 bpy.ops.mesh.primitive_plane_add()
@@ -142,10 +141,17 @@ for step in range(rotation_steps + 1):
         max_dist = distance_to_origin(camera.location)
         max_dist_camera_location = list(camera.location)
 
+# move the light relative to camera
+light.location = (
+    arguments.light * max_dist,
+    -arguments.light * max_dist,
+    arguments.light * max_dist
+)
+
 # fit the view to the entire hold + scale it down a bit
 camera.location = max_dist_camera_location
 
-hold.delta_scale = (0.85, 0.85, 0.85)
+hold.delta_scale = (0.75, 0.75, 0.75)
 
 bpy.context.view_layer.update()
 
