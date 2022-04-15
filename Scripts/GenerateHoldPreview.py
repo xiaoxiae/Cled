@@ -141,7 +141,6 @@ for step in range(rotation_steps + 1):
     if max_dist < distance_to_origin(camera.location):
         max_dist = distance_to_origin(camera.location)
         max_dist_camera_location = list(camera.location)
-        print(camera.location, max_dist_camera_location)
 
 # fit the view to the entire hold + scale it down a bit
 camera.location = max_dist_camera_location
