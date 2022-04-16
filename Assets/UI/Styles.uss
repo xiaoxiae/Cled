@@ -180,6 +180,7 @@ Label {
 /* a hack for nicer toolbar foldouts */
 .toolbar-panel Label { background-color: var(--panel-color) !important; margin: 3px; padding: 3px; }
 .toolbar-panel Foldout > Toggle > VisualElement > VisualElement { display: none; }
+.toolbar-panel Foldout Label { color: var(--text-color); }
 
 .toolbar-panel Button { background-color: var(--panel-color); border-width: 0px; }
 .toolbar-panel Button Label { background-color: var(--panel-color) !important; }

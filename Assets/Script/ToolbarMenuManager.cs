@@ -1,12 +1,12 @@
 using SFB;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using Cursor = UnityEngine.Cursor;
 
 public class ToolbarMenuManager : MonoBehaviour
 {
     public StateImportExportManager StateImportExportManager;
+    public PopupManager PopupManager;
+    public PauseManager PauseManager;
 
     private bool _forceSave;
     private bool _forceSaveAs;
@@ -52,12 +52,12 @@ public class ToolbarMenuManager : MonoBehaviour
     void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
-        
+
         GetComponent<UIDocument>().sortingOrder = 10;
-        
+
         var openButton = _root.Q<Button>("open-button");
         MenuUtilities.AddOpenButtonOperation(openButton);
-        
+
         var newButton = _root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);
 
@@ -71,14 +71,15 @@ public class ToolbarMenuManager : MonoBehaviour
         _quitButton = _root.Q<Button>("quit-button");
         _quitButton.clicked += Quit;
 
-        Foldout[] foldouts = {
+        Foldout[] foldouts =
+        {
             _root.Q<Foldout>("file-foldout"),
             _root.Q<Foldout>("view-foldout"),
             _root.Q<Foldout>("capture-foldout"),
             _root.Q<Foldout>("help-foldout"),
         };
-        
-        foreach(Foldout foldout in foldouts)
+
+        foreach (Foldout foldout in foldouts)
             foldout.RegisterValueChangedCallback((evt) =>
             {
                 if (evt.newValue)
@@ -88,12 +89,11 @@ public class ToolbarMenuManager : MonoBehaviour
                         if (f != foldout)
                             f.value = false;
                 }
-                    
             });
     }
 
     /// <summary>
-    /// Attempt to save.
+    /// Attempt to save, failing if the save path doesn't exist yet.
     /// </summary>
     private bool Save()
     {
@@ -107,31 +107,23 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save as.
     /// </summary>
-    private bool SaveAs()
+    private void SaveAs()
     {
         var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
             new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
-        if (string.IsNullOrEmpty(path))
-            return false;
-        
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        path = Utilities.EnsureExtension(path, "yaml");
+
         if (!StateImportExportManager.Export(path))
-            return false;
+            return;
 
         PreferencesManager.LastOpenWallPath = path;
 
         SetForceSave(false);
         _forceSaveAs = false;
-        return true;
-    }
-
-    /// <summary>
-    /// Attempt to return to the main menu, possibly warning about things not being saved.
-    /// </summary>
-    private void MainMenu()
-    {
-        if (EnsureQuittingOk())
-            SceneManager.LoadScene("MainMenuScene");
     }
 
     /// <summary>
@@ -139,38 +131,43 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private void Quit()
     {
-        if (EnsureQuittingOk())
-            Application.Quit();
-    }
-
-    /// <summary>
-    /// Ensure that terminating the app is ok, either by saving or discarding.
-    ///
-    /// Return true if they are after the function call, else false.
-    /// </summary>
-    /// <returns></returns>
-    private bool EnsureQuittingOk()
-    {
         if (_forceSaveAs)
         {
-            // TODO: popup here
-            
-            return SaveAs();
+            PopupManager.CreateSavePopup("Save As",
+                SaveAs,
+                Application.Quit,
+                () => { }
+            );
         }
-
-        if (_forceSave)
+        else if (_forceSave)
         {
-            // TODO: popup here
-            
-            return Save();
+            PopupManager.CreateSavePopup("Save",
+                () => { Save(); },
+                Application.Quit,
+                () => { }
+            );
         }
-
-        return true;
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
-            EnsureQuittingOk();
+        // only work if a popup isn't already present
+        if (PauseManager.State != PausedState.Popup)
+        {
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
+            {
+                if (!Save()) SaveAs();
+            }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
+                     Input.GetKeyDown(KeyCode.S))
+                SaveAs();
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
+                MenuUtilities.New();
+            
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
+                MenuUtilities.Open();
+        }
     }
 }

@@ -8,11 +8,15 @@ public class MenuUtilities
     /// Attach an open project operation to a button.
     /// </summary>
     /// <param name="button"></param>
-    public static void AddOpenButtonOperation(Button button)
+    public static void AddOpenButtonOperation(Button button) => button.clicked += Open;
+
+    /// <summary>
+    /// Prompt opening an existing project.
+    /// </summary>
+    public static void Open()
     {
-        button.clicked += () =>
-            StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
-                new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
+        StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
+            new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
     }
 
     /// <summary>
@@ -29,16 +33,20 @@ public class MenuUtilities
         PreferencesManager.LastOpenWallPath = paths[0];
         SceneManager.LoadScene("WallScene");
     }
-    
+
     /// <summary>
     /// Attach a new project operation to a button.
     /// </summary>
-    public static void AddNewButtonOperation(Button button)
+    public static void AddNewButtonOperation(Button button) => button.clicked += New;
+
+    /// <summary>
+    /// Prompt opening a new wall and holds.
+    /// </summary>
+    public static void New()
     {
-        button.clicked += () => StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
+        StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
             new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, OnOpenNewWall);
     }
-    
 
     /// <summary>
     /// Called when opening a new wall.
@@ -65,7 +73,7 @@ public class MenuUtilities
         PreferencesManager.CurrentHoldModelsPath = paths[0];
 
         PreferencesManager.LastOpenWallPath = null;
-        
+
         SceneManager.LoadScene("WallScene");
     }
 }

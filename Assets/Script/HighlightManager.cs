@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,17 +29,8 @@ public class HighlightManager : MonoBehaviour
     /// </summary>
     public void Highlight(Route route, HighlightType highlightType)
     {
-        foreach (GameObject hold in route.Holds)
+        foreach (var hold in route.Holds)
             Highlight(hold, highlightType);
-    }
-
-    /// <summary>
-    /// Highlight an entire route.
-    /// </summary>
-    public void Unhighlight(Route route)
-    {
-        foreach (GameObject hold in route.Holds)
-            Unhighlight(hold);
     }
 
     /// <summary>
@@ -76,7 +68,7 @@ public class HighlightManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Dehighlight the given object (if it's not already).
+    /// Unhighlight the given object (if it's not already).
     /// </summary>
     public void Unhighlight(GameObject obj)
     {

@@ -36,9 +36,9 @@ public class HoldPickerManager : MonoBehaviour
 
     public StyleSheet globalStyleSheets;
 
+    // manager-related things
     public PauseManager pauseManager;
     
-    // hold manager-related things
     public HoldManager HoldManager;
 
     private HoldBlueprint[] _allHolds;
@@ -64,9 +64,9 @@ public class HoldPickerManager : MonoBehaviour
         _holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
 
     /// <summary>
-    /// Update the grid according to the dropdown buttons.
+    /// Update the grid according to the dropdown button filters.
     /// </summary>
-    void UpdateGrid()
+    private void UpdateGrid()
     {
         FillGrid(HoldManager.Filter(hold =>
         {
@@ -202,12 +202,12 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
     /// </summary>
-    void UpdateFilterCounters() => _filteredHoldCounter.text = _currentlyFilteredHolds.Length.ToString();
+    private void UpdateFilterCounters() => _filteredHoldCounter.text = _currentlyFilteredHolds.Length.ToString();
 
     /// <summary>
     /// Update the counters that change when filtered holds are selected/deselected.
     /// </summary>
-    void UpdateSelectCounters()
+    private void UpdateSelectCounters()
     {
         _totalSelectedHoldCounter.text =
             _gridStateDictionary.Values.Count(value => value).ToString();
@@ -219,7 +219,7 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Select a grid element.
     /// </summary>
-    void Select(VisualElement item)
+    private void Select(VisualElement item)
     {
         // do nothing if it is already selected
         if (_gridStateDictionary[item])
@@ -238,7 +238,7 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Deselect a grid element.
     /// </summary>
-    void Deselect(VisualElement item)
+    private void Deselect(VisualElement item)
     {
         // do nothing if it is already deselected
         if (!_gridStateDictionary[item])
@@ -257,7 +257,7 @@ public class HoldPickerManager : MonoBehaviour
     /// <summary>
     /// Toggle the selection of the grid element.
     /// </summary>
-    void ToggleSelect(VisualElement item)
+    private void ToggleSelect(VisualElement item)
     {
         if (_gridStateDictionary[item])
             Deselect(item);
@@ -270,10 +270,10 @@ public class HoldPickerManager : MonoBehaviour
     /// </summary>
     private void FillGrid(HoldBlueprint[] holdBlueprints)
     {
-        foreach (HoldBlueprint blueprint in _currentlyFilteredHolds)
+        foreach (var blueprint in _currentlyFilteredHolds)
             _grid.Remove(_holdToGridDictionary[blueprint]);
 
-        foreach (HoldBlueprint blueprint in holdBlueprints
+        foreach (var blueprint in holdBlueprints
                      .OrderBy(x => x.HoldInformation.colorHex)
                      .ThenBy(x => x.HoldInformation.type))
             _grid.Add(_holdToGridDictionary[blueprint]);
@@ -305,15 +305,15 @@ public class HoldPickerManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
-            if (pauseManager.State == PausedState.Regular)
+            if (pauseManager.State is PausedState.Regular or PausedState.HoldPicker)
             {
                 _root.visible = false;
                 pauseManager.Unpause();
             }
-            else if (pauseManager.State == PausedState.Unpaused)
+            else if (pauseManager.State is PausedState.Unpaused)
             {
                 _root.visible = true;
-                pauseManager.RegularPause();
+                pauseManager.HoldPickerPause();
             }
 
             Input.ResetInputAxes();

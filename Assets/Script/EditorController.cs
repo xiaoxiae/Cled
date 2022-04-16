@@ -284,7 +284,7 @@ public class EditorController : MonoBehaviour
 
             ToolbarMenuManager.ForceSave();
 
-            CameraControl.LookAt(hold.transform.position);
+            CameraControl.PointCameraAt(hold.transform.position);
         }
 
         // b/t for bottom/top marks

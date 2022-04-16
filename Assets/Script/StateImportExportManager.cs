@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
@@ -131,40 +130,12 @@ public class StateImportExportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Return an UID of a GameObject that is a string.
-    /// </summary>
-    private static string GetObjectId(GameObject obj) => Sha256(obj.GetInstanceID().ToString())[..12];
-
-    /// <summary>
-    /// Return a sha256 hash from a string.
-    /// </summary>
-    private static string Sha256(string randomString)
-    {
-        var crypt = new System.Security.Cryptography.SHA256Managed();
-        var hash = new System.Text.StringBuilder();
-        byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
-        foreach (byte theByte in crypto)
-        {
-            hash.Append(theByte.ToString("x2"));
-        }
-
-        return hash.ToString();
-    }
-
-    /// <summary>
     /// Export the state to the given path.
     /// 
     /// Return true if successful, else false.
     /// </summary>
     public bool Export(string path)
     {
-        var ext = Path.GetExtension(path);
-
-        // if it doesn't contain an extension, add it
-        // if it does, the data will still be YAML, but it's less invasive than changing it
-        if (ext == "")
-            path += ".yaml";
-
         try
         {
             using StreamWriter writer = new StreamWriter(path);
@@ -178,7 +149,7 @@ public class StateImportExportManager : MonoBehaviour
                 var holdBlueprint = holdStateManager.GetHoldBlueprint(hold);
                 var holdState = holdStateManager.GetHoldState(hold);
 
-                holds[GetObjectId(hold)] = new SerializableHold
+                holds[Utilities.GetObjectId(hold)] = new SerializableHold
                     { BlueprintId = holdBlueprint.Id, State = holdState };
             }
 
@@ -187,7 +158,7 @@ public class StateImportExportManager : MonoBehaviour
             foreach (Route route in routeManager.GetRoutes())
                 if (route.Holds.Length > 1 || route.StartingHolds.Length != 0 || route.EndingHolds.Length != 0)
                     routes.Add(new SerializableRoute
-                        { HoldIDs = route.Holds.Select(GetObjectId).ToList() });
+                        { HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList() });
 
             serializer.Serialize(writer,
                 new SerializableWallState
@@ -196,8 +167,8 @@ public class StateImportExportManager : MonoBehaviour
                     HoldModelsPath = PreferencesManager.CurrentHoldModelsPath,
                     HoldStates = holds,
                     Routes = routes,
-                    StartingHoldIDs = routeManager._startingHolds.Select(GetObjectId).ToList(),
-                    EndingHoldIDs = routeManager._endingHolds.Select(GetObjectId).ToList(),
+                    StartingHoldIDs = routeManager._startingHolds.Select(Utilities.GetObjectId).ToList(),
+                    EndingHoldIDs = routeManager._endingHolds.Select(Utilities.GetObjectId).ToList(),
                 });
         }
         catch (Exception e)

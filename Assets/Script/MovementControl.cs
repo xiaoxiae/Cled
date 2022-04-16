@@ -14,6 +14,10 @@ public class MovementControl : MonoBehaviour
 
     void Update()
     {
+        // don't move when control is pressed, mostly because of ctrl+s
+        if (Input.GetKey(KeyCode.LeftControl))
+            return;
+        
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 

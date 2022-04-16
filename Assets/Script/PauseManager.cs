@@ -9,6 +9,7 @@ public enum PausedState
     Unpaused,
     Regular,
     Popup,
+    HoldPicker,
 }
 
 /// <summary>
@@ -51,7 +52,7 @@ public class PauseManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Pause due to a popup
+    /// Pause due to a popup.
     /// </summary>
     public void PopupPause()
     {
@@ -60,6 +61,18 @@ public class PauseManager : MonoBehaviour
         _root.enabled = true;
 
         State = PausedState.Popup;
+    }
+
+    /// <summary>
+    /// Pause due to the hold picker menu.
+    /// </summary>
+    public void HoldPickerPause()
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        _root.enabled = true;
+
+        State = PausedState.HoldPicker;
     }
 
     /// <summary>

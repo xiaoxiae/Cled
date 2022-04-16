@@ -14,11 +14,10 @@ public class CameraControl : MonoBehaviour
     /// <summary>
     /// Look at a certain point.
     /// </summary>
-    public void LookAt(Vector3 point) {
-		transform.LookAt(point);
-    }
+    public void PointCameraAt(Vector3 point) => transform.LookAt(point);
 
     void Update() {
+	    // don't move the camera when time doesn't run
         if (Time.timeScale == 0)
             return;
         
