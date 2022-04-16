@@ -71,7 +71,7 @@ public class HoldManager : MonoBehaviour
         {
             var info = bp.HoldInformation;
 
-            foreach (string str in aggregateFunction(info).Where(str => !string.IsNullOrEmpty(str)))
+            foreach (string str in aggregateFunction(info).Where(str => !string.IsNullOrWhiteSpace(str)))
                 set.Add(str);
         }
 

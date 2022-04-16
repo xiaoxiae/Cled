@@ -70,19 +70,19 @@ public class HoldPickerManager : MonoBehaviour
     {
         FillGrid(HoldManager.Filter(hold =>
         {
-            if (!string.IsNullOrEmpty(_colorDropdown.value) && _colorDropdown.value != NoSelectionString &&
+            if (!string.IsNullOrWhiteSpace(_colorDropdown.value) && _colorDropdown.value != NoSelectionString &&
                 hold.colorName != _colorDropdown.value)
                 return false;
 
-            if (!string.IsNullOrEmpty(_labelsDropdown.value) && _labelsDropdown.value != NoSelectionString &&
+            if (!string.IsNullOrWhiteSpace(_labelsDropdown.value) && _labelsDropdown.value != NoSelectionString &&
                 hold.labels.Contains(_labelsDropdown.value))
                 return false;
 
-            if (!string.IsNullOrEmpty(_manufacturerDropdown.value) &&
+            if (!string.IsNullOrWhiteSpace(_manufacturerDropdown.value) &&
                 _manufacturerDropdown.value != NoSelectionString && hold.manufacturer != _manufacturerDropdown.value)
                 return false;
 
-            if (!string.IsNullOrEmpty(_typeDropdown.value) &&
+            if (!string.IsNullOrWhiteSpace(_typeDropdown.value) &&
                 _typeDropdown.value != NoSelectionString && hold.manufacturer != _typeDropdown.value)
                 return false;
 
