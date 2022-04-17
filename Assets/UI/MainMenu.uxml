@@ -5,7 +5,10 @@
         <ui:VisualElement class="small-vspace" />
         <ui:Label text="The &lt;b&gt;cli&lt;/b&gt;mber&apos;s &lt;b&gt;s&lt;/b&gt;canner" display-tooltip-when-elided="true" name="cled-description-label" style="background-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255); font-size: 45%;" />
         <ui:VisualElement class="medium-vspace" />
-        <ui:Button text="Continue" display-tooltip-when-elided="true" name="continue-button" class="main-menu-button-style" />
+        <ui:Button display-tooltip-when-elided="true" name="continue-button" class="main-menu-button-style">
+            <ui:Label text="Continue" display-tooltip-when-elided="true" name="continue-label" />
+            <ui:Label text="Continue" display-tooltip-when-elided="true" name="continue-path-label" style="visibility: visible; overflow: visible; display: flex;" />
+        </ui:Button>
         <ui:VisualElement style="flex-direction: row;">
             <ui:Button text="New" display-tooltip-when-elided="true" name="new-button" class="main-menu-button-style" />
             <ui:Button text="Open" display-tooltip-when-elided="true" name="open-button" class="main-menu-button-style" />

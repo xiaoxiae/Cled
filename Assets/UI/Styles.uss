@@ -4,10 +4,7 @@
     --button-color: rgb(180, 180, 180);
     --button-color-hover: rgb(220, 220, 220);
     --button-color-active: rgb(150, 150, 150);
-
-    --dropdown-color: var(--button-color);
-    --dropdown-color-hover: var(--button-color-hover);
-    --dropdown-color-active: var(--button-color-active);
+    --button-color-disabled: rgb(120, 120, 120);
     
     --label-color: rgb(140, 140, 140);
     --changing-label-color: var(--button-color);
@@ -28,30 +25,10 @@
 }
 
 /* --- BUTTONS --- */
-Button {
-    background-color: var(--button-color);
-    border-color: rgba(0, 0, 0, 1);
-}
-
-Button:hover {
-    background-color: var(--button-color-hover);
-}
-
-Button:active {
-    background-color: var(--button-color-active);
-}
-
-Dropdown {
-    background-color: var(--dropdown-color);
-}
-
-Dropdown:hover {
-    background-color: var(--dropdown-color-hover);
-}
-
-Dropdown:active {
-    background-color: var(--dropdown-color-active);
-}
+Button, Dropdown { background-color: var(--button-color); border-color: rgba(0, 0, 0, 1); } 
+Button:hover, Dropdown:hover { background-color: var(--button-color-hover); }
+Button:active, Dropdown:active { background-color: var(--button-color-active); }
+Button:disabled, Dropdown:disabled { background-color: var(--button-color-disabled); }
 
 .cled-logo {
     background-image: url('project://database/Assets/UI/Logo.png?fileID=2800000&guid=b871ba5a9e75096f7a74a76f92f0a1d3&type=3#Logo');
@@ -60,53 +37,19 @@ Dropdown:active {
     -unity-background-scale-mode: stretch-to-fill;
 }
 
-.hfill {
-    flex-grow: 1;
-}
-
 /* --- SPACERS --- */
-.small-hspace {
-    width: var(--small-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
+.hfill { flex-grow: 1; }
 
-.medium-hspace {
-    width: var(--medium-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
+.small-hspace, .medium-hspace, .large-hspace, .small-vspace, .medium-vspace, .large-vspace { flex-grow: 0; flex-shrink: 0; }
 
-.large-hspace {
-    width: var(--large-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
+.small-hspace { width: var(--small-space); }
+.medium-hspace { width: var(--medium-space); }
+.large-hspace { width: var(--large-space); }
+.small-vspace { height: var(--small-space); }
+.medium-vspace { height: var(--medium-space); }
+.large-vspace { height: var(--large-space); }
 
-.small-vspace {
-    height: var(--small-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.medium-vspace {
-    height: var(--medium-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.large-vspace {
-    height: var(--large-space);
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.main-menu-button-style {
-    font-size: 37px;
-    margin: 10px;
-    padding: 15px;
-}
-
+/* --- LABELS --- */
 Label {
     background-color: var(--label-color);
 }
@@ -219,3 +162,17 @@ Label {
     border-width: 1px;
     border-color: var(--border-color);
 }
+
+/* --- MAIN MENU --- */
+.main-menu-button-style {
+    font-size: 37px;
+    margin: 10px;
+    padding: 15px;
+}
+
+.main-menu-button-style Label { background-color: var(--button-color); padding: 0; margin: 0; }
+.main-menu-button-style Label:hover { background-color: var(--button-color-hover); }
+.main-menu-button-style Label:active { background-color: var(--button-color-active); }
+.main-menu-button-style Label:disabled { background-color: var(--button-color-disabled); }
+
+#continue-path-label { font-size: 30%; }
