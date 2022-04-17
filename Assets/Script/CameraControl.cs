@@ -10,6 +10,16 @@ public class CameraControl : MonoBehaviour
 	public float mouseSensitivity = 100f;
 
 	private float _yRotation;
+	
+    /// <summary>
+    /// Get the orientation the camera.
+    /// </summary>
+    public Quaternion GetOrientation() => transform.rotation;
+    
+    /// <summary>
+    /// Set the orientation the camera.
+    /// </summary>
+    public void SetOrientation(Quaternion rotation) => transform.rotation = rotation;
     
     /// <summary>
     /// Look at a certain point.

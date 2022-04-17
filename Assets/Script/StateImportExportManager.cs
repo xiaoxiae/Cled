@@ -11,6 +11,10 @@ using YamlDotNet.Serialization;
 /// </summary>
 public class SerializableWallState
 {
+    // the player position and orientation
+    public SerializableVector3 PlayerPosition { get; set; }
+    public SerializableQuaternion PlayerOrientation { get; set; }
+        
     // paths to wall and models
     public string WallModelPath { get; set; }
     public string HoldModelsPath { get; set; }
@@ -52,6 +56,9 @@ public class StateImportExportManager : MonoBehaviour
     public HoldManager holdManager;
     public RouteManager routeManager;
     public WallManager wallManager;
+
+    public MovementControl movementControl;
+    public CameraControl cameraControl;
 
     private static SerializableWallState Deserialize(string path)
     {
@@ -123,8 +130,13 @@ public class StateImportExportManager : MonoBehaviour
         // import ending holds
         foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
             routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
-
+        
+        // initialize wall
         wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
+        
+        // set player position
+        movementControl.SetPosition(obj.PlayerPosition);
+        cameraControl.SetOrientation(obj.PlayerOrientation);
 
         return true;
     }
@@ -163,6 +175,8 @@ public class StateImportExportManager : MonoBehaviour
             serializer.Serialize(writer,
                 new SerializableWallState
                 {
+                    PlayerPosition = movementControl.GetPosition(),
+                    PlayerOrientation = cameraControl.GetOrientation(),
                     WallModelPath = PreferencesManager.CurrentWallModelPath,
                     HoldModelsPath = PreferencesManager.CurrentHoldModelsPath,
                     HoldStates = holds,

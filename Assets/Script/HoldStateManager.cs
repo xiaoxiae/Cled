@@ -33,6 +33,29 @@ public struct SerializableVector3
 }
 
 /// <summary>
+/// Same as SerializableVector3.
+/// </summary>
+public struct SerializableQuaternion
+{
+    public float w;
+    public float x;
+    public float y;
+    public float z;
+
+    public SerializableQuaternion(float rW, float rX, float rY, float rZ)
+    {
+        w = rW;
+        x = rX;
+        y = rY;
+        z = rZ;
+    }
+
+    public static implicit operator Quaternion(SerializableQuaternion rValue) => new(rValue.w, rValue.x, rValue.y, rValue.z);
+
+    public static implicit operator SerializableQuaternion(Quaternion rValue) => new(rValue.w, rValue.x, rValue.y, rValue.z);
+}
+
+/// <summary>
 /// Information about the given hold's state when it's placed on the wall.
 /// Used to smoothly continue editing it and for import/export.
 /// </summary>

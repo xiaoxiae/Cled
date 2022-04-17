@@ -12,6 +12,16 @@ public class MovementControl : MonoBehaviour
 
     private float _gravity;
 
+    /// <summary>
+    /// Get the position the player.
+    /// </summary>
+    public Vector3 GetPosition() => transform.position;
+
+    /// <summary>
+    /// Set the position the player.
+    /// </summary>
+    public void SetPosition(Vector3 position) => transform.position = position;
+
     void Update()
     {
         // don't move when control is pressed, mostly because of ctrl+s
