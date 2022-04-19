@@ -50,15 +50,32 @@ public class HighlightManager : MonoBehaviour
         var mtl = renderer.material;
 
         // https://stackoverflow.com/questions/39366888/unity-mesh-renderer-wont-be-completely-transparent
+        // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/
         mtl.color = new Color(1f, 1f, 1f, opacity);
-        mtl.SetFloat("_Mode", 2);
-        mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        mtl.SetInt("_ZWrite", 0);
-        mtl.DisableKeyword("_ALPHATEST_ON");
-        mtl.EnableKeyword("_ALPHABLEND_ON");
-        mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        mtl.renderQueue = 3000;
+
+        if (Math.Abs(opacity - 1) < 0.01)
+        {
+            mtl.SetFloat("_Mode", 0);
+            mtl.SetOverrideTag("RenderType", "");
+            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+            mtl.SetInt("_ZWrite", 1);
+            mtl.DisableKeyword("_ALPHATEST_ON");
+            mtl.DisableKeyword("_ALPHABLEND_ON");
+            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            mtl.renderQueue = -1;
+        }
+        else
+        {
+            mtl.SetFloat("_Mode", 2);
+            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mtl.SetInt("_ZWrite", 0);
+            mtl.DisableKeyword("_ALPHATEST_ON");
+            mtl.EnableKeyword("_ALPHABLEND_ON");
+            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            mtl.renderQueue = 3000;
+        }
     }
 
     /// <summary>
