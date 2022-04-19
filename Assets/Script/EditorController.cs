@@ -107,10 +107,6 @@ public class EditorController : MonoBehaviour
                 }
             }
         }
-
-        // always secondarily highlight the route
-        if (currentMode == Mode.Route)
-            HighlightManager.Highlight(RouteManager.SelectedRoute, HighlightType.Secondary);
     }
 
     /// <summary>
@@ -233,6 +229,10 @@ public class EditorController : MonoBehaviour
                 }
             }
         }
+
+        // always highlight the current route
+        if (currentMode == Mode.Route)
+            HighlightManager.Highlight(RouteManager.SelectedRoute, true);
     }
 
     /// <summary>
@@ -271,9 +271,6 @@ public class EditorController : MonoBehaviour
     /// </summary>
     void NormalRouteHoldHitControls(GameObject hold)
     {
-        // highlight the hold we're looking at
-        HighlightManager.Highlight(hold, HighlightType.Primary);
-
         // when left clicking, snap back to holding mode and pick it up
         // CTRL+LMB and SHIFT+LMB click behaves differently in route mode, so it's forbidden altogether
         if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
@@ -327,6 +324,12 @@ public class EditorController : MonoBehaviour
                 SetCurrentMode(Mode.Route);
             }
         }
+        
+        // secondary highlight the hold we're looking at
+        HighlightManager.Highlight(route);
+
+        // highlight the hold we're looking at
+        HighlightManager.Highlight(hold, HighlightType.Primary);
     }
 
     void Update()

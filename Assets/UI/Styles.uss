@@ -1,13 +1,12 @@
+/* --- COLOR DEFINITIONS --- */
 * {
     --text-color: rgb(0, 0, 0);
+    --disabled-text-color: rgb(50, 50, 50);
     
     --button-color: rgb(180, 180, 180);
     --button-color-hover: rgb(220, 220, 220);
     --button-color-active: rgb(150, 150, 150);
     --button-color-disabled: rgb(120, 120, 120);
-    
-    --label-color: rgb(140, 140, 140);
-    --changing-label-color: var(--button-color);
 
     --panel-color: var(--button-color);
     --panel-color-hover: var(--button-color-hover);
@@ -24,12 +23,19 @@
     --small-space: 15px;
 }
 
-/* --- BUTTONS --- */
+/* --- BUTTON COLORS --- */
 Button, Dropdown { background-color: var(--button-color); border-color: rgba(0, 0, 0, 1); } 
 Button:hover, Dropdown:hover { background-color: var(--button-color-hover); }
 Button:active, Dropdown:active { background-color: var(--button-color-active); }
-Button:disabled, Dropdown:disabled { background-color: var(--button-color-disabled); }
+Button:disabled, Dropdown:disabled { background-color: var(--button-color-disabled); opacity: 100; }
 
+/* --- LABEL COLORS --- */
+Label { color: var(--text-color); background-color: var(--button-color); }
+Label:hover { color: var(--text-color); }
+Label:active { color: var(--text-color); }
+Label:disabled { color: var(--disabled-text-color); }
+ 
+/* --- LOGO --- */
 .cled-logo {
     background-image: url('project://database/Assets/UI/Logo.png?fileID=2800000&guid=b871ba5a9e75096f7a74a76f92f0a1d3&type=3#Logo');
     width: 500px;
@@ -49,41 +55,20 @@ Button:disabled, Dropdown:disabled { background-color: var(--button-color-disabl
 .medium-vspace { height: var(--medium-space); }
 .large-vspace { height: var(--large-space); }
 
-/* --- LABELS --- */
-Label {
-    background-color: var(--label-color);
-}
-
 /* --- HOLD PICKER --- */
-.hold-picker-hold {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border-width: 5px;
-}
-
-.hold-picker-label {
-    -unity-text-align: middle-center;
-    white-space: normal;
-    justify-content: center;
-    padding: 8px;
-}
-
-.changing-label {
-    background-color: var(--changing-label-color);
-}
+.hold-picker-hold { width: 150px; height: 150px; margin: 10px; border-width: 5px; }
+.hold-picker-label { -unity-text-align: middle-center; white-space: normal; justify-content: center; padding: 8px; }
 
 .hold-picker-changing-label {
     -unity-text-align: middle-center;
     white-space: normal;
     justify-content: center;
-    background-color: var(--changing-label-color);
     padding: 8px;
     width: 45px;
 }
 
 .hold-picker-dropdown {
-    padding: 0px;
+    padding: 0;
     margin: 8px;
     width: 130px;
     -unity-text-align: middle-center;
@@ -171,8 +156,8 @@ Label {
 }
 
 .main-menu-button-style Label { background-color: var(--button-color); padding: 0; margin: 0; }
-.main-menu-button-style Label:hover { background-color: var(--button-color-hover); }
-.main-menu-button-style Label:active { background-color: var(--button-color-active); }
-.main-menu-button-style Label:disabled { background-color: var(--button-color-disabled); }
+.main-menu-button-style:hover Label { background-color: var(--button-color-hover); }
+.main-menu-button-style:active Label { background-color: var(--button-color-active); }
+.main-menu-button-style:disabled Label { background-color: var(--button-color-disabled); }
 
 #continue-path-label { font-size: 30%; }

@@ -49,6 +49,7 @@ public class HoldPickerManager : MonoBehaviour
     private readonly long timestampHackDuration = 100;
 
     // styling
+    // TODO: this should be moved to the USS file
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
     private readonly StyleColor _deselectedBorderColor = new(new Color(0.35f, 0.35f, 0.35f));
 
@@ -145,7 +146,7 @@ public class HoldPickerManager : MonoBehaviour
             dropdowns[i].index = 0;
             dropdowns[i].RegisterValueChangedCallback(_ => UpdateGrid());
         }
-
+        
         _gridStateDictionary = new Dictionary<VisualElement, bool>();
         _holdToGridDictionary = new Dictionary<HoldBlueprint, VisualElement>();
 

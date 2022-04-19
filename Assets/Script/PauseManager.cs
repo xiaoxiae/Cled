@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +50,9 @@ public class PauseManager : MonoBehaviour
         _root.enabled = true;
 
         State = PausedState.Regular;
+
+        foreach (var hook in _pauseHooks)
+            hook();
     }
 
     /// <summary>
@@ -61,6 +65,9 @@ public class PauseManager : MonoBehaviour
         _root.enabled = true;
 
         State = PausedState.Popup;
+
+        foreach (var hook in _pauseHooks)
+            hook();
     }
 
     /// <summary>
@@ -73,6 +80,9 @@ public class PauseManager : MonoBehaviour
         _root.enabled = true;
 
         State = PausedState.HoldPicker;
+
+        foreach (var hook in _pauseHooks)
+            hook();
     }
 
     /// <summary>
@@ -85,5 +95,21 @@ public class PauseManager : MonoBehaviour
         _root.enabled = false;
 
         State = PausedState.Unpaused;
+
+        foreach (var hook in _unpauseHooks)
+            hook();
     }
+
+    private List<Action> _pauseHooks = new();
+    private List<Action> _unpauseHooks = new();
+
+    /// <summary>
+    /// Add a hook function that gets called every time the editor is paused.
+    /// </summary>
+    public void AddPausedHook(Action hook) => _pauseHooks.Add(hook);
+
+    /// <summary>
+    /// Add a hook function that gets called every time the editor is unpaused.
+    /// </summary>
+    public void AddUnpausedHook(Action hook) => _unpauseHooks.Add(hook);
 }

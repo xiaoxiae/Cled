@@ -80,6 +80,7 @@ public class ToolbarMenuManager : MonoBehaviour
         };
 
         foreach (Foldout foldout in foldouts)
+        {
             foldout.RegisterValueChangedCallback((evt) =>
             {
                 if (evt.newValue)
@@ -90,6 +91,10 @@ public class ToolbarMenuManager : MonoBehaviour
                             f.value = false;
                 }
             });
+
+            PauseManager.AddPausedHook(() => { foldout.value = false; });
+            PauseManager.AddUnpausedHook(() => { foldout.value = false; });
+        }
     }
 
     /// <summary>
@@ -165,7 +170,7 @@ public class ToolbarMenuManager : MonoBehaviour
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
                 MenuUtilities.New();
-            
+
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
                 MenuUtilities.Open();
         }
