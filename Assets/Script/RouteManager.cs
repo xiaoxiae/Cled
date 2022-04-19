@@ -21,10 +21,8 @@ public class Route
     private readonly GameObject _startMarkerPrefab;
     private readonly GameObject _endMarkerPrefab;
 
-    public int Id;
     public string Name;
 
-    // this should be enums somewhere
     public string Grade;
     public string Zone;
     public string Setter;

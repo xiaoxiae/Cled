@@ -36,8 +36,11 @@ public class SerializableWallState
 public class SerializableRoute
 {
     public List<string> HoldIDs { get; set; }
-    
-    // TODO: other route attributes
+
+    public string Name;
+    public string Grade;
+    public string Zone;
+    public string Setter;
 }
 
 /// <summary>
@@ -121,6 +124,11 @@ public class StateImportExportManager : MonoBehaviour
 
             foreach (GameObject hold in serializableRoute.HoldIDs.Select(x => holds[x]))
                 routeManager.ToggleHold(route, hold, holdStateManager.GetHoldBlueprint(hold));
+
+            route.Name = serializableRoute.Name;
+            route.Grade = serializableRoute.Grade;
+            route.Setter = serializableRoute.Setter;
+            route.Zone = serializableRoute.Zone;
         }
 
         // import starting hold 
@@ -130,10 +138,10 @@ public class StateImportExportManager : MonoBehaviour
         // import ending holds
         foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
             routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
-        
+
         // initialize wall
         wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
-        
+
         // set player position
         movementControl.SetPosition(obj.PlayerPosition);
         cameraControl.SetOrientation(obj.PlayerOrientation);
@@ -170,7 +178,13 @@ public class StateImportExportManager : MonoBehaviour
             foreach (Route route in routeManager.GetRoutes())
                 if (route.Holds.Length > 1 || route.StartingHolds.Length != 0 || route.EndingHolds.Length != 0)
                     routes.Add(new SerializableRoute
-                        { HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList() });
+                    {
+                        HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList(),
+                        Name = route.Name,
+                        Setter = route.Setter,
+                        Zone = route.Zone,
+                        Grade = route.Grade,
+                    });
 
             serializer.Serialize(writer,
                 new SerializableWallState
