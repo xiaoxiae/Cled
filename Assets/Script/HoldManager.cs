@@ -105,10 +105,7 @@ public class HoldManager : MonoBehaviour
     void Awake()
     {
         string yml = File.ReadAllText(Path.Combine(PreferencesManager.CurrentHoldModelsPath, HoldsYamlName));
-
-        var deserializer = new DeserializerBuilder().Build();
-
-        var holdInformation = deserializer.Deserialize<Dictionary<string, HoldInformation>>(yml);
+        var holdInformation = new Deserializer().Deserialize<Dictionary<string, HoldInformation>>(yml);
 
         foreach (var pair in holdInformation)
         {
@@ -129,7 +126,6 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Return a set of holds, given a filter delegate.
     /// </summary>
-    /// <returns></returns>
     public HoldBlueprint[] Filter(Func<HoldInformation, bool> filter) => (from holdId in _holds.Keys
             where filter(_holds[holdId].HoldInformation)
             select _holds[holdId])

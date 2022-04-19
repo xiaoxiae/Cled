@@ -14,7 +14,7 @@ public class SerializableWallState
     // the player position and orientation
     public SerializableVector3 PlayerPosition { get; set; }
     public SerializableQuaternion PlayerOrientation { get; set; }
-        
+
     // paths to wall and models
     public string WallModelPath { get; set; }
     public string HoldModelsPath { get; set; }

@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-public enum PausedState
+public enum PauseType
 {
     Unpaused,
-    Regular,
+    Normal,
     Popup,
     HoldPicker,
 }
@@ -18,7 +18,7 @@ public enum PausedState
 /// </summary>
 public class PauseManager : MonoBehaviour
 {
-    public PausedState State { get; set; }
+    public PauseType State { get; set; }
 
     private UIDocument _root;
 
@@ -33,26 +33,20 @@ public class PauseManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (State == PausedState.Regular)
+            if (State == PauseType.Normal)
                 Unpause();
-            else if (State == PausedState.Unpaused)
-                RegularPause();
+            else if (State == PauseType.Unpaused)
+                NormalPause();
         }
     }
 
     /// <summary>
-    /// Regular pause.
+    /// Normal pause.
     /// </summary>
-    public void RegularPause()
+    public void NormalPause()
     {
-        Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
-        _root.enabled = true;
-
-        State = PausedState.Regular;
-
-        foreach (var hook in _pauseHooks)
-            hook();
+        _pause();
+        State = PauseType.Normal;
     }
 
     /// <summary>
@@ -60,14 +54,8 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     public void PopupPause()
     {
-        Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
-        _root.enabled = true;
-
-        State = PausedState.Popup;
-
-        foreach (var hook in _pauseHooks)
-            hook();
+        _pause();
+        State = PauseType.Popup;
     }
 
     /// <summary>
@@ -75,14 +63,8 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     public void HoldPickerPause()
     {
-        Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
-        _root.enabled = true;
-
-        State = PausedState.HoldPicker;
-
-        foreach (var hook in _pauseHooks)
-            hook();
+        _pause();
+        State = PauseType.HoldPicker;
     }
 
     /// <summary>
@@ -90,11 +72,25 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     public void Unpause()
     {
+        State = PauseType.Unpaused;
+        _unpause();
+    }
+
+    private void _pause()
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        _root.enabled = true;
+
+        foreach (var hook in _pauseHooks)
+            hook();
+    }
+
+    private void _unpause()
+    {
         Time.timeScale = 1;
         Cursor.lockState = CursorLockMode.Locked;
         _root.enabled = false;
-
-        State = PausedState.Unpaused;
 
         foreach (var hook in _unpauseHooks)
             hook();

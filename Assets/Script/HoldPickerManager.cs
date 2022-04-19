@@ -306,12 +306,12 @@ public class HoldPickerManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
-            if (pauseManager.State is PausedState.Regular or PausedState.HoldPicker)
+            if (pauseManager.State is PauseType.Normal or PauseType.HoldPicker)
             {
                 _root.visible = false;
                 pauseManager.Unpause();
             }
-            else if (pauseManager.State is PausedState.Unpaused)
+            else if (pauseManager.State is PauseType.Unpaused)
             {
                 _root.visible = true;
                 pauseManager.HoldPickerPause();

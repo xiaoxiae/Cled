@@ -26,7 +26,7 @@ public class PopupManager : MonoBehaviour
 
         var root = document.rootVisualElement;
 
-        if (pauseManager.State == PausedState.Unpaused)
+        if (pauseManager.State == PauseType.Unpaused)
             pauseManager.PopupPause();
 
         root.Q<Label>("contents").text = contents;
@@ -34,7 +34,7 @@ public class PopupManager : MonoBehaviour
         {
             document.visualTreeAsset = null;
 
-            if (pauseManager.State != PausedState.HoldPicker)
+            if (pauseManager.State != PauseType.HoldPicker)
                 pauseManager.Unpause();
         };
     }
@@ -49,7 +49,7 @@ public class PopupManager : MonoBehaviour
 
         var root = document.rootVisualElement;
 
-        if (pauseManager.State == PausedState.Unpaused)
+        if (pauseManager.State == PauseType.Unpaused)
             pauseManager.PopupPause();
 
         root.Q<Button>("operation-button").text = operationName;
@@ -61,21 +61,21 @@ public class PopupManager : MonoBehaviour
         {
             document.visualTreeAsset = null;
 
-            if (pauseManager.State != PausedState.HoldPicker)
+            if (pauseManager.State != PauseType.HoldPicker)
                 pauseManager.Unpause();
         };
         root.Q<Button>("discard-button").clicked += () =>
         {
             document.visualTreeAsset = null;
 
-            if (pauseManager.State != PausedState.HoldPicker)
+            if (pauseManager.State != PauseType.HoldPicker)
                 pauseManager.Unpause();
         };
         root.Q<Button>("cancel-button").clicked += () =>
         {
             document.visualTreeAsset = null;
 
-            if (pauseManager.State != PausedState.HoldPicker)
+            if (pauseManager.State != PauseType.HoldPicker)
                 pauseManager.Unpause();
         };
     }
