@@ -146,6 +146,19 @@ Label:disabled { color: var(--disabled-text-color); }
     background-color: var(--popup-color);
     border-width: 1px;
     border-color: var(--border-color);
+    max-width: 600px;
+}
+
+/* --- SETTINGS --- */
+.settings-panel Label { background-color: var(--popup-color); }
+.settings-panel TextField > Label { min-width: 80px; }
+.settings-panel Dropdown { min-width: 100px; }
+
+.settings-panel {
+    background-color: var(--popup-color);
+    border-width: 1px;
+    border-color: var(--border-color);
+    -unity-text-align: middle-left;
 }
 
 /* --- MAIN MENU --- */

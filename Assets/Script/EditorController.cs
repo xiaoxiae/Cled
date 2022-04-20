@@ -20,6 +20,7 @@ public class EditorController : MonoBehaviour
     public ToolbarMenuManager ToolbarMenuManager;
     public PopupManager PopupManager;
     public HoldPickerManager HoldPickerManager;
+    public RouteSettingsMenuManager RouteSettingsMenuManager;
 
     private Label _currentModeLabel;
 
@@ -322,6 +323,10 @@ public class EditorController : MonoBehaviour
                 RouteManager.SelectRoute(clickedRoute);
                 HighlightManager.UnhighlightAll();
                 SetCurrentMode(Mode.Route);
+            }
+            else
+            {
+                RouteSettingsMenuManager.Show(RouteManager.SelectedRoute);
             }
         }
         

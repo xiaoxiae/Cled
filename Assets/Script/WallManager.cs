@@ -43,7 +43,7 @@ public class WallManager : MonoBehaviour
             
             Metadata = new Deserializer().Deserialize<WallMetadata>(yml);
         }
-
+        
         MeshFilter mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
         MeshCollider collider = Wall.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;

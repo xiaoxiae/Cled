@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
+    <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 1;">
+        <ui:VisualElement tooltip="panel" class="settings-panel" style="padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;">
+            <ui:TextField picking-mode="Ignore" label="Name" name="name-textfield" style="min-width: 500px;" />
+            <ui:TextField picking-mode="Ignore" label="Grade" name="grade-textfield" style="min-width: 500px;">
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="grade-dropdown" />
+            </ui:TextField>
+            <ui:TextField picking-mode="Ignore" label="Zone" name="zone-textfield" style="min-width: 500px;">
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="zone-dropdown" />
+            </ui:TextField>
+            <ui:TextField picking-mode="Ignore" label="Setter" name="setter-textfield" style="min-width: 500px;">
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="setter-dropdown" />
+            </ui:TextField>
+            <ui:VisualElement class="small-vspace" />
+            <ui:VisualElement style="flex-direction: row; justify-content: center;">
+                <ui:Button text="Apply" display-tooltip-when-elided="true" name="apply-button" />
+                <ui:Button text="Discard" display-tooltip-when-elided="true" name="discard-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

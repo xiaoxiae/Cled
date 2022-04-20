@@ -46,8 +46,6 @@ public class ToolbarMenuManager : MonoBehaviour
 
     private Button _saveButton;
     private Button _saveAsButton;
-    private Button _mainMenuButton;
-    private Button _quitButton;
 
     void Awake()
     {
@@ -68,8 +66,11 @@ public class ToolbarMenuManager : MonoBehaviour
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
 
-        _quitButton = _root.Q<Button>("quit-button");
-        _quitButton.clicked += Quit;
+        var quitButton = _root.Q<Button>("quit-button");
+        quitButton.clicked += Quit;
+        
+        var aboutButton = _root.Q<Button>("about-button");
+        aboutButton.clicked += () => { PopupManager.CreateInfoPopup("This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3 and is open to pull requests, should you find any bugs or missing features."); };
 
         Foldout[] foldouts =
         {

@@ -11,10 +11,13 @@ using Cursor = UnityEngine.Cursor;
 public class HoldPickerManager : MonoBehaviour
 {
     // a dictionary for storing each visual element's state
-    private Dictionary<VisualElement, bool> _gridStateDictionary;
+    private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
 
     // a dictionary for mapping hold blueprints to grid tiles
-    private Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary;
+    private readonly Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary = new();
+    
+    // a dictionary for storing the previous hold textures so we don't keep loading more
+    private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
 
     // UI elements
     private VisualElement _root;
@@ -36,6 +39,8 @@ public class HoldPickerManager : MonoBehaviour
 
     public StyleSheet globalStyleSheets;
 
+    private StyleBackground _videoBackground;
+    
     // manager-related things
     public PauseManager pauseManager;
     
@@ -97,6 +102,8 @@ public class HoldPickerManager : MonoBehaviour
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
+        
+         _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
 
         _grid = _root.Q<VisualElement>("hold-grid");
 
@@ -146,9 +153,11 @@ public class HoldPickerManager : MonoBehaviour
             dropdowns[i].index = 0;
             dropdowns[i].RegisterValueChangedCallback(_ => UpdateGrid());
         }
-        
-        _gridStateDictionary = new Dictionary<VisualElement, bool>();
-        _holdToGridDictionary = new Dictionary<HoldBlueprint, VisualElement>();
+
+        foreach (var dropdown in dropdowns)
+        {
+            pauseManager.AddUnpausedHook(() => { dropdown.style.display = DisplayStyle.None; });
+        }
 
         _currentlyFilteredHolds = new HoldBlueprint[] { };
 
@@ -170,16 +179,14 @@ public class HoldPickerManager : MonoBehaviour
                 VideoPlayer.url = blueprint.PreviewVideoPath;
 
                 RenderTexture.DiscardContents();
-                Graphics.Blit(LoadTexture(blueprint.PreviewImagePath), RenderTexture);
+                Graphics.Blit(_gridTextureDictionary[item], RenderTexture);
 
-                item.style.backgroundImage =
-                    new StyleBackground(Background.FromRenderTexture(RenderTexture));
+                item.style.backgroundImage = _videoBackground;
             });
 
             item.RegisterCallback<MouseLeaveEvent>(evt =>
             {
-                item.style.backgroundImage =
-                    new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));
+                item.style.backgroundImage = _gridTextureDictionary[item];
             });
 
             item.RegisterCallback<ClickEvent>(evt =>
@@ -192,8 +199,10 @@ public class HoldPickerManager : MonoBehaviour
                 _timestampHackLastPressed = evt.timestamp;
             });
 
+            _gridTextureDictionary[item] = LoadTexture(blueprint.PreviewImagePath);
+
             item.style.backgroundImage =
-                new StyleBackground(Background.FromTexture2D(LoadTexture(blueprint.PreviewImagePath)));
+                new StyleBackground(Background.FromTexture2D(_gridTextureDictionary[item]));
         }
 
         FillGrid(_allHolds);
