@@ -1,3 +1,8 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -68,9 +73,36 @@ public class ToolbarMenuManager : MonoBehaviour
 
         var quitButton = _root.Q<Button>("quit-button");
         quitButton.clicked += Quit;
-        
+
         var aboutButton = _root.Q<Button>("about-button");
-        aboutButton.clicked += () => { PopupManager.CreateInfoPopup("This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3 and is open to pull requests, should you find any bugs or missing features."); };
+        aboutButton.clicked += () =>
+        {
+            PopupManager.CreateInfoPopup(
+                "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3 and is open to pull requests, should you find any bugs or missing features.");
+        };
+
+        var captureImageButton = _root.Q<Button>("capture-image-button");
+        captureImageButton.clicked += () =>
+        {
+            // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
+            StartCoroutine(CaptureScreen(Path.Join(PreferencesManager.CaptureImagePath,
+                $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
+        };
+
+        var captureImageAsButton = _root.Q<Button>("capture-image-as-button");
+        captureImageAsButton.clicked += () =>
+        {
+            // TODO: this is copy-pasted from loading code
+            var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
+                new[] { new ExtensionFilter("PNG Images (.png)", "png") });
+
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            path = Utilities.EnsureExtension(path, "png");
+
+            StartCoroutine(CaptureScreen(path));
+        };
 
         Foldout[] foldouts =
         {
@@ -108,6 +140,39 @@ public class ToolbarMenuManager : MonoBehaviour
 
         SetForceSave(false);
         return true;
+    }
+
+    /// <summary>
+    /// Capture the screen as a coroutine, hiding all of the UI in the process.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public IEnumerator CaptureScreen(string path)
+    {
+        yield return null;
+
+        var documents = FindObjectsOfType<UIDocument>();
+        var visibleDocuments = new List<UIDocument>();
+
+        foreach (var document in documents)
+            if (document.rootVisualElement.visible)
+            {
+                visibleDocuments.Add(document);
+                document.rootVisualElement.visible = false;
+            }
+
+        // Wait for screen rendering to complete
+        yield return new WaitForEndOfFrame();
+
+        // Take screenshot
+        ScreenCapture.CaptureScreenshot(
+            path,
+            PreferencesManager.CaptureImageMultiplier
+        );
+
+        // Show UI after we're done
+        foreach (var document in visibleDocuments)
+            document.rootVisualElement.visible = true;
     }
 
     /// <summary>

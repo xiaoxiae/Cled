@@ -28,17 +28,6 @@ public class PauseManager : MonoBehaviour
         _unpause();
     }
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (IsPaused(PauseType.Normal))
-                Unpause(PauseType.Normal);
-            else if (IsUnpaused())
-                Pause(PauseType.Normal);
-        }
-    }
-
     /// <summary>
     /// Unpause the given type.
     /// </summary>

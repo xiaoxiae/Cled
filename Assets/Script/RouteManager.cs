@@ -212,7 +212,11 @@ public class RouteManager : MonoBehaviour
     public void ToggleStarting(GameObject hold, HoldBlueprint blueprint)
     {
         Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
-
+        
+        // if it's already ending, make it not so
+        if (_endingHolds.Contains(hold))
+            ToggleEnding(hold, blueprint);
+        
         originalRoute.ToggleStarting(hold);
 
         if (_startingHolds.Contains(hold))
@@ -227,6 +231,10 @@ public class RouteManager : MonoBehaviour
     public void ToggleEnding(GameObject hold, HoldBlueprint blueprint)
     {
         Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
+        
+        // if it's already starting, make it not so
+        if (_startingHolds.Contains(hold))
+            ToggleStarting(hold, blueprint);
 
         originalRoute.ToggleEnding(hold);
 

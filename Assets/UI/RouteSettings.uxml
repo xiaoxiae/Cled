@@ -4,13 +4,13 @@
         <ui:VisualElement tooltip="panel" class="settings-panel" style="padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;">
             <ui:TextField picking-mode="Ignore" label="Name" name="name-textfield" style="min-width: 500px;" />
             <ui:TextField picking-mode="Ignore" label="Grade" name="grade-textfield" style="min-width: 500px;">
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="grade-dropdown" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="grade-dropdown" focusable="false" />
             </ui:TextField>
             <ui:TextField picking-mode="Ignore" label="Zone" name="zone-textfield" style="min-width: 500px;">
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="zone-dropdown" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="zone-dropdown" focusable="false" />
             </ui:TextField>
             <ui:TextField picking-mode="Ignore" label="Setter" name="setter-textfield" style="min-width: 500px;">
-                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="setter-dropdown" />
+                <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="setter-dropdown" focusable="false" />
             </ui:TextField>
             <ui:VisualElement class="small-vspace" />
             <ui:VisualElement style="flex-direction: row; justify-content: center;">

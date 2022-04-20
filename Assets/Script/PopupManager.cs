@@ -16,8 +16,8 @@ public class PopupManager : MonoBehaviour
         document = GetComponent<UIDocument>();
         document.sortingOrder = 10;
     }
-    
-    private void ClosePopup()
+
+    public void Close()
     {
         document.visualTreeAsset = null;
         pauseManager.Unpause(PauseType.Popup);
@@ -35,7 +35,7 @@ public class PopupManager : MonoBehaviour
         pauseManager.Pause(PauseType.Popup);
 
         root.Q<Label>("contents").text = contents;
-        root.Q<Button>("ok-button").clicked += ClosePopup;
+        root.Q<Button>("ok-button").clicked += Close;
     }
 
     /// <summary>
@@ -54,17 +54,8 @@ public class PopupManager : MonoBehaviour
         root.Q<Button>("discard-button").clicked += discardAction;
         root.Q<Button>("cancel-button").clicked += cancelButton;
 
-        root.Q<Button>("operation-button").clicked += ClosePopup;
-        root.Q<Button>("discard-button").clicked += ClosePopup;
-        root.Q<Button>("cancel-button").clicked += ClosePopup;
-    }
-    
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) && pauseManager.IsPaused(PauseType.Popup))
-        {
-            document.visualTreeAsset = null;
-            pauseManager.Unpause(PauseType.Popup);
-        }
+        root.Q<Button>("operation-button").clicked += Close;
+        root.Q<Button>("discard-button").clicked += Close;
+        root.Q<Button>("cancel-button").clicked += Close;
     }
 }

@@ -23,6 +23,8 @@
     --small-space: 15px;
 }
 
+.toolbar-panel Foldout Label.toolbar-shortcut-label { color: var(--shortcut-text-color); }
+
 /* --- BUTTON COLORS --- */
 Button, Dropdown { background-color: var(--button-color); border-color: rgba(0, 0, 0, 1); } 
 Button:hover, Dropdown:hover { background-color: var(--button-color-hover); }
@@ -83,11 +85,11 @@ Label:disabled { color: var(--disabled-text-color); }
 
 /* --- TOOLBAR --- */ 
 .toolbar-panel Toggle { background-color: var(--panel-color); border-width: 0; margin: 0; }
-.toolbar-panel Toggle Label { background-color: var(--panel-color) !important; }
+.toolbar-panel Toggle Label { background-color: var(--panel-color); }
 .toolbar-panel Toggle:hover { background-color: var(--panel-color-hover); }
-.toolbar-panel Toggle:hover Label { background-color: var(--panel-color-hover) !important; }
+.toolbar-panel Toggle:hover Label { background-color: var(--panel-color-hover); }
 .toolbar-panel Toggle:active { background-color: var(--panel-color-active); }
-.toolbar-panel Toggle:active Label { background-color: var(--panel-color-active) !important; }
+.toolbar-panel Toggle:active Label { background-color: var(--panel-color-active); }
 
 .toolbar-panel Toggle {
     flex-direction: row;
@@ -106,16 +108,16 @@ Label:disabled { color: var(--disabled-text-color); }
 }
 
 /* a hack for nicer toolbar foldouts */
-.toolbar-panel Label { background-color: var(--panel-color) !important; margin: 3px; padding: 3px; }
+.toolbar-panel Label { background-color: var(--panel-color); margin: 3px; padding: 3px; }
 .toolbar-panel Foldout > Toggle > VisualElement > VisualElement { display: none; }
 .toolbar-panel Foldout Label { color: var(--text-color); }
 
 .toolbar-panel Button { background-color: var(--panel-color); border-width: 0px; }
-.toolbar-panel Button Label { background-color: var(--panel-color) !important; }
+.toolbar-panel Button Label { background-color: var(--panel-color); }
 .toolbar-panel Button:hover { background-color: var(--panel-color-hover); }
-.toolbar-panel Button:hover Label { background-color: var(--panel-color-hover) !important; }
+.toolbar-panel Button:hover Label { background-color: var(--panel-color-hover); }
 .toolbar-panel Button:active { background-color: var(--panel-color-active); }
-.toolbar-panel Button:active Label { background-color: var(--panel-color-active) !important; }
+.toolbar-panel Button:active Label { background-color: var(--panel-color-active); }
 
 .toolbar-panel Button {
     flex-direction: row;
@@ -129,10 +131,6 @@ Label:disabled { color: var(--disabled-text-color); }
     height: 0;
     border-bottom-width: 1px;    
     border-color: var(--border-color);
-}
-
-.toolbar-shortcut-label {
-    color: var(--shortcut-text-color) !important;
 }
 
 /* --- POPUP --- */

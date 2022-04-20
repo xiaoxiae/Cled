@@ -49,9 +49,9 @@ public class HoldPickerManager : MonoBehaviour
     private HoldBlueprint[] _allHolds;
     private HoldBlueprint[] _currentlyFilteredHolds;
 
-    // Linux hack
-    private long _timestampHackLastPressed;
-    private readonly long timestampHackDuration = 100;
+    // hacks
+    private const long UIBugWorkaroundDurations = 100;
+    private long _doubleTriggerTimestamp;
 
     // styling
     // TODO: this should be moved to the USS file
@@ -98,9 +98,18 @@ public class HoldPickerManager : MonoBehaviour
         UpdateSelectCounters();
     }
 
+    public void Close()
+    {
+        _root.visible = false;
+        pauseManager.Unpause(PauseType.HoldPicker);
+    }
+
     void Start()
     {
-        _root = GetComponent<UIDocument>().rootVisualElement;
+        var document = GetComponent<UIDocument>();
+        document.sortingOrder = 5;
+        
+        _root = document.rootVisualElement;
         _root.visible = false;
 
         _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
@@ -188,10 +197,10 @@ public class HoldPickerManager : MonoBehaviour
             {
                 // TODO: this is a hack for a bug in Linux Unity
                 // https://forum.unity.com/threads/registercallback-clickevent-triggers-twice-on-linux-only.1111474/
-                if (evt.timestamp - _timestampHackLastPressed > timestampHackDuration)
+                if (evt.timestamp - _doubleTriggerTimestamp > UIBugWorkaroundDurations)
                     ToggleSelect(item);
 
-                _timestampHackLastPressed = evt.timestamp;
+                _doubleTriggerTimestamp = evt.timestamp;
             });
 
             _gridTextureDictionary[item] = LoadTexture(blueprint.PreviewImagePath);
@@ -307,20 +316,16 @@ public class HoldPickerManager : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
+        
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
+        {
+            // don't open it when popups or route settings are present
+            if (pauseManager.IsPaused(PauseType.Popup) || pauseManager.IsPaused(PauseType.RouteSettings))
+                return;
 
-        if (Input.GetKeyDown(KeyCode.Escape) && pauseManager.IsPaused(PauseType.HoldPicker))
-        {
-            _root.visible = false;
-            pauseManager.Unpause(PauseType.HoldPicker);
-        }
-        else if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (pauseManager.IsPaused(PauseType.Popup)) return;
-            
             if (pauseManager.IsPaused(PauseType.HoldPicker))
             {
-                _root.visible = false;
-                pauseManager.Unpause(PauseType.HoldPicker);
+                Close();
             }
             else
             {
@@ -328,7 +333,8 @@ public class HoldPickerManager : MonoBehaviour
                 pauseManager.Pause(PauseType.HoldPicker);
             }
 
-            Input.ResetInputAxes();
+            // TODO: while this does fix it, it is pretty buggy
+            // Input.ResetInputAxes();
         }
     }
 }

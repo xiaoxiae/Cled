@@ -74,15 +74,15 @@ public class RouteSettingsMenuManager : MonoBehaviour
             }
         }
         
-        _hide();
+        Close();
     }
 
     /// <summary>
     /// Discard the settings of the given route, hiding the settings.
     /// </summary>
-    private void Discard() => _hide();
+    private void Discard() => Close();
 
-    private void _hide()
+    public void Close()
     {
         _root.visible = false;
         pauseManager.Unpause(PauseType.RouteSettings);
@@ -169,14 +169,5 @@ public class RouteSettingsMenuManager : MonoBehaviour
         _setFromRoute(route);
 
         pauseManager.Pause(PauseType.RouteSettings);
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) && pauseManager.IsPaused(PauseType.RouteSettings))
-        {
-            _root.visible = false;
-            pauseManager.Unpause(PauseType.RouteSettings);
-        }
     }
 }

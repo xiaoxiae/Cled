@@ -44,16 +44,16 @@
             </ui:VisualElement>
         </ui:Foldout>
         <ui:Foldout text="Capture" value="false" name="capture-foldout" style="flex-direction: column;">
-            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 173px;">
-                <ui:Button display-tooltip-when-elided="true" name="new-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 194px;">
+                <ui:Button display-tooltip-when-elided="true" name="capture-image-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Image" display-tooltip-when-elided="true" name="image-label" />
                     <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
                     <ui:Label text="Ctrl+P" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="selected-route-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
-                    <ui:Label text="Selected route" display-tooltip-when-elided="true" name="selected-route-label" />
-                    <ui:VisualElement name="hfill" style="flex-grow: 1;" />
-                    <ui:Label display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                <ui:Button display-tooltip-when-elided="true" name="capture-image-as-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Image As" display-tooltip-when-elided="true" name="image-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
+                    <ui:Label text="Ctrl+Shift+P" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
