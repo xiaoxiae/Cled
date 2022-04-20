@@ -3,35 +3,35 @@
     <ui:VisualElement class="toolbar-panel" style="flex-direction: row; flex-shrink: 0; align-items: center;">
         <ui:Foldout text="File" value="false" name="file-foldout" style="flex-direction: column;">
             <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 187px;">
-                <ui:Button display-tooltip-when-elided="true" name="new-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button display-tooltip-when-elided="true" name="new-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="New" display-tooltip-when-elided="true" name="new-label" />
                     <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
                     <ui:Label text="Ctrl+N" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="open-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="open-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Open" display-tooltip-when-elided="true" name="open-label" />
                     <ui:VisualElement name="hfill" style="flex-grow: 1;" />
                     <ui:Label text="Ctrl+O" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
                 <ui:VisualElement class="toolbar-separator" />
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Save" display-tooltip-when-elided="true" name="save-label" />
                     <ui:VisualElement style="flex-grow: 1;" />
                     <ui:Label text="Ctrl+S" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-as-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="save-as-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Save As" display-tooltip-when-elided="true" name="save-label" />
                     <ui:VisualElement style="flex-grow: 1;" />
                     <ui:Label text="Ctrl+Shift+S" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
                 <ui:VisualElement class="toolbar-separator" />
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="preferences-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="preferences-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Preferences" display-tooltip-when-elided="true" name="preferences-label" />
                     <ui:VisualElement style="flex-grow: 1;" />
                     <ui:Label display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
                 </ui:Button>
                 <ui:VisualElement class="toolbar-separator" />
-                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="quit-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                <ui:Button text="&#10;" display-tooltip-when-elided="true" name="quit-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Quit" display-tooltip-when-elided="true" name="quit-label" />
                     <ui:VisualElement style="flex-grow: 1;" />
                     <ui:Label text="Ctrl+Q" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
