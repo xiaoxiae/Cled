@@ -158,11 +158,12 @@ public class ToolbarMenuManager : MonoBehaviour
     void Update()
     {
         // only work if a popup isn't already present
-        if (PauseManager.State != PauseType.Popup)
+        if (!PauseManager.IsPaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
             {
-                if (!Save()) SaveAs();
+                if (!Save())
+                    SaveAs();
             }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&

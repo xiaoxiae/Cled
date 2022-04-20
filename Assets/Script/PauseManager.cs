@@ -7,10 +7,10 @@ using Cursor = UnityEngine.Cursor;
 
 public enum PauseType
 {
-    Unpaused,
     Normal,
     Popup,
     HoldPicker,
+    RouteSettings,
 }
 
 /// <summary>
@@ -18,62 +18,48 @@ public enum PauseType
 /// </summary>
 public class PauseManager : MonoBehaviour
 {
-    public PauseType State { get; set; }
+    private HashSet<PauseType> Pauses = new();
 
     private UIDocument _root;
 
     public void Start()
     {
         _root = GetComponent<UIDocument>();
-
-        Unpause();
+        _unpause();
     }
 
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (State == PauseType.Normal)
-                Unpause();
-            else if (State == PauseType.Unpaused)
-                NormalPause();
+            if (IsPaused(PauseType.Normal))
+                Unpause(PauseType.Normal);
+            else if (IsUnpaused())
+                Pause(PauseType.Normal);
         }
     }
 
     /// <summary>
-    /// Normal pause.
+    /// Unpause the given type.
     /// </summary>
-    public void NormalPause()
+    /// <param name="unpauseIfNormallyPaused">If the editor is paused normally, unpause the normal pause.</param>
+    public void Unpause(PauseType type, bool unpauseIfNormallyPaused = true)
     {
-        _pause();
-        State = PauseType.Normal;
+        Pauses.Remove(type);
+        
+        if (Pauses.Count == 1 && Pauses.Contains(PauseType.Normal))
+            Unpause(PauseType.Normal);
+        
+        if (Pauses.Count == 0)
+            _unpause();
     }
 
-    /// <summary>
-    /// Pause due to a popup.
-    /// </summary>
-    public void PopupPause()
+    public void Pause(PauseType type)
     {
-        _pause();
-        State = PauseType.Popup;
-    }
-
-    /// <summary>
-    /// Pause due to the hold picker menu.
-    /// </summary>
-    public void HoldPickerPause()
-    {
-        _pause();
-        State = PauseType.HoldPicker;
-    }
-
-    /// <summary>
-    /// Continue (unpause).
-    /// </summary>
-    public void Unpause()
-    {
-        State = PauseType.Unpaused;
-        _unpause();
+        Pauses.Add(type);
+        
+        if (Pauses.Count != 0)
+            _pause();
     }
 
     private void _pause()
@@ -98,6 +84,16 @@ public class PauseManager : MonoBehaviour
 
     private List<Action> _pauseHooks = new();
     private List<Action> _unpauseHooks = new();
+
+    /// <summary>
+    /// Return true if the editor is currently unpaused.
+    /// </summary>
+    public bool IsUnpaused() => Pauses.Count == 0;
+
+    /// <summary>
+    /// Return true if the editor is currently unpaused via this pause type.
+    /// </summary>
+    public bool IsPaused(PauseType type) => Pauses.Contains(type);
 
     /// <summary>
     /// Add a hook function that gets called every time the editor is paused.

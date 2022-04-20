@@ -15,7 +15,7 @@ public class HoldPickerManager : MonoBehaviour
 
     // a dictionary for mapping hold blueprints to grid tiles
     private readonly Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary = new();
-    
+
     // a dictionary for storing the previous hold textures so we don't keep loading more
     private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
 
@@ -40,10 +40,10 @@ public class HoldPickerManager : MonoBehaviour
     public StyleSheet globalStyleSheets;
 
     private StyleBackground _videoBackground;
-    
+
     // manager-related things
     public PauseManager pauseManager;
-    
+
     public HoldManager HoldManager;
 
     private HoldBlueprint[] _allHolds;
@@ -102,8 +102,8 @@ public class HoldPickerManager : MonoBehaviour
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
-        
-         _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
+
+        _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
 
         _grid = _root.Q<VisualElement>("hold-grid");
 
@@ -154,11 +154,6 @@ public class HoldPickerManager : MonoBehaviour
             dropdowns[i].RegisterValueChangedCallback(_ => UpdateGrid());
         }
 
-        foreach (var dropdown in dropdowns)
-        {
-            pauseManager.AddUnpausedHook(() => { dropdown.style.display = DisplayStyle.None; });
-        }
-
         _currentlyFilteredHolds = new HoldBlueprint[] { };
 
         // create a visual element for each hold
@@ -170,7 +165,7 @@ public class HoldPickerManager : MonoBehaviour
             _gridStateDictionary[item] = false;
 
             Deselect(item);
-            
+
             item.styleSheets.Add(globalStyleSheets);
             item.AddToClassList("hold-picker-hold");
 
@@ -313,17 +308,24 @@ public class HoldPickerManager : MonoBehaviour
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
 
-        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Escape) && pauseManager.IsPaused(PauseType.HoldPicker))
         {
-            if (pauseManager.State is PauseType.Normal or PauseType.HoldPicker)
+            _root.visible = false;
+            pauseManager.Unpause(PauseType.HoldPicker);
+        }
+        else if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (pauseManager.IsPaused(PauseType.Popup)) return;
+            
+            if (pauseManager.IsPaused(PauseType.HoldPicker))
             {
                 _root.visible = false;
-                pauseManager.Unpause();
+                pauseManager.Unpause(PauseType.HoldPicker);
             }
-            else if (pauseManager.State is PauseType.Unpaused)
+            else
             {
                 _root.visible = true;
-                pauseManager.HoldPickerPause();
+                pauseManager.Pause(PauseType.HoldPicker);
             }
 
             Input.ResetInputAxes();

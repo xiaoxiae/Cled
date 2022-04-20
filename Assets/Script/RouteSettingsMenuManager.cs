@@ -85,7 +85,7 @@ public class RouteSettingsMenuManager : MonoBehaviour
     private void _hide()
     {
         _root.visible = false;
-        pauseManager.Unpause();
+        pauseManager.Unpause(PauseType.RouteSettings);
     }
 
     private void _initialize()
@@ -168,6 +168,15 @@ public class RouteSettingsMenuManager : MonoBehaviour
         
         _setFromRoute(route);
 
-        pauseManager.NormalPause();
+        pauseManager.Pause(PauseType.RouteSettings);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && pauseManager.IsPaused(PauseType.RouteSettings))
+        {
+            _root.visible = false;
+            pauseManager.Unpause(PauseType.RouteSettings);
+        }
     }
 }
