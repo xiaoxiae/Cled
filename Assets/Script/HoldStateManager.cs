@@ -50,9 +50,11 @@ public struct SerializableQuaternion
         z = rZ;
     }
 
-    public static implicit operator Quaternion(SerializableQuaternion rValue) => new(rValue.w, rValue.x, rValue.y, rValue.z);
+    public static implicit operator Quaternion(SerializableQuaternion rValue) =>
+        new(rValue.w, rValue.x, rValue.y, rValue.z);
 
-    public static implicit operator SerializableQuaternion(Quaternion rValue) => new(rValue.w, rValue.x, rValue.y, rValue.z);
+    public static implicit operator SerializableQuaternion(Quaternion rValue) =>
+        new(rValue.w, rValue.x, rValue.y, rValue.z);
 }
 
 /// <summary>

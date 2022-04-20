@@ -1,4 +1,7 @@
+using System;
+using System.Numerics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class MovementControl : MonoBehaviour
 {
@@ -6,10 +9,17 @@ public class MovementControl : MonoBehaviour
     public EditorController editorController;
     public CameraControl cameraControl;
 
-    public float speed = 5f;
+    private const float ForwardBackwardSpeed = 5;
+    private const float SideSpeed = 4;
 
-    public float gravityMultiplier = 1;
+    // flying-related variables
+    private bool _flying;
+    private float _flyingSpeed;  // normalized from 0 to 1
+    private const float FlyingSmoothness = 0.15f;
+    private const float FlyingMultiplier = 0.1f;
 
+    // gravity-related things
+    private const float GravityMultiplier = 0.25f;
     private float _gravity;
 
     /// <summary>
@@ -24,19 +34,45 @@ public class MovementControl : MonoBehaviour
 
     void Update()
     {
-        // don't move when control is pressed, mostly because of ctrl+s
-        if (Input.GetKey(KeyCode.LeftControl))
-            return;
-        
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        float x = Input.GetAxis("Horizontal") * SideSpeed;
+        float z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;
 
-        // don't move when shift is pressed in edit mode -- holds turn
-        Vector3 move;
-        if (Input.GetKey(KeyCode.LeftShift) && editorController.currentMode == Mode.Holding)
-            move = Vector3.zero;
+        // flying-related stuff
+        if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.LeftShift))
+        {
+            _flying = true;
+            _flyingSpeed = Mathf.Lerp(_flyingSpeed, 0, FlyingSmoothness);
+        }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            _flying = true;
+            _flyingSpeed = Mathf.Lerp(_flyingSpeed, 1, FlyingSmoothness);
+        }
+        else if (Input.GetKey(KeyCode.LeftShift))
+        {
+            _flying = true;
+            _flyingSpeed = Mathf.Lerp(_flyingSpeed, -1, FlyingSmoothness);
+        }
         else
-            move = transform.right * x + transform.forward * z;
+        {
+            _flyingSpeed = Mathf.Lerp(_flyingSpeed, 0, FlyingSmoothness);
+        }
+
+        // when grounded, reset flying (but only if we're not trying to lift off)
+        if (!Input.GetKey(KeyCode.Space) && controller.isGrounded)
+        {
+            _flying = false;
+            _gravity = 0;
+        }
+
+        // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
+        if (Input.GetMouseButton(2) || Input.GetKey(KeyCode.LeftControl))
+        {
+            controller.Move(Vector3.zero);
+            return;
+        }
+
+        Vector3 move = transform.right * x + transform.forward * z;
 
         // ensure that we're pointing towards where the camera is 
         // not elegant but functional
@@ -45,12 +81,12 @@ public class MovementControl : MonoBehaviour
         move.y = 0;
         move = move.normalized * mag;
 
-        _gravity += 0.981f * Time.deltaTime;
-
-        // reset gravity if grounded
-        if (controller.isGrounded)
-            _gravity = 0;
-
-        controller.Move(move * (speed * Time.deltaTime) + Vector3.down * (_gravity * gravityMultiplier));
+        if (!_flying)
+        {
+            _gravity += 0.981f * Time.deltaTime;
+            controller.Move(move * Time.deltaTime + Vector3.down * (_gravity * GravityMultiplier));
+        }
+        else
+            controller.Move(move * Time.deltaTime + Vector3.up * _flyingSpeed * FlyingMultiplier);
     }
 }

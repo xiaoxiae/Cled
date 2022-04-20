@@ -108,7 +108,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         var document = GetComponent<UIDocument>();
         document.sortingOrder = 5;
-        
+
         _root = document.rootVisualElement;
         _root.visible = false;
 
@@ -312,11 +312,12 @@ public class HoldPickerManager : MonoBehaviour
 
     void Update()
     {
-        // CTRL+A selects all filtered holds
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
+        // CTRL+A selects all filtered holds (when the holdpicker is open)
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
+            !pauseManager.IsPaused(PauseType.HoldPicker))
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
-        
+
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
             // don't open it when popups or route settings are present

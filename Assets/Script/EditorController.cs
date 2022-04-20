@@ -199,8 +199,8 @@ public class EditorController : MonoBehaviour
     {
         if (currentMode == Mode.Holding)
         {
-            // rotate hold on shift press
-            if (Input.GetKey(KeyCode.LeftShift))
+            // rotate hold on middle mouse button
+            if (Input.GetMouseButton(2))
                 HoldStateManager.RotateHeld(Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime);
 
             var mouseDelta = Input.mouseScrollDelta.y;

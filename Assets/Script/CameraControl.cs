@@ -31,8 +31,9 @@ public class CameraControl : MonoBehaviour
         if (Time.timeScale == 0)
             return;
         
-		// don't move when shift is pressed in edit mode (holds turn)
-		if (Input.GetKey(KeyCode.LeftShift) && editorController.currentMode == Mode.Holding) return;
+        // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
+        if (Input.GetMouseButton(2) || Input.GetKey(KeyCode.LeftControl))
+			return;
 		
 		var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		var mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
