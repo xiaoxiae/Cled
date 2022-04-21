@@ -21,6 +21,7 @@ public class EditorController : MonoBehaviour
     public PopupManager PopupManager;
     public HoldPickerManager HoldPickerManager;
     public RouteSettingsMenuManager RouteSettingsMenuManager;
+    public MovementControl movementControl;
 
     private Label _currentModeLabel;
 
@@ -184,8 +185,6 @@ public class EditorController : MonoBehaviour
                     // if the route has no more holds, switch to normal mode
                     if (RouteManager.SelectedRoute.IsEmpty())
                         SetCurrentMode(Mode.Normal);
-
-                    ToolbarMenuManager.ForceSave();
                 }
 
                 break;
@@ -253,8 +252,6 @@ public class EditorController : MonoBehaviour
             HoldStateManager.InterpolateHeldToHit(hit);
             HoldStateManager.PutDown();
             SetCurrentMode(Mode.Normal);
-
-            ToolbarMenuManager.ForceSave();
         }
 
         // r/del - delete the held hold and switch to normal mode
@@ -280,8 +277,6 @@ public class EditorController : MonoBehaviour
 
             HoldStateManager.PickUp(hold);
 
-            ToolbarMenuManager.ForceSave();
-
             CameraControl.PointCameraAt(hold.transform.position);
         }
 
@@ -289,25 +284,21 @@ public class EditorController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             RouteManager.ToggleStarting(hold, HoldStateManager.GetHoldBlueprint(hold));
-            ToolbarMenuManager.ForceSave();
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
             RouteManager.ToggleEnding(hold, HoldStateManager.GetHoldBlueprint(hold));
-            ToolbarMenuManager.ForceSave();
         }
+
+        Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
 
         // r/del - delete hold
         if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
             HoldStateManager.Unplace(hold, true);
             RouteManager.RemoveHold(hold);
-
-            ToolbarMenuManager.ForceSave();
         }
-
-        Route route = RouteManager.GetOrCreateRouteWithHold(hold, HoldStateManager.GetHoldBlueprint(hold));
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (route.IsEmpty())

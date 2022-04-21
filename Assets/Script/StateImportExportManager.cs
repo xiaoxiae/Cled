@@ -9,25 +9,27 @@ using YamlDotNet.Serialization;
 /// <summary>
 /// The object that gets serialized when exporting.
 /// </summary>
-public class SerializableWallState
+public class SerializableState
 {
-    // the player position and orientation
-    public SerializableVector3 PlayerPosition { get; set; }
-    public SerializableQuaternion PlayerOrientation { get; set; }
+    // player
+    public SerializablePlayer Player;
 
     // paths to wall and models
     public string WallModelPath { get; set; }
     public string HoldModelsPath { get; set; }
 
     // given a hold instance, store its id and state
-    public Dictionary<string, SerializableHold> HoldStates { get; set; }
+    public Dictionary<string, SerializableHold> Holds { get; set; }
 
-    // also store all routes
+    // all routes
     public List<SerializableRoute> Routes { get; set; }
 
-    // and starting/ending markers
+    // starting/ending markers
     public List<string> StartingHoldIDs { get; set; }
     public List<string> EndingHoldIDs { get; set; }
+
+    // lights
+    public SerializableLights Lights { get; set; }
 }
 
 /// <summary>
@@ -52,6 +54,32 @@ public class SerializableHold
     public HoldState State;
 }
 
+/// <summary>
+/// Lights.
+/// </summary>
+public class SerializableLights
+{
+    // positions of the lights
+    public List<SerializableVector3> Positions;
+
+    // light parameters
+    public float Intensity;
+    public float ShadowStrength;
+}
+
+
+/// <summary>
+/// Player.
+/// </summary>
+public class SerializablePlayer
+{
+    // the player position and orientation
+    public SerializableVector3 Position { get; set; }
+    public SerializableQuaternion Orientation { get; set; }
+
+    // whether the player's flashlight is on
+    public bool Light;
+}
 
 public class StateImportExportManager : MonoBehaviour
 {
@@ -59,20 +87,26 @@ public class StateImportExportManager : MonoBehaviour
     public HoldManager holdManager;
     public RouteManager routeManager;
     public WallManager wallManager;
+    public LightManager lightManager;
 
+    public PopupManager popupManager;
+    
     public MovementControl movementControl;
     public CameraControl cameraControl;
 
-    private static SerializableWallState Deserialize(string path)
+    private static SerializableState Deserialize(string path)
     {
         var deserializer = new Deserializer();
 
         using var reader = new StreamReader(path);
-        return deserializer.Deserialize<SerializableWallState>(reader);
+        return deserializer.Deserialize<SerializableState>(reader);
     }
 
     /// <summary>
     /// Import the preferences (path to holds and to wall).
+    ///
+    /// Since this is a static function called either from the main menu or ingame, a popup manager object
+    /// must be passed for the popup to properly show.
     /// </summary>
     public static bool ImportPreferences(string path)
     {
@@ -85,9 +119,8 @@ public class StateImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e);
-
-            // TODO display message
+            // TODO: this is a static function and popup manager is not present
+            // popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
 
@@ -102,49 +135,67 @@ public class StateImportExportManager : MonoBehaviour
     /// </summary>
     public bool ImportState(string path)
     {
-        var obj = Deserialize(path);
-
-        holdStateManager.Clear();
-        routeManager.Clear();
-
-        var holds = new Dictionary<string, GameObject>();
-
-        // import holds
-        foreach (var (id, serializableHold) in obj.HoldStates)
+        try
         {
-            var hold = holdStateManager.Place(
-                holdManager.GetHoldBlueprint(serializableHold.BlueprintId), serializableHold.State);
-            holds[id] = hold;
-        }
+            var obj = Deserialize(path);
 
-        // import routes
-        foreach (var serializableRoute in obj.Routes)
+            holdStateManager.Clear();
+            routeManager.Clear();
+            lightManager.Clear();
+
+            var holds = new Dictionary<string, GameObject>();
+
+            // import holds
+            foreach (var (id, serializableHold) in obj.Holds)
+            {
+                var hold = holdStateManager.Place(
+                    holdManager.GetHoldBlueprint(serializableHold.BlueprintId), serializableHold.State);
+                holds[id] = hold;
+            }
+
+            // import routes
+            foreach (var serializableRoute in obj.Routes)
+            {
+                var route = routeManager.CreateRoute();
+
+                foreach (GameObject hold in serializableRoute.HoldIDs.Select(x => holds[x]))
+                    routeManager.ToggleHold(route, hold, holdStateManager.GetHoldBlueprint(hold));
+
+                route.Name = serializableRoute.Name;
+                route.Grade = serializableRoute.Grade;
+                route.Setter = serializableRoute.Setter;
+                route.Zone = serializableRoute.Zone;
+            }
+
+            // import starting hold 
+            foreach (GameObject hold in obj.StartingHoldIDs.Select(x => holds[x]))
+                routeManager.ToggleStarting(hold, holdStateManager.GetHoldBlueprint(hold));
+
+            // import ending holds
+            foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
+                routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
+
+            // initialize wall
+            wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
+
+            // set player position
+            movementControl.SetPosition(obj.Player.Position);
+            cameraControl.SetOrientation(obj.Player.Orientation);
+
+            // import lights
+            foreach (Vector3 position in obj.Lights.Positions)
+                lightManager.AddLight(position);
+
+            lightManager.Intensity = obj.Lights.Intensity;
+            lightManager.ShadowStrength = obj.Lights.ShadowStrength;
+            lightManager.PlayerLightEnabled = obj.Player.Light;
+        }
+        catch (Exception e)
         {
-            var route = routeManager.CreateRoute();
-
-            foreach (GameObject hold in serializableRoute.HoldIDs.Select(x => holds[x]))
-                routeManager.ToggleHold(route, hold, holdStateManager.GetHoldBlueprint(hold));
-
-            route.Name = serializableRoute.Name;
-            route.Grade = serializableRoute.Grade;
-            route.Setter = serializableRoute.Setter;
-            route.Zone = serializableRoute.Zone;
+            popupManager.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
+            return false;
         }
-
-        // import starting hold 
-        foreach (GameObject hold in obj.StartingHoldIDs.Select(x => holds[x]))
-            routeManager.ToggleStarting(hold, holdStateManager.GetHoldBlueprint(hold));
-
-        // import ending holds
-        foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
-            routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
-
-        // initialize wall
-        wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
-
-        // set player position
-        movementControl.SetPosition(obj.PlayerPosition);
-        cameraControl.SetOrientation(obj.PlayerOrientation);
+        
 
         return true;
     }
@@ -187,23 +238,31 @@ public class StateImportExportManager : MonoBehaviour
                     });
 
             serializer.Serialize(writer,
-                new SerializableWallState
+                new SerializableState
                 {
-                    PlayerPosition = movementControl.GetPosition(),
-                    PlayerOrientation = cameraControl.GetOrientation(),
+                    Player = new SerializablePlayer
+                    {
+                        Position = movementControl.GetPosition(),
+                        Orientation = cameraControl.GetOrientation(),
+                        Light = lightManager.PlayerLightEnabled
+                    },
                     WallModelPath = PreferencesManager.CurrentWallModelPath,
                     HoldModelsPath = PreferencesManager.CurrentHoldModelsPath,
-                    HoldStates = holds,
+                    Holds = holds,
                     Routes = routes,
                     StartingHoldIDs = routeManager._startingHolds.Select(Utilities.GetObjectId).ToList(),
                     EndingHoldIDs = routeManager._endingHolds.Select(Utilities.GetObjectId).ToList(),
+                    Lights = new SerializableLights
+                    {
+                        Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
+                        Intensity = lightManager.Intensity,
+                        ShadowStrength = lightManager.ShadowStrength,
+                    }
                 });
         }
         catch (Exception e)
         {
-            Debug.Log(e);
-
-            // TODO display message
+            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
 

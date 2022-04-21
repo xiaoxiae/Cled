@@ -518,6 +518,7 @@ GameObject:
   - component: {fileID: 665042415}
   - component: {fileID: 665042417}
   - component: {fileID: 665042419}
+  - component: {fileID: 665042420}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
@@ -573,10 +574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 665042415}
-  editorController: {fileID: 665042419}
   cameraControl: {fileID: 963194229}
-  speed: 5
-  gravityMultiplier: 1
 --- !u!114 &665042419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,8 +597,22 @@ MonoBehaviour:
   PopupManager: {fileID: 547134781}
   HoldPickerManager: {fileID: 693249231}
   RouteSettingsMenuManager: {fileID: 1132278475}
+  movementControl: {fileID: 665042417}
   currentMode: 0
   mouseSensitivity: 5
+--- !u!114 &665042420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665042414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d53e3253e30fb1158fc3b6a4c9a7741, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerLight: {fileID: 705507993}
 --- !u!1 &674212779
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,7 +735,7 @@ GameObject:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
   m_Layer: 0
-  m_Name: Light
+  m_Name: Player Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -738,11 +750,11 @@ Light:
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 1
+  m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
-  m_Range: 1000
+  m_Intensity: 0.2
+  m_Range: 100000
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -750,7 +762,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.2
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -799,7 +811,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: -0.814, y: 7.037, z: 1.41}
+  m_LocalPosition: {x: -0.81400007, y: 7.037, z: 1.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1057,7 +1069,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b39295cc118d5aa8b992bcaf10b158c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editorController: {fileID: 665042419}
   mouseSensitivity: 100
 --- !u!1 &1132278474
 GameObject:
@@ -1387,8 +1398,10 @@ MonoBehaviour:
   holdManager: {fileID: 1579647979}
   routeManager: {fileID: 651512647}
   wallManager: {fileID: 244077567}
-  movementControl: {fileID: 0}
-  cameraControl: {fileID: 0}
+  lightManager: {fileID: 665042420}
+  popupManager: {fileID: 547134781}
+  movementControl: {fileID: 665042417}
+  cameraControl: {fileID: 963194229}
 --- !u!1 &2070913818
 GameObject:
   m_ObjectHideFlags: 0

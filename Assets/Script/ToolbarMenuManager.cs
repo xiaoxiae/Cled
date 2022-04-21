@@ -19,12 +19,6 @@ public class ToolbarMenuManager : MonoBehaviour
     private VisualElement _root;
 
     /// <summary>
-    /// Forces a save when either main menu or quit is called.
-    /// Should ideally be called after the wall has been modified and the user wanted to quit before it was saved.
-    /// </summary>
-    public void ForceSave() => SetForceSave(true);
-
-    /// <summary>
     /// Set the forceSave attribute to a given state, along with possibly enabling/disabling the save button.
     /// </summary>
     private void SetForceSave(bool state)
@@ -131,10 +125,13 @@ public class ToolbarMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to save, failing if the save path doesn't exist yet.
+    /// Attempt to save, possibly failing if the save path doesn't exist yet.
     /// </summary>
     private bool Save()
     {
+        if (String.IsNullOrWhiteSpace(PreferencesManager.LastOpenWallPath))
+            return false;
+        
         if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
             return false;
 
@@ -185,7 +182,7 @@ public class ToolbarMenuManager : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(path))
             return;
-
+        
         path = Utilities.EnsureExtension(path, "yaml");
 
         if (!StateImportExportManager.Export(path))
@@ -193,7 +190,6 @@ public class ToolbarMenuManager : MonoBehaviour
 
         PreferencesManager.LastOpenWallPath = path;
 
-        SetForceSave(false);
         _forceSaveAs = false;
     }
 
@@ -225,15 +221,15 @@ public class ToolbarMenuManager : MonoBehaviour
         // only work if a popup isn't already present
         if (!PauseManager.IsPaused(PauseType.Popup))
         {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
+                     Input.GetKeyDown(KeyCode.S))
+                SaveAs();
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
             {
                 if (!Save())
                     SaveAs();
             }
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
-                     Input.GetKeyDown(KeyCode.S))
-                SaveAs();
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
                 MenuUtilities.New();

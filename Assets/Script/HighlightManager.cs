@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -86,11 +87,12 @@ public class HighlightManager : MonoBehaviour
     {
         if (IsHighlighted(obj))
         {
-            // the primary highlight overrides the secondary
-            if (_highlighted[obj] is HighlightType.Secondary or HighlightType.Tertiary &&
-                highlightType == HighlightType.Primary)
-                Unhighlight(obj);
-            else
+            if (_highlighted[obj] == highlightType)
+                return;
+
+            // highlight only if we're going up in highlights
+            if (!(_highlighted[obj] == HighlightType.Tertiary && highlightType == HighlightType.Primary ||
+                _highlighted[obj] == HighlightType.Secondary && highlightType == HighlightType.Primary))
                 return;
         }
 
@@ -100,14 +102,18 @@ public class HighlightManager : MonoBehaviour
         switch (highlightType)
         {
             case HighlightType.Primary:
-                outline = obj.AddComponent<Outline>();
+                outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
-                outline.OutlineColor = Color.white;
+                outline.OutlineColor = Color.blue;
+                outline.UpdateMaterialProperties();
+                SetHoldOpacity(obj, 1f);
                 break;
             case HighlightType.Secondary:
-                outline = obj.AddComponent<Outline>();
+                outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
                 outline.OutlineColor = Color.grey;
+                outline.UpdateMaterialProperties();
+                SetHoldOpacity(obj, 1f);
                 break;
             case HighlightType.Tertiary:
                 SetHoldOpacity(obj, 0.3f);

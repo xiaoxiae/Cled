@@ -22,7 +22,14 @@ public class GeneralUIManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // close popups first
+            // if we're not paused at all, pause
+            if (pauseManager.IsUnpaused())
+            {
+                pauseManager.Pause(PauseType.Normal);
+                return;
+            }
+            
+            // else close popups first
             if (pauseManager.IsPaused(PauseType.Popup)) {
                 pauseManager.Unpause(PauseType.Popup);
                 popupManager.Close();
@@ -40,6 +47,12 @@ public class GeneralUIManager : MonoBehaviour
             if (pauseManager.IsPaused(PauseType.RouteSettings)) {
                 pauseManager.Unpause(PauseType.RouteSettings);
                 routeSettingsMenuManager.Close();
+                return;
+            }
+            
+            // then normal pause
+            if (pauseManager.IsPaused(PauseType.Normal)) {
+                pauseManager.Unpause(PauseType.Normal);
                 return;
             }
         }

@@ -6,7 +6,6 @@ using Vector3 = UnityEngine.Vector3;
 public class MovementControl : MonoBehaviour
 {
     public CharacterController controller;
-    public EditorController editorController;
     public CameraControl cameraControl;
 
     private const float ForwardBackwardSpeed = 5;
@@ -34,6 +33,11 @@ public class MovementControl : MonoBehaviour
 
     void Update()
     {
+        // when time stops, don't do anything in the editor
+        // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
+        if (Time.timeScale == 0)
+            return;
+        
         float x = Input.GetAxis("Horizontal") * SideSpeed;
         float z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;
 
