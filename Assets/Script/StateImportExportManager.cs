@@ -141,10 +141,6 @@ public class StateImportExportManager : MonoBehaviour
         {
             var obj = Deserialize(path);
 
-            holdStateManager.Clear();
-            routeManager.Clear();
-            lightManager.Clear();
-
             var holds = new Dictionary<string, GameObject>();
 
             // import holds

@@ -188,15 +188,6 @@ public class RouteManager : MonoBehaviour
     public GameObject[] GetEndingHolds() => _endingHolds.ToArray();
 
     /// <summary>
-    /// Clear out the route manager, NOT destroying any holds in the process.
-    /// </summary>
-    public void Clear()
-    {
-        _routes = new HashSet<Route>();
-        SelectedRoute = null;
-    }
-
-    /// <summary>
     /// Select the given route.
     /// </summary>
     public void SelectRoute(Route route) => SelectedRoute = route;

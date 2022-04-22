@@ -89,25 +89,6 @@ public class HoldStateManager : MonoBehaviour
     public GameObject GetHeld() => _heldObject;
 
     /// <summary>
-    /// Clear out the hold state manager, destroying all objects in the process.
-    /// </summary>
-    public void Clear()
-    {
-        if (_heldObject)
-        {
-            DestroyImmediate(_heldObject);
-            _heldObject = null;
-        }
-
-        _heldObjectState = new HoldState();
-
-        foreach (GameObject key in _placedHolds.Keys)
-            DestroyImmediate(key);
-
-        _placedHolds.Clear();
-    }
-
-    /// <summary>
     /// Start holding a hold from a hold object (instantiating it).
     /// </summary>
     public void SetHeld(HoldBlueprint holdBlueprint) => SetHeld(holdBlueprint, new HoldState());
