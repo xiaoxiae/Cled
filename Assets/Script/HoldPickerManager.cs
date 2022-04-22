@@ -314,7 +314,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         // CTRL+A selects all filtered holds (when the holdpicker is open)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
-            !pauseManager.IsPaused(PauseType.HoldPicker))
+            pauseManager.IsPaused(PauseType.HoldPicker))
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
 

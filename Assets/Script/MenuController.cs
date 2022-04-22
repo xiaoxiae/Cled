@@ -1,11 +1,19 @@
 using System.IO;
-using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
+    public PopupManager popupManager;
+    public PauseManager pauseManager;
+
+    void Start()
+    {
+        // we're in a menu, don't lock stuff
+        pauseManager.KeepUnlocked = true;
+    }
+    
     void Awake()
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
@@ -32,7 +40,8 @@ public class MenuController : MonoBehaviour
         }
 
         var openButton = root.Q<Button>("open-button");
-        MenuUtilities.AddOpenButtonOperation(openButton);
+        openButton.clicked += () => popupManager.CreateInfoPopup("test 123");
+        MenuUtilities.AddOpenButtonOperation(openButton, popupManager);
         
         var newButton = root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);

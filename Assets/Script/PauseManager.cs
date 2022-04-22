@@ -22,17 +22,33 @@ public class PauseManager : MonoBehaviour
 
     private UIDocument _root;
 
+    private bool _keepUnlocked;
+    
+    /// <summary>
+    /// Whether to not mess with the cursor and keep it unlocked.
+    /// </summary>
+    public bool KeepUnlocked
+    {
+        get => _keepUnlocked;
+        set {
+            if (value)
+                Cursor.lockState = CursorLockMode.None;
+
+            _keepUnlocked = value;
+        }
+    }
+
     public void Start()
     {
         _root = GetComponent<UIDocument>();
+        _root.sortingOrder = 2;
         _unpause();
     }
 
     /// <summary>
     /// Unpause the given type.
     /// </summary>
-    /// <param name="unpauseIfNormallyPaused">If the editor is paused normally, unpause the normal pause.</param>
-    public void Unpause(PauseType type, bool unpauseIfNormallyPaused = true)
+    public void Unpause(PauseType type)
     {
         Pauses.Remove(type);
         
@@ -54,7 +70,10 @@ public class PauseManager : MonoBehaviour
     private void _pause()
     {
         Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
+        
+        if (!KeepUnlocked)
+            Cursor.lockState = CursorLockMode.None;
+        
         _root.enabled = true;
 
         foreach (var hook in _pauseHooks)
@@ -64,7 +83,10 @@ public class PauseManager : MonoBehaviour
     private void _unpause()
     {
         Time.timeScale = 1;
-        Cursor.lockState = CursorLockMode.Locked;
+        
+        if (!KeepUnlocked)
+            Cursor.lockState = CursorLockMode.Locked;
+        
         _root.enabled = false;
 
         foreach (var hook in _unpauseHooks)

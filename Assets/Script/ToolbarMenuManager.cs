@@ -53,7 +53,7 @@ public class ToolbarMenuManager : MonoBehaviour
         GetComponent<UIDocument>().sortingOrder = 10;
 
         var openButton = _root.Q<Button>("open-button");
-        MenuUtilities.AddOpenButtonOperation(openButton);
+        MenuUtilities.AddOpenButtonOperation(openButton, PopupManager);
 
         var newButton = _root.Q<Button>("new-button");
         MenuUtilities.AddNewButtonOperation(newButton);
@@ -235,7 +235,7 @@ public class ToolbarMenuManager : MonoBehaviour
                 MenuUtilities.New();
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
-                MenuUtilities.Open();
+                MenuUtilities.Open(PopupManager);
         }
     }
 }

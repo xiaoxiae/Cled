@@ -101,14 +101,14 @@ public class StateImportExportManager : MonoBehaviour
         using var reader = new StreamReader(path);
         return deserializer.Deserialize<SerializableState>(reader);
     }
-
+    
     /// <summary>
     /// Import the preferences (path to holds and to wall).
     ///
     /// Since this is a static function called either from the main menu or ingame, a popup manager object
     /// must be passed for the popup to properly show.
     /// </summary>
-    public static bool ImportPreferences(string path)
+    public static bool ImportPreferences(string path, PopupManager popupManager)
     {
         try
         {
@@ -119,8 +119,7 @@ public class StateImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            // TODO: this is a static function and popup manager is not present
-            // popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
 
@@ -195,7 +194,6 @@ public class StateImportExportManager : MonoBehaviour
             popupManager.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
             return false;
         }
-        
 
         return true;
     }

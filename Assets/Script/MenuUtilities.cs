@@ -8,26 +8,26 @@ public class MenuUtilities
     /// Attach an open project operation to a button.
     /// </summary>
     /// <param name="button"></param>
-    public static void AddOpenButtonOperation(Button button) => button.clicked += Open;
+    public static void AddOpenButtonOperation(Button button, PopupManager popupManager) => button.clicked += () => Open(popupManager);
 
     /// <summary>
     /// Prompt opening an existing project.
     /// </summary>
-    public static void Open()
+    public static void Open(PopupManager popupManager)
     {
         StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
-            new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
+            new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, val => OnOpenWall(val, popupManager));
     }
 
     /// <summary>
     /// Called when opening an existing wall.
     /// </summary>
-    private static void OnOpenWall(string[] paths)
+    private static void OnOpenWall(string[] paths, PopupManager popupManager)
     {
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        if (!StateImportExportManager.ImportPreferences(paths[0]))
+        if (!StateImportExportManager.ImportPreferences(paths[0], popupManager))
             return;
 
         PreferencesManager.LastOpenWallPath = paths[0];

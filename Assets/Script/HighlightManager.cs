@@ -104,7 +104,7 @@ public class HighlightManager : MonoBehaviour
             case HighlightType.Primary:
                 outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
-                outline.OutlineColor = Color.blue;
+                outline.OutlineColor = Color.white;
                 outline.UpdateMaterialProperties();
                 SetHoldOpacity(obj, 1f);
                 break;
