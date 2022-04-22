@@ -13,7 +13,7 @@ public class MovementControl : MonoBehaviour
 
     // flying-related variables
     private bool _flying;
-    private float _flyingSpeed;  // normalized from 0 to 1
+    private float _flyingSpeed; // normalized from 0 to 1
     private const float FlyingSmoothness = 0.15f;
     private const float FlyingMultiplier = 0.1f;
 
@@ -40,7 +40,7 @@ public class MovementControl : MonoBehaviour
         {
             if (value)
                 _gravity = 0;
-                
+
             _flying = value;
         }
     }
@@ -51,7 +51,7 @@ public class MovementControl : MonoBehaviour
         // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
         if (Time.timeScale == 0)
             return;
-        
+
         float x = Input.GetAxis("Horizontal") * SideSpeed;
         float z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;
 

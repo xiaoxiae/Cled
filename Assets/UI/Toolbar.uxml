@@ -57,7 +57,7 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
-        <ui:Foldout text="Lighting" value="true" name="lighting-foldout" style="flex-direction: column;">
+        <ui:Foldout text="Lighting" value="false" name="lighting-foldout" style="flex-direction: column;">
             <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 180px;">
                 <ui:Toggle name="player-light-toggle" style="flex-grow: 0;">
                     <ui:Label text="Player light" display-tooltip-when-elided="true" />
