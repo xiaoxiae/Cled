@@ -33,28 +33,28 @@ public struct SerializableVector3
 }
 
 /// <summary>
-/// Same as SerializableVector3.
+/// Same as SerializableVector2.
 /// </summary>
-public struct SerializableQuaternion
+public struct SerializableVector2
 {
-    public float w;
     public float x;
     public float y;
-    public float z;
 
-    public SerializableQuaternion(float rW, float rX, float rY, float rZ)
+    public SerializableVector2(float rX, float rY)
     {
-        w = rW;
         x = rX;
         y = rY;
-        z = rZ;
     }
 
-    public static implicit operator Quaternion(SerializableQuaternion rValue) =>
-        new(rValue.w, rValue.x, rValue.y, rValue.z);
+    /// <summary>
+    /// Automatic conversion from SerializableVector3 to Vector3.
+    /// </summary>
+    public static implicit operator Vector2(SerializableVector2 rValue) => new(rValue.x, rValue.y);
 
-    public static implicit operator SerializableQuaternion(Quaternion rValue) =>
-        new(rValue.w, rValue.x, rValue.y, rValue.z);
+    /// <summary>
+    /// Automatic conversion from Vector3 to SerializableVector3.
+    /// </summary>
+    public static implicit operator SerializableVector2(Vector2 rValue) => new(rValue.x, rValue.y);
 }
 
 /// <summary>

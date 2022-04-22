@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using SFB;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,30 +13,11 @@ public class ToolbarMenuManager : MonoBehaviour
     public StateImportExportManager StateImportExportManager;
     public PopupManager PopupManager;
     public PauseManager PauseManager;
+    public LightManager lightManager;
 
-    private bool _forceSave;
     private bool _forceSaveAs;
 
     private VisualElement _root;
-
-    /// <summary>
-    /// Set the forceSave attribute to a given state, along with possibly enabling/disabling the save button.
-    /// </summary>
-    private void SetForceSave(bool state)
-    {
-        _forceSave = state;
-
-        // only enable save button if save as is not
-        if (state)
-        {
-            if (!_forceSaveAs)
-                _saveButton.SetEnabled(true);
-        }
-        else
-        {
-            _saveButton.SetEnabled(false);
-        }
-    }
 
     /// <summary>
     /// Forces a save as when either main menu or quit is called.
@@ -46,17 +28,32 @@ public class ToolbarMenuManager : MonoBehaviour
     private Button _saveButton;
     private Button _saveAsButton;
 
+    void Start()
+    {
+        // lighting
+        var addLightingButton = _root.Q<Button>("add-lighting-button");
+        addLightingButton.clicked += lightManager.AddLight;
+
+        var clearLightingButton = _root.Q<Button>("clear-lighting-button");
+        clearLightingButton.clicked += lightManager.Clear;
+
+        var playerLightToggle = _root.Q<Toggle>("player-light-toggle");
+        playerLightToggle.RegisterValueChangedCallback(evt => lightManager.PlayerLightEnabled = evt.newValue);
+        lightManager.AddPlayerLightWatcher(value => { playerLightToggle.SetValueWithoutNotify(value); });
+    }
+
     void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
 
         GetComponent<UIDocument>().sortingOrder = 10;
 
+        // files
         var openButton = _root.Q<Button>("open-button");
-        MenuUtilities.AddOpenButtonOperation(openButton, PopupManager);
+        openButton.clicked += () => _ensureSavedAction(() => { MenuUtilities.Open(PopupManager); });
 
         var newButton = _root.Q<Button>("new-button");
-        MenuUtilities.AddNewButtonOperation(newButton);
+        newButton.clicked += () => _ensureSavedAction(MenuUtilities.New);
 
         _saveButton = _root.Q<Button>("save-button");
         _saveButton.SetEnabled(false);
@@ -68,6 +65,7 @@ public class ToolbarMenuManager : MonoBehaviour
         var quitButton = _root.Q<Button>("quit-button");
         quitButton.clicked += Quit;
 
+        // help
         var aboutButton = _root.Q<Button>("about-button");
         aboutButton.clicked += () =>
         {
@@ -75,6 +73,7 @@ public class ToolbarMenuManager : MonoBehaviour
                 "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3 and is open to pull requests, should you find any bugs or missing features.");
         };
 
+        // capturing
         var captureImageButton = _root.Q<Button>("capture-image-button");
         captureImageButton.clicked += () =>
         {
@@ -103,6 +102,7 @@ public class ToolbarMenuManager : MonoBehaviour
             _root.Q<Foldout>("file-foldout"),
             _root.Q<Foldout>("view-foldout"),
             _root.Q<Foldout>("capture-foldout"),
+            _root.Q<Foldout>("lighting-foldout"),
             _root.Q<Foldout>("help-foldout"),
         };
 
@@ -131,11 +131,10 @@ public class ToolbarMenuManager : MonoBehaviour
     {
         if (String.IsNullOrWhiteSpace(PreferencesManager.LastOpenWallPath))
             return false;
-        
+
         if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
             return false;
 
-        SetForceSave(false);
         return true;
     }
 
@@ -182,7 +181,7 @@ public class ToolbarMenuManager : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(path))
             return;
-        
+
         path = Utilities.EnsureExtension(path, "yaml");
 
         if (!StateImportExportManager.Export(path))
@@ -196,21 +195,26 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to quit.
     /// </summary>
-    private void Quit()
+    private void Quit() => _ensureSavedAction(Application.Quit);
+
+    /// <summary>
+    /// Perform the action, making sure that everything is saved in the process.
+    /// </summary>
+    private void _ensureSavedAction(Action action)
     {
         if (_forceSaveAs)
         {
             PopupManager.CreateSavePopup("Save As",
                 SaveAs,
-                Application.Quit,
+                action,
                 () => { }
             );
         }
-        else if (_forceSave)
+        else
         {
             PopupManager.CreateSavePopup("Save",
                 () => { Save(); },
-                Application.Quit,
+                action,
                 () => { }
             );
         }
@@ -222,8 +226,8 @@ public class ToolbarMenuManager : MonoBehaviour
         if (!PauseManager.IsPaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
-                     Input.GetKeyDown(KeyCode.S))
-                SaveAs();
+                Input.GetKeyDown(KeyCode.S))
+                _saveAsButton.SendEvent(new ClickEvent());
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
             {

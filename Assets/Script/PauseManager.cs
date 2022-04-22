@@ -38,7 +38,7 @@ public class PauseManager : MonoBehaviour
         }
     }
 
-    public void Start()
+    public void Awake()
     {
         _root = GetComponent<UIDocument>();
         _root.sortingOrder = 2;

@@ -99,7 +99,7 @@ Label:disabled { color: var(--disabled-text-color); }
 }
 
 /* a hack for nicer toolbar toggles */
-.toolbar-panel > Toggle > Label { flex-grow: 0; }
+.toolbar-panel > Toggle > VisualElement { padding: 3px; flex-grow: 1; }
 
 .toolbar-panel {
     background-color: var(--panel-color);

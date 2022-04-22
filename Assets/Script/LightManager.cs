@@ -16,12 +16,23 @@ public class LightManager : MonoBehaviour
         set
         {
             _playerLightEnabled = value;
+            
             PlayerLight.GetComponent<Light>().enabled = value;
+            
+            foreach (var action in _playerLightWatchers)
+                action(value);
         }
     }
 
     private List<GameObject> _lights = new();
 
+    private readonly List<Action<bool>> _playerLightWatchers = new();
+    
+    public void AddPlayerLightWatcher(Action<bool> action) => _playerLightWatchers.Add(action);
+
+    /// <summary>
+    /// Clear all lights.
+    /// </summary>
     public void Clear()
     {
         foreach(GameObject light in _lights)
@@ -30,9 +41,9 @@ public class LightManager : MonoBehaviour
         _lights.Clear();
     }
 
-    void Start()
+    void Awake()
     {
-        _playerLightEnabled = true;
+        PlayerLightEnabled = true;
     }
 
     /// <summary>
@@ -83,6 +94,11 @@ public class LightManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Add a new light at the player's location.
+    /// </summary>
+    public void AddLight() => AddLight(transform.position);
+
+    /// <summary>
     /// Add a new light at the given location.
     /// </summary>
     public void AddLight(Vector3 position)
@@ -90,8 +106,9 @@ public class LightManager : MonoBehaviour
         // copy the player light
         GameObject lightGameObject = Instantiate(PlayerLight);
         lightGameObject.GetComponent<Light>().enabled = true;
-
         lightGameObject.transform.position = position;
+        
+        _lights.Add(lightGameObject);
     }
 
     void Update()
@@ -103,12 +120,12 @@ public class LightManager : MonoBehaviour
         if (Time.timeScale == 0)
             return;
 
-        // toggle player light
-        if (Input.GetKeyDown(KeyCode.F))
-            PlayerLightEnabled = !PlayerLightEnabled;
-
         // place light
-        if (Input.GetKeyDown(KeyCode.L))
-            AddLight(transform.position);
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.F))
+            AddLight();
+
+        // toggle player light
+        else if (Input.GetKeyDown(KeyCode.F))
+            PlayerLightEnabled = !PlayerLightEnabled;
     }
 }

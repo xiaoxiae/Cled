@@ -7,16 +7,16 @@ using UnityEngine;
 public class CameraControl : MonoBehaviour
 {
 	public float mouseSensitivity = 100f;
-	
+
     /// <summary>
-    /// Get the orientation the camera.
+    /// The orientation the camera.
+    /// Since the camera only rotates around and up/down, two numbers can be used to determine it.
     /// </summary>
-    public Quaternion GetOrientation() => transform.rotation;
-    
-    /// <summary>
-    /// Set the orientation the camera.
-    /// </summary>
-    public void SetOrientation(Quaternion rotation) => transform.rotation = rotation;
+	public Vector2 Orientation
+    {
+        get => transform.rotation.eulerAngles;
+        set => transform.rotation = Quaternion.Euler(value.x, value.y, 0);
+    }
     
     /// <summary>
     /// Look at a certain point.

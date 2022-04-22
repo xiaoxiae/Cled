@@ -75,7 +75,10 @@ public class SerializablePlayer
 {
     // the player position and orientation
     public SerializableVector3 Position { get; set; }
-    public SerializableQuaternion Orientation { get; set; }
+    public SerializableVector2 Orientation { get; set; }
+    
+    // whether the player is flying
+    public bool Flying { get; set; }
 
     // whether the player's flashlight is on
     public bool Light;
@@ -178,8 +181,9 @@ public class StateImportExportManager : MonoBehaviour
             wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
 
             // set player position
-            movementControl.SetPosition(obj.Player.Position);
-            cameraControl.SetOrientation(obj.Player.Orientation);
+            movementControl.Position = obj.Player.Position;
+            cameraControl.Orientation = obj.Player.Orientation;
+            movementControl.Flying = obj.Player.Flying;
 
             // import lights
             foreach (Vector3 position in obj.Lights.Positions)
@@ -240,8 +244,9 @@ public class StateImportExportManager : MonoBehaviour
                 {
                     Player = new SerializablePlayer
                     {
-                        Position = movementControl.GetPosition(),
-                        Orientation = cameraControl.GetOrientation(),
+                        Position = movementControl.Position,
+                        Orientation = cameraControl.Orientation,
+                        Flying = movementControl.Flying,
                         Light = lightManager.PlayerLightEnabled
                     },
                     WallModelPath = PreferencesManager.CurrentWallModelPath,

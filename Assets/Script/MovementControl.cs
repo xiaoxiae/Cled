@@ -22,14 +22,28 @@ public class MovementControl : MonoBehaviour
     private float _gravity;
 
     /// <summary>
-    /// Get the position the player.
+    /// The position of the player.
     /// </summary>
-    public Vector3 GetPosition() => transform.position;
+    public Vector3 Position
+    {
+        get => transform.position;
+        set => transform.position = value;
+    }
 
     /// <summary>
-    /// Set the position the player.
+    /// Whether the player is flying or not.
     /// </summary>
-    public void SetPosition(Vector3 position) => transform.position = position;
+    public bool Flying
+    {
+        get => _flying;
+        set
+        {
+            if (value)
+                _gravity = 0;
+                
+            _flying = value;
+        }
+    }
 
     void Update()
     {
@@ -70,7 +84,7 @@ public class MovementControl : MonoBehaviour
         }
 
         // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
-        if (Input.GetMouseButton(2) || Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetMouseButton(2) || Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
         {
             controller.Move(Vector3.zero);
             return;

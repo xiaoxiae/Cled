@@ -57,6 +57,23 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
+        <ui:Foldout text="Lighting" value="true" name="lighting-foldout" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 180px;">
+                <ui:Toggle name="player-light-toggle" style="flex-grow: 0;">
+                    <ui:Label text="Player light" display-tooltip-when-elided="true" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0; width: 23px;" />
+                    <ui:Label text="F" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Toggle>
+                <ui:Button display-tooltip-when-elided="true" name="add-lighting-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Add light" display-tooltip-when-elided="true" name="add-lighting-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
+                    <ui:Label text="Ctrl+F" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
+                <ui:Button display-tooltip-when-elided="true" name="clear-lighting-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Clear all lights" display-tooltip-when-elided="true" name="clear-lighting-label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:Foldout>
         <ui:Foldout text="Help" value="false" name="help-foldout" style="flex-direction: column;">
             <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 74px;">
                 <ui:Button display-tooltip-when-elided="true" name="help-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">

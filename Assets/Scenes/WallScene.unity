@@ -187,6 +187,7 @@ MonoBehaviour:
   StateImportExportManager: {fileID: 1935898423}
   PopupManager: {fileID: 547134781}
   PauseManager: {fileID: 816695697}
+  lightManager: {fileID: 665042420}
 --- !u!1 &84805216
 GameObject:
   m_ObjectHideFlags: 0

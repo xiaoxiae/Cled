@@ -40,7 +40,6 @@ public class MenuController : MonoBehaviour
         }
 
         var openButton = root.Q<Button>("open-button");
-        openButton.clicked += () => popupManager.CreateInfoPopup("test 123");
         MenuUtilities.AddOpenButtonOperation(openButton, popupManager);
         
         var newButton = root.Q<Button>("new-button");
