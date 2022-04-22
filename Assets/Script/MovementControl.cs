@@ -8,6 +8,8 @@ public class MovementControl : MonoBehaviour
     public CharacterController controller;
     public CameraControl cameraControl;
 
+    public EditorController editorController;
+
     private const float ForwardBackwardSpeed = 5;
     private const float SideSpeed = 4;
 
@@ -82,11 +84,15 @@ public class MovementControl : MonoBehaviour
             _flying = false;
             _gravity = 0;
         }
+        
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
+            _flyingSpeed = 0;
 
         // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
-        if (Input.GetMouseButton(2) || Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetMouseButton(2) && editorController.currentMode == Mode.Holding)
         {
-            controller.Move(Vector3.zero);
+            controller.velocity.Set(0, 0, 0);
+            _flyingSpeed = 0;
             return;
         }
 

@@ -21,6 +21,10 @@ public class MenuController : MonoBehaviour
         var continueButton = root.Q<Button>("continue-button");
         
         var continuePathLabel = root.Q<Label>("continue-path-label");
+        
+        
+        var versionLabel = root.Q<Label>("version-label");
+        versionLabel.text = $"version {Application.version}";
 
         if (PreferencesManager.LastOpenWallPath == "" || !File.Exists(PreferencesManager.LastOpenWallPath)) {
             continueButton.SetEnabled(false);

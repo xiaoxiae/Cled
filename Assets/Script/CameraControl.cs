@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class CameraControl : MonoBehaviour
 {
+	public EditorController editorController;
+	
 	public float mouseSensitivity = 100f;
 
     /// <summary>
@@ -29,7 +31,7 @@ public class CameraControl : MonoBehaviour
             return;
         
         // don't move when middle button is pressed in edit mode (holds turn)
-        if (Input.GetMouseButton(2))
+        if (Input.GetMouseButton(2) && editorController.currentMode == Mode.Holding)
 			return;
 		
 		var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

@@ -25,6 +25,8 @@ public class ToolbarMenuManager : MonoBehaviour
 
     private Button _saveButton;
     private Button _saveAsButton;
+    private Button _newButton;
+    private Button _openButton;
 
     void Start()
     {
@@ -47,15 +49,15 @@ public class ToolbarMenuManager : MonoBehaviour
         GetComponent<UIDocument>().sortingOrder = 10;
 
         // files
-        var openButton = _root.Q<Button>("open-button");
-        openButton.clicked += () => _ensureSavedAction(() => { MenuUtilities.Open(PopupManager); });
+        _openButton = _root.Q<Button>("open-button");
+        _openButton.clicked += () => _ensureSavedAction(() => { MenuUtilities.Open(PopupManager); });
 
-        var newButton = _root.Q<Button>("new-button");
-        newButton.clicked += () => _ensureSavedAction(MenuUtilities.New);
+        _newButton = _root.Q<Button>("new-button");
+        _newButton.clicked += () => _ensureSavedAction(MenuUtilities.New);
 
         _saveButton = _root.Q<Button>("save-button");
         _saveButton.SetEnabled(false);
-        _saveButton.clicked += () => Save();
+        _saveButton.clicked += () => _ensureSavedAction(() => { });
 
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
@@ -172,22 +174,23 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save as.
     /// </summary>
-    private void SaveAs()
+    private bool SaveAs()
     {
         var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
             new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
         if (string.IsNullOrWhiteSpace(path))
-            return;
+            return false;
 
         path = Utilities.EnsureExtension(path, "yaml");
 
         if (!StateImportExportManager.Export(path))
-            return;
+            return false;
 
         PreferencesManager.LastOpenWallPath = path;
 
         _forceSaveAs = false;
+        return true;
     }
 
     /// <summary>
@@ -203,7 +206,11 @@ public class ToolbarMenuManager : MonoBehaviour
         if (_forceSaveAs)
         {
             PopupManager.CreateSavePopup("Save As",
-                SaveAs,
+                () =>
+                {
+                    if (SaveAs())
+                        action();
+                },
                 action,
                 () => { }
             );
@@ -211,7 +218,11 @@ public class ToolbarMenuManager : MonoBehaviour
         else
         {
             PopupManager.CreateSavePopup("Save",
-                () => { Save(); },
+                () =>
+                {
+                    if (Save())
+                        action();
+                },
                 action,
                 () => { }
             );
@@ -223,21 +234,21 @@ public class ToolbarMenuManager : MonoBehaviour
         // only work if a popup isn't already present
         if (!PauseManager.IsPaused(PauseType.Popup))
         {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
-                Input.GetKeyDown(KeyCode.S))
-                _saveAsButton.SendEvent(new ClickEvent());
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
+                using (var e = new NavigationSubmitEvent { target = _saveAsButton })
+                    _saveAsButton.SendEvent(e);
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
-            {
-                if (!Save())
-                    SaveAs();
-            }
+                using (var e = new NavigationSubmitEvent { target = _saveButton })
+                    _saveButton.SendEvent(e);
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
-                MenuUtilities.New();
+                using (var e = new NavigationSubmitEvent { target = _newButton })
+                    _newButton.SendEvent(e);
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
-                MenuUtilities.Open(PopupManager);
+                using (var e = new NavigationSubmitEvent { target = _openButton })
+                    _openButton.SendEvent(e);
         }
     }
 }
