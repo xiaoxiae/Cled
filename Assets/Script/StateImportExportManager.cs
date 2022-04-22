@@ -11,6 +11,8 @@ using YamlDotNet.Serialization;
 /// </summary>
 public class SerializableState
 {
+    public string Version;
+    
     // player
     public SerializablePlayer Player;
 
@@ -238,6 +240,7 @@ public class StateImportExportManager : MonoBehaviour
             serializer.Serialize(writer,
                 new SerializableState
                 {
+                    Version = Application.version,
                     Player = new SerializablePlayer
                     {
                         Position = movementControl.Position,
