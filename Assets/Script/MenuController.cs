@@ -22,7 +22,6 @@ public class MenuController : MonoBehaviour
         
         var continuePathLabel = root.Q<Label>("continue-path-label");
         
-        
         var versionLabel = root.Q<Label>("version-label");
         versionLabel.text = $"version {Application.version}";
 

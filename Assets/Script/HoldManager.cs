@@ -8,6 +8,7 @@ using YamlDotNet.Serialization;
 
 /// <summary>
 /// A class for storing the information about the given hold.
+/// It is deserialized from the `holds.yaml` file.
 /// </summary>
 public class HoldInformation
 {
@@ -15,6 +16,7 @@ public class HoldInformation
     public string type;
     public string manufacturer;
     public string[] labels;
+    public float volume;
     public DateTime date;
 
     public string colorName => color[0];

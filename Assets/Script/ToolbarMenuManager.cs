@@ -56,8 +56,11 @@ public class ToolbarMenuManager : MonoBehaviour
         _newButton.clicked += () => _ensureSavedAction(MenuUtilities.New);
 
         _saveButton = _root.Q<Button>("save-button");
-        _saveButton.SetEnabled(false);
-        _saveButton.clicked += () => _ensureSavedAction(() => { });
+        _saveButton.clicked += () =>
+        {
+            if (!Save())
+                SaveAs();
+        };
 
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
