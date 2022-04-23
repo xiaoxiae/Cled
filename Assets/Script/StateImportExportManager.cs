@@ -89,22 +89,45 @@ public class SerializablePlayer
 public class StateImportExportManager : MonoBehaviour
 {
     public HoldStateManager holdStateManager;
+    public HoldPickerManager holdPickerManager;
     public HoldManager holdManager;
     public RouteManager routeManager;
     public WallManager wallManager;
     public LightManager lightManager;
+    public PauseManager pauseManager;
 
     public PopupManager popupManager;
     
     public MovementControl movementControl;
     public CameraControl cameraControl;
 
+    /// <summary>
+    /// Return the deserialized state object, given its path.
+    /// </summary>
     private static SerializableState Deserialize(string path)
     {
         var deserializer = new Deserializer();
 
         using var reader = new StreamReader(path);
         return deserializer.Deserialize<SerializableState>(reader);
+    }
+
+    /// <summary>
+    /// Clear appropriate manager states.
+    /// </summary>
+    private void Clear()
+    {
+        holdStateManager.Clear();
+        holdManager.Clear();
+        routeManager.Clear();
+        wallManager.Clear();
+        holdPickerManager.Clear();
+        lightManager.Clear();
+        
+        movementControl.Position = Vector3.zero;
+        cameraControl.Orientation = Vector3.forward;
+        
+        pauseManager.UnpauseAll();
     }
     
     /// <summary>
@@ -113,7 +136,7 @@ public class StateImportExportManager : MonoBehaviour
     /// Since this is a static function called either from the main menu or ingame, a popup manager object
     /// must be passed for the popup to properly show.
     /// </summary>
-    public static bool ImportPreferences(string path, PopupManager popupManager)
+    public bool ImportPreferences(string path)
     {
         try
         {
@@ -141,6 +164,14 @@ public class StateImportExportManager : MonoBehaviour
     {
         try
         {
+            Clear();
+
+            // initialize wall
+            wallManager.Initialize(PreferencesManager.CurrentWallModelPath);
+            
+            // initialize holds
+            holdManager.Initialize(PreferencesManager.CurrentHoldModelsPath);
+            
             var obj = Deserialize(path);
 
             var holds = new Dictionary<string, GameObject>();
@@ -175,9 +206,6 @@ public class StateImportExportManager : MonoBehaviour
             foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
                 routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
 
-            // initialize wall
-            wallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
-
             // set player position
             movementControl.Position = obj.Player.Position;
             cameraControl.Orientation = obj.Player.Orientation;
@@ -190,6 +218,8 @@ public class StateImportExportManager : MonoBehaviour
             lightManager.Intensity = obj.Lights.Intensity;
             lightManager.ShadowStrength = obj.Lights.ShadowStrength;
             lightManager.PlayerLightEnabled = obj.Player.Light;
+
+            holdPickerManager.Initialize();
         }
         catch (Exception e)
         {
@@ -252,8 +282,8 @@ public class StateImportExportManager : MonoBehaviour
                     HoldModelsPath = PreferencesManager.CurrentHoldModelsPath,
                     Holds = holds,
                     Routes = routes,
-                    StartingHoldIDs = routeManager._startingHolds.Select(Utilities.GetObjectId).ToList(),
-                    EndingHoldIDs = routeManager._endingHolds.Select(Utilities.GetObjectId).ToList(),
+                    StartingHoldIDs = routeManager.StartingHolds.Select(Utilities.GetObjectId).ToList(),
+                    EndingHoldIDs = routeManager.EndingHolds.Select(Utilities.GetObjectId).ToList(),
                     Lights = new SerializableLights
                     {
                         Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
@@ -261,13 +291,36 @@ public class StateImportExportManager : MonoBehaviour
                         ShadowStrength = lightManager.ShadowStrength,
                     }
                 });
+
+            return true;
         }
         catch (Exception e)
         {
             popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
+    }
 
-        return true;
+    /// <summary>
+    /// Initialize a new state from a wall model and holds folder.
+    /// </summary>
+    public bool ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
+    {
+        try
+        {
+            Clear();
+
+            wallManager.Initialize(currentWallModelPath);
+            holdManager.Initialize(currentHoldModelsPath);
+            
+            holdPickerManager.Initialize();
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            return false;
+        }
     }
 }

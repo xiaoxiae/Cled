@@ -599,7 +599,6 @@ MonoBehaviour:
   PopupManager: {fileID: 547134781}
   HoldPickerManager: {fileID: 693249231}
   RouteSettingsMenuManager: {fileID: 1132278475}
-  movementControl: {fileID: 665042417}
   currentMode: 0
   mouseSensitivity: 5
 --- !u!114 &665042420
@@ -692,6 +691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalStyleSheets: {fileID: 7433441132597879392, guid: e11f46a4365fa2bd09a3a61054c87ebf, type: 3}
   pauseManager: {fileID: 816695697}
+  popupManager: {fileID: 547134781}
   HoldManager: {fileID: 1579647979}
   RenderTexture: {fileID: 8400000, guid: a6c4919686560fc9fb642ff93b22c63e, type: 2}
   VideoPlayer: {fileID: 1448058875}
@@ -1398,10 +1398,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdStateManager: {fileID: 1150806010}
+  holdPickerManager: {fileID: 693249231}
   holdManager: {fileID: 1579647979}
   routeManager: {fileID: 651512647}
   wallManager: {fileID: 244077567}
   lightManager: {fileID: 665042420}
+  pauseManager: {fileID: 816695697}
   popupManager: {fileID: 547134781}
   movementControl: {fileID: 665042417}
   cameraControl: {fileID: 963194229}

@@ -20,9 +20,11 @@ public class RouteSettingsMenuManager : MonoBehaviour
 
     void Start()
     {
-        _root = GetComponent<UIDocument>().rootVisualElement;
+        var document = GetComponent<UIDocument>();
+        
+        _root = document.rootVisualElement;
         _root.visible = false;
-
+        
         // they're functions because the values haven't been initialized by this point
         _attributeMapping = new Dictionary<string, Func<List<string>>>
         {
@@ -45,7 +47,7 @@ public class RouteSettingsMenuManager : MonoBehaviour
         applyButton.clicked += Apply;
 
         var discardButton = _root.Q<Button>("discard-button");
-        discardButton.clicked += Discard;
+        discardButton.clicked += Close;
     }
 
     /// <summary>
@@ -78,14 +80,12 @@ public class RouteSettingsMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Discard the settings of the given route, hiding the settings.
+    /// Close the route settings.
     /// </summary>
-    private void Discard() => Close();
-
     public void Close()
     {
         _root.visible = false;
-        pauseManager.Unpause(PauseType.RouteSettings);
+        pauseManager.UnpauseType(PauseType.RouteSettings);
     }
 
     private void _initialize()

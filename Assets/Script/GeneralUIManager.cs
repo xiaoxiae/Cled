@@ -31,28 +31,28 @@ public class GeneralUIManager : MonoBehaviour
             
             // else close popups first
             if (pauseManager.IsPaused(PauseType.Popup)) {
-                pauseManager.Unpause(PauseType.Popup);
+                pauseManager.UnpauseType(PauseType.Popup);
                 popupManager.Close();
                 return;
             }
             
             // then hold picker
             if (pauseManager.IsPaused(PauseType.HoldPicker)) {
-                pauseManager.Unpause(PauseType.HoldPicker);
+                pauseManager.UnpauseType(PauseType.HoldPicker);
                 holdPickerManager.Close();
                 return;
             }
                 
             // then route settings
             if (pauseManager.IsPaused(PauseType.RouteSettings)) {
-                pauseManager.Unpause(PauseType.RouteSettings);
+                pauseManager.UnpauseType(PauseType.RouteSettings);
                 routeSettingsMenuManager.Close();
                 return;
             }
             
             // then normal pause
             if (pauseManager.IsPaused(PauseType.Normal)) {
-                pauseManager.Unpause(PauseType.Normal);
+                pauseManager.UnpauseType(PauseType.Normal);
                 return;
             }
         }

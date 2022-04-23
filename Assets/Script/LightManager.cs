@@ -8,6 +8,9 @@ public class LightManager : MonoBehaviour
 {
     public GameObject PlayerLight;
 
+    private readonly List<GameObject> _lights = new();
+    private readonly List<Action<bool>> _playerLightWatchers = new();
+
     private bool _playerLightEnabled;
 
     public bool PlayerLightEnabled
@@ -23,10 +26,6 @@ public class LightManager : MonoBehaviour
                 action(value);
         }
     }
-
-    private List<GameObject> _lights = new();
-
-    private readonly List<Action<bool>> _playerLightWatchers = new();
     
     public void AddPlayerLightWatcher(Action<bool> action) => _playerLightWatchers.Add(action);
 
@@ -39,10 +38,6 @@ public class LightManager : MonoBehaviour
             Destroy(light);
         
         _lights.Clear();
-    }
-
-    void Awake()
-    {
         PlayerLightEnabled = true;
     }
 

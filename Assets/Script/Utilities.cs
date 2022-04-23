@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Dummiesman;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Utilities
 {
@@ -82,5 +83,19 @@ public class Utilities
         }
 
         return hash.ToString();
+    }
+    
+
+    /// <summary>
+    /// Disable the element being able to be focused.
+    /// </summary>
+    public static void DisableElementFocusable(VisualElement element)
+    {
+        foreach (var child in element.Children())
+        {
+            child.focusable = false;
+            
+            DisableElementFocusable(child);
+        }
     }
 }

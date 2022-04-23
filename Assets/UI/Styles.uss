@@ -158,17 +158,3 @@ Label:disabled { color: var(--disabled-text-color); }
     border-color: var(--border-color);
     -unity-text-align: middle-left;
 }
-
-/* --- MAIN MENU --- */
-.main-menu-button-style {
-    font-size: 37px;
-    margin: 10px;
-    padding: 15px;
-}
-
-.main-menu-button-style Label { background-color: var(--button-color); padding: 0; margin: 0; }
-.main-menu-button-style:hover Label { background-color: var(--button-color-hover); }
-.main-menu-button-style:active Label { background-color: var(--button-color-active); }
-.main-menu-button-style:disabled Label { background-color: var(--button-color-disabled); }
-
-#continue-path-label { font-size: 30%; }

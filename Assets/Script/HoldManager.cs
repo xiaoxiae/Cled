@@ -102,11 +102,11 @@ public class HoldManager : MonoBehaviour
     public List<string> AllManufacturers() => AttributeAggregate(info => new List<string> { info.manufacturer });
 
     /// <summary>
-    /// Read holds from the preferences manager path.
+    /// Initialize holds from the given directory.
     /// </summary>
-    void Awake()
+    public void Initialize(string path)
     {
-        string yml = File.ReadAllText(Path.Combine(PreferencesManager.CurrentHoldModelsPath, HoldsYamlName));
+        string yml = File.ReadAllText(Path.Combine(path, HoldsYamlName));
         var holdInformation = new Deserializer().Deserialize<Dictionary<string, HoldInformation>>(yml);
 
         foreach (var pair in holdInformation)
@@ -163,4 +163,15 @@ public class HoldManager : MonoBehaviour
 
     private string GetHoldMaterialPath(string id)
         => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + ".mtl");
+
+    /// <summary>
+    /// Remove all holds, destroying them in the process.
+    /// </summary>
+    public void Clear()
+    {
+        foreach (var (key, value) in _holds)
+            DestroyImmediate(value.Model);
+        
+        _holds.Clear();
+    }
 }

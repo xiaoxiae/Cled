@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
-using Cursor = UnityEngine.Cursor;
 
 public class HoldPickerManager : MonoBehaviour
 {
@@ -18,6 +17,12 @@ public class HoldPickerManager : MonoBehaviour
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
     private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
+    
+    // store all holds
+    private HoldBlueprint[] _allHolds = {};
+    
+    // and the filtered ones
+    private HoldBlueprint[] _currentlyFilteredHolds = {};
 
     // UI elements
     private VisualElement _root;
@@ -43,11 +48,9 @@ public class HoldPickerManager : MonoBehaviour
 
     // manager-related things
     public PauseManager pauseManager;
+    public PopupManager popupManager;
 
     public HoldManager HoldManager;
-
-    private HoldBlueprint[] _allHolds;
-    private HoldBlueprint[] _currentlyFilteredHolds;
 
     // hacks
     private const long UIBugWorkaroundDurations = 100;
@@ -98,19 +101,21 @@ public class HoldPickerManager : MonoBehaviour
         UpdateSelectCounters();
     }
 
+    /// <summary>
+    /// Close the hold picker menu.
+    /// </summary>
     public void Close()
     {
         _root.visible = false;
-        pauseManager.Unpause(PauseType.HoldPicker);
+        pauseManager.UnpauseType(PauseType.HoldPicker);
     }
 
-    void Start()
+    void Awake()
     {
-        var document = GetComponent<UIDocument>();
-        document.sortingOrder = 5;
-
-        _root = document.rootVisualElement;
+        _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
+        
+        Utilities.DisableElementFocusable(_root);
 
         _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
 
@@ -139,15 +144,19 @@ public class HoldPickerManager : MonoBehaviour
 
         _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
         _filteredSelectedHoldCounter = _root.Q<Label>("filtered-selected-hold-counter");
-        _allHolds = HoldManager.Filter(_ => true);
 
         _totalHoldCounter.text = HoldManager.HoldCount.ToString();
+    }
 
+    public void Initialize()
+    {
+        _allHolds = HoldManager.Filter(_ => true);
+        
         // dropdowns
         var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
         var choiceFunctions = new Func<List<string>>[]
             { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
-
+        
         for (int i = 0; i < dropdowns.Length; i++)
         {
             var allValues = choiceFunctions[i]();
@@ -162,8 +171,6 @@ public class HoldPickerManager : MonoBehaviour
             dropdowns[i].index = 0;
             dropdowns[i].RegisterValueChangedCallback(_ => UpdateGrid());
         }
-
-        _currentlyFilteredHolds = new HoldBlueprint[] { };
 
         // create a visual element for each hold
         foreach (HoldBlueprint blueprint in _allHolds)
@@ -280,13 +287,22 @@ public class HoldPickerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Fill the grid with a selection of the holds.
+    /// Clear the hold grid.
     /// </summary>
-    private void FillGrid(HoldBlueprint[] holdBlueprints)
+    private void ClearGrid()
     {
         foreach (var blueprint in _currentlyFilteredHolds)
             _grid.Remove(_holdToGridDictionary[blueprint]);
 
+    }
+
+    /// <summary>
+    /// Fill the grid with a selection of the holds.
+    /// </summary>
+    private void FillGrid(HoldBlueprint[] holdBlueprints)
+    {
+        ClearGrid();
+        
         foreach (var blueprint in holdBlueprints
                      .OrderBy(x => x.HoldInformation.colorHex)
                      .ThenBy(x => x.HoldInformation.type)
@@ -319,11 +335,20 @@ public class HoldPickerManager : MonoBehaviour
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
 
+        // only open the hold menu if some holds were actually loaded in
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
             // don't open it when popups or route settings are present
             if (pauseManager.IsPaused(PauseType.Popup) || pauseManager.IsPaused(PauseType.RouteSettings))
                 return;
+
+            // if there are no holds, don't show it at all
+            if (HoldManager.HoldCount == 0)
+            {
+                popupManager.CreateInfoPopup("No holds loaded, nothing to filter.");
+                return;
+            }
+
 
             if (pauseManager.IsPaused(PauseType.HoldPicker))
             {
@@ -338,5 +363,19 @@ public class HoldPickerManager : MonoBehaviour
             // TODO: while this does fix it, it is pretty buggy
             // Input.ResetInputAxes();
         }
+    }
+
+    public void Clear()
+    {  
+        ClearGrid();
+        
+        _allHolds = new HoldBlueprint[]{};
+    
+        _currentlyFilteredHolds = new HoldBlueprint[] { };
+        _gridStateDictionary.Clear();
+        _holdToGridDictionary.Clear();
+        _gridTextureDictionary.Clear();
+       
+        Close();
     }
 }

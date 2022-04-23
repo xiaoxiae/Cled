@@ -51,4 +51,14 @@ public static class PreferencesManager
         get => PlayerPrefs.GetString("CurrentHoldModelsPath");
         set => PlayerPrefs.SetString("CurrentHoldModelsPath", value);
     }
+    
+    /// <summary>
+    /// Whether the editor has been initialized.
+    /// Used to determine things like whether to show "save or discard" when opening a new project.
+    /// </summary>
+    public static bool Initialized
+    {
+        get => PlayerPrefs.GetInt("Initialized") != 0;
+        set => PlayerPrefs.SetInt("Initialized", value ? 1 : 0);
+    }
 }

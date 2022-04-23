@@ -18,61 +18,42 @@ public enum PauseType
 /// </summary>
 public class PauseManager : MonoBehaviour
 {
-    private HashSet<PauseType> Pauses = new();
+    private readonly HashSet<PauseType> _pauses = new();
 
     private UIDocument _root;
-
-    private bool _keepUnlocked;
-    
-    /// <summary>
-    /// Whether to not mess with the cursor and keep it unlocked.
-    /// </summary>
-    public bool KeepUnlocked
-    {
-        get => _keepUnlocked;
-        set {
-            if (value)
-                Cursor.lockState = CursorLockMode.None;
-
-            _keepUnlocked = value;
-        }
-    }
 
     public void Awake()
     {
         _root = GetComponent<UIDocument>();
-        _root.sortingOrder = 2;
         _unpause();
     }
 
     /// <summary>
     /// Unpause the given type.
     /// </summary>
-    public void Unpause(PauseType type)
+    public void UnpauseType(PauseType type)
     {
-        Pauses.Remove(type);
+        _pauses.Remove(type);
         
-        if (Pauses.Count == 1 && Pauses.Contains(PauseType.Normal))
-            Unpause(PauseType.Normal);
+        if (_pauses.Count == 1 && _pauses.Contains(PauseType.Normal))
+            UnpauseType(PauseType.Normal);
         
-        if (Pauses.Count == 0)
+        if (_pauses.Count == 0)
             _unpause();
     }
 
     public void Pause(PauseType type)
     {
-        Pauses.Add(type);
+        _pauses.Add(type);
         
-        if (Pauses.Count != 0)
+        if (_pauses.Count != 0)
             _pause();
     }
 
     private void _pause()
     {
         Time.timeScale = 0;
-        
-        if (!KeepUnlocked)
-            Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.None;
         
         _root.enabled = true;
 
@@ -83,9 +64,7 @@ public class PauseManager : MonoBehaviour
     private void _unpause()
     {
         Time.timeScale = 1;
-        
-        if (!KeepUnlocked)
-            Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
         
         _root.enabled = false;
 
@@ -99,12 +78,12 @@ public class PauseManager : MonoBehaviour
     /// <summary>
     /// Return true if the editor is currently unpaused.
     /// </summary>
-    public bool IsUnpaused() => Pauses.Count == 0;
+    public bool IsUnpaused() => _pauses.Count == 0;
 
     /// <summary>
     /// Return true if the editor is currently unpaused via this pause type.
     /// </summary>
-    public bool IsPaused(PauseType type) => Pauses.Contains(type);
+    public bool IsPaused(PauseType type) => _pauses.Contains(type);
 
     /// <summary>
     /// Add a hook function that gets called every time the editor is paused.
@@ -115,4 +94,13 @@ public class PauseManager : MonoBehaviour
     /// Add a hook function that gets called every time the editor is unpaused.
     /// </summary>
     public void AddUnpausedHook(Action hook) => _unpauseHooks.Add(hook);
+
+    /// <summary>
+    /// Unpause everything.
+    /// </summary>
+    public void UnpauseAll()
+    {
+        _pauses.Clear();
+        _unpause();
+    }
 }

@@ -11,16 +11,15 @@ public class PopupManager : MonoBehaviour
 
     public PauseManager pauseManager;
 
-    public void Start()
+    public void Awake()
     {
         document = GetComponent<UIDocument>();
-        document.sortingOrder = 10;
     }
 
     public void Close()
     {
         document.visualTreeAsset = null;
-        pauseManager.Unpause(PauseType.Popup);
+        pauseManager.UnpauseType(PauseType.Popup);
     }
 
     /// <summary>
@@ -31,6 +30,7 @@ public class PopupManager : MonoBehaviour
         document.visualTreeAsset = InfoPopup;
 
         var root = document.rootVisualElement;
+        Utilities.DisableElementFocusable(root);
 
         pauseManager.Pause(PauseType.Popup);
 

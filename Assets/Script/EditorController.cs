@@ -21,7 +21,6 @@ public class EditorController : MonoBehaviour
     public PopupManager PopupManager;
     public HoldPickerManager HoldPickerManager;
     public RouteSettingsMenuManager RouteSettingsMenuManager;
-    public MovementControl movementControl;
 
     private Label _currentModeLabel;
 
@@ -31,23 +30,13 @@ public class EditorController : MonoBehaviour
 
     public float mouseSensitivity = 1f;
 
-    void Start()
+    void Awake()
     {
         _currentModeLabel = ToolbarMenuManager.GetComponent<UIDocument>().rootVisualElement
             .Q<Label>("current-mode-label");
 
         SetCurrentMode(Mode.Normal);
-
-        // initialize the states from preference manager
-        if (PreferencesManager.LastOpenWallPath != "")
-            StateImportExportManager.ImportState(PreferencesManager.LastOpenWallPath);
-        else if (PreferencesManager.CurrentWallModelPath != "")
-        {
-            WallManager.InitializeFromPath(PreferencesManager.CurrentWallModelPath);
-            ToolbarMenuManager.ForceSaveAs();
-        }
     }
-
 
     /// <summary>
     /// Set the current mode, updating the UI mode label in the process.

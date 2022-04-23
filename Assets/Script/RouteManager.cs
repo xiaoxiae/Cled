@@ -161,31 +161,21 @@ public class Route
 /// </summary>
 public class RouteManager : MonoBehaviour
 {
-    private HashSet<Route> _routes = new();
+    private readonly HashSet<Route> _routes = new();
 
     public Route SelectedRoute;
 
     public GameObject StartMarkerPrefab;
     public GameObject EndMarkerPrefab;
 
-    public HashSet<GameObject> _startingHolds = new();
-    public HashSet<GameObject> _endingHolds = new();
+    public readonly HashSet<GameObject> StartingHolds = new();
+    public readonly HashSet<GameObject> EndingHolds = new();
 
     /// <summary>
     /// Get all routes.
     /// </summary>
     /// <returns></returns>
     public Route[] GetRoutes() => _routes.ToArray();
-
-    /// <summary>
-    /// Get all starting holds.
-    /// </summary>
-    public GameObject[] GetStartingHolds() => _startingHolds.ToArray();
-
-    /// <summary>
-    /// Get all ending holds.
-    /// </summary>
-    public GameObject[] GetEndingHolds() => _endingHolds.ToArray();
 
     /// <summary>
     /// Select the given route.
@@ -203,17 +193,17 @@ public class RouteManager : MonoBehaviour
     public void ToggleStarting(GameObject hold, HoldBlueprint blueprint)
     {
         Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
-        
+
         // if it's already ending, make it not so
-        if (_endingHolds.Contains(hold))
+        if (EndingHolds.Contains(hold))
             ToggleEnding(hold, blueprint);
-        
+
         originalRoute.ToggleStarting(hold);
 
-        if (_startingHolds.Contains(hold))
-            _startingHolds.Remove(hold);
+        if (StartingHolds.Contains(hold))
+            StartingHolds.Remove(hold);
         else
-            _startingHolds.Add(hold);
+            StartingHolds.Add(hold);
     }
 
     /// <summary>
@@ -222,17 +212,17 @@ public class RouteManager : MonoBehaviour
     public void ToggleEnding(GameObject hold, HoldBlueprint blueprint)
     {
         Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
-        
+
         // if it's already starting, make it not so
-        if (_startingHolds.Contains(hold))
+        if (StartingHolds.Contains(hold))
             ToggleStarting(hold, blueprint);
 
         originalRoute.ToggleEnding(hold);
 
-        if (_endingHolds.Contains(hold))
-            _endingHolds.Remove(hold);
+        if (EndingHolds.Contains(hold))
+            EndingHolds.Remove(hold);
         else
-            _endingHolds.Add(hold);
+            EndingHolds.Add(hold);
     }
 
     /// <summary>
@@ -243,8 +233,8 @@ public class RouteManager : MonoBehaviour
         // the route the hold was originally in
         Route originalRoute = GetRouteWithHold(hold);
 
-        bool isStarting = _startingHolds.Contains(hold);
-        bool isEnding = _endingHolds.Contains(hold);
+        bool isStarting = StartingHolds.Contains(hold);
+        bool isEnding = EndingHolds.Contains(hold);
 
         // if we're removing it from a route, simply toggle it
         if (route == originalRoute)
@@ -301,7 +291,6 @@ public class RouteManager : MonoBehaviour
     /// <summary>
     /// Return the route with the given hold, or create one if no such exists.
     /// </summary>
-    /// <returns></returns>
     public Route GetOrCreateRouteWithHold(GameObject hold, HoldBlueprint blueprint)
     {
         var route = GetRouteWithHold(hold);
@@ -319,4 +308,14 @@ public class RouteManager : MonoBehaviour
     /// Remove a route from the manager.
     /// </summary>
     private void RemoveRoute(Route route) => _routes.Remove(route);
+
+    public void Clear()
+    {
+        _routes.Clear();
+
+        SelectedRoute = null;
+
+        StartingHolds.Clear();
+        EndingHolds.Clear();
+    }
 }

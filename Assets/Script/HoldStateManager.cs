@@ -250,4 +250,13 @@ public class HoldStateManager : MonoBehaviour
         UpdateHeldPosition(hit.point);
         UpdateHeldNormal(hit.normal);
     }
+
+    public void Clear()
+    {
+        _placedHolds.Clear();
+    
+        _heldObject = null;
+        _heldObjectBlueprint = null;
+        _heldObjectState = null;
+    }
 }

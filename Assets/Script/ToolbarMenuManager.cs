@@ -45,15 +45,15 @@ public class ToolbarMenuManager : MonoBehaviour
     void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
-
-        GetComponent<UIDocument>().sortingOrder = 10;
+        
+        Utilities.DisableElementFocusable(_root);
 
         // files
         _openButton = _root.Q<Button>("open-button");
-        _openButton.clicked += () => _ensureSavedAction(() => { MenuUtilities.Open(PopupManager); });
+        _openButton.clicked += () => _ensureSavedAction(Open);
 
         _newButton = _root.Q<Button>("new-button");
-        _newButton.clicked += () => _ensureSavedAction(MenuUtilities.New);
+        _newButton.clicked += () => _ensureSavedAction(New);
 
         _saveButton = _root.Q<Button>("save-button");
         _saveButton.clicked += () =>
@@ -206,6 +206,13 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private void _ensureSavedAction(Action action)
     {
+        // don't actually ensure save when nothing is initialized
+        if (!PreferencesManager.Initialized)
+        {
+            action();
+            return;
+        }
+
         if (_forceSaveAs)
         {
             PopupManager.CreateSavePopup("Save As",
@@ -253,5 +260,79 @@ public class ToolbarMenuManager : MonoBehaviour
                 using (var e = new NavigationSubmitEvent { target = _openButton })
                     _openButton.SendEvent(e);
         }
+    }
+    
+    /// <summary>
+    /// Attach an open project operation to a button.
+    /// </summary>
+    void AddOpenButtonOperation(Button button) => button.clicked += Open;
+
+    /// <summary>
+    /// Prompt opening an existing project.
+    /// </summary>
+    void Open()
+    {
+        StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
+            new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
+    }
+
+    /// <summary>
+    /// Called when opening an existing wall.
+    /// </summary>
+    private void OnOpenWall(string[] paths)
+    {
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
+            return;
+        
+        if (!StateImportExportManager.ImportPreferences(paths[0]))
+            return;
+
+        PreferencesManager.LastOpenWallPath = paths[0];
+        
+        StateImportExportManager.ImportState(PreferencesManager.LastOpenWallPath);
+    }
+
+    /// <summary>
+    /// Attach a new project operation to a button.
+    /// </summary>
+    public void AddNewButtonOperation(Button button) => button.clicked += New;
+
+    /// <summary>
+    /// Prompt opening a new wall and holds.
+    /// </summary>
+    public void New()
+    {
+        StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
+            new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, OnOpenNewWall);
+    }
+
+    /// <summary>
+    /// Called when opening a new wall.
+    /// Prompts opening holds if successful.
+    /// </summary>
+    private void OnOpenNewWall(string[] paths)
+    {
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
+            return;
+
+        PreferencesManager.CurrentWallModelPath = paths[0];
+
+        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, OnOpenNewHolds);
+    }
+
+    /// <summary>
+    /// Called when opening a new wall.
+    /// </summary>
+    private void OnOpenNewHolds(string[] paths)
+    {
+        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
+            return;
+
+        PreferencesManager.CurrentHoldModelsPath = paths[0];
+
+        PreferencesManager.LastOpenWallPath = null;
+
+        StateImportExportManager.ImportFromNew(PreferencesManager.CurrentWallModelPath, PreferencesManager.CurrentHoldModelsPath);
+        ForceSaveAs();
     }
 }

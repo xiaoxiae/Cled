@@ -23,7 +23,7 @@ public class WallManager : MonoBehaviour
     /// <summary>
     /// Generate the wall object from the given path, discarding the old one in the process.
     /// </summary>
-    public void InitializeFromPath(string path)
+    public void Initialize(string path)
     {
         if (!Wall)
             DestroyImmediate(Wall);
@@ -47,5 +47,13 @@ public class WallManager : MonoBehaviour
         MeshFilter mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
         MeshCollider collider = Wall.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
+    }
+
+    public void Clear()
+    {
+        if (Wall)
+            Destroy(Wall);
+
+        Metadata = null;
     }
 }
