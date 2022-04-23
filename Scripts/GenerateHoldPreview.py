@@ -29,16 +29,16 @@ parser.add_argument(
 parser.add_argument(
     "-q",
     "--quality",
-    help="The resulting image quality. Defaults to 60.",
+    help="The resulting JPG image quality. Defaults to 90.",
     type=int,
-    default=60,
+    default=90,
 )
 parser.add_argument(
     "-s",
-    "--size",
-    help="The resulting image size. Defaults to 1000 (by 1000).",
+    "--resolution",
+    help="The resulting image resolution. Defaults to 500 (by 500).",
     type=int,
-    default=1000,
+    default=500,
 )
 parser.add_argument(
     "-n",
@@ -57,9 +57,9 @@ parser.add_argument(
 parser.add_argument(
     "-l",
     "--light",
-    help="The distance of the light to the object, multiplied by camera distance. Defaults to 50.",
+    help="The distance of the light to the object, multiplied by camera distance. Defaults to 30.",
     type=int,
-    default=50,
+    default=30,
 )
 
 arguments = parser.parse_args()
@@ -158,8 +158,8 @@ bpy.context.view_layer.update()
 bpy.context.scene.render.image_settings.file_format = "JPEG"
 bpy.context.scene.render.image_settings.quality = arguments.quality
 
-bpy.context.scene.render.resolution_x = arguments.size
-bpy.context.scene.render.resolution_y = arguments.size
+bpy.context.scene.render.resolution_x = arguments.resolution
+bpy.context.scene.render.resolution_y = arguments.resolution
 
 try:
     frames = []
@@ -189,8 +189,11 @@ try:
             frames_glob,
             "-c:v",
             "libvpx",
+            "-crf",
+            "18",
             "-b:v",
-            "1M",
+            "0",
+            "-y",  # force overwrite
             "-c:a",
             "libvorbis",
             arguments.output + "-preview.webm",
