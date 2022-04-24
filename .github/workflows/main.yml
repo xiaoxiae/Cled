@@ -69,3 +69,6 @@ jobs:
         with:
           files: StandaloneLinux64.zip
           name: Release ${{ github.ref }}
+          body: TODO
+          draft: true
+          prerelease: false
