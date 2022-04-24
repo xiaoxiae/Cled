@@ -1,0 +1,74 @@
+name: Build
+
+# on:
+#   push:
+#     tags:
+#       - '*'
+
+on:
+  push:
+    branches: '**'
+
+env:
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+
+jobs:
+  build:
+    name: Build my project
+    runs-on: ubuntu-latest
+    steps:
+
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Cache
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library
+
+            #      # Build Windows
+            #      - name: Build project
+            #        uses: game-ci/unity-builder@v2
+            #        with:
+            #          targetPlatform: StandaloneWindows64
+            #
+            #      # Build Mac
+            #      - name: Build project
+            #        uses: game-ci/unity-builder@v2
+            #        with:
+            #          targetPlatform: StandaloneOSX
+
+      # Build Linux
+      - name: Build project
+        uses: game-ci/unity-builder@v2
+        with:
+          targetPlatform: StandaloneLinux64
+
+      # Output
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Build
+          path: build
+
+      # Return License (https://game.ci/docs/github/returning-a-license)
+      - name: Return license
+        uses: game-ci/unity-return-license@v1
+        if: always()
+
+#      - name: Zip build
+#        run: |
+#          pushd build/StandaloneWindows64
+#          zip -r ../../StandaloneWindows64.zip .
+#          popd
+#
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          files: StandaloneWindows64.zip
+#          name: Release ${{ github.ref }}
