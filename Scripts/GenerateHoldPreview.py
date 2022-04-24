@@ -57,9 +57,9 @@ parser.add_argument(
 parser.add_argument(
     "-l",
     "--light",
-    help="The distance of the light to the object, multiplied by the square root of the camera distance. Defaults to 30.",
+    help="The distance of the light to the object. Defaults to 30.",
     type=int,
-    default=12,
+    default=8,
 )
 
 arguments = parser.parse_args()
@@ -143,9 +143,9 @@ for step in range(rotation_steps + 1):
 
 # move the light relative to camera
 light.location = (
-    arguments.light * sqrt(max_dist),
-    -arguments.light * sqrt(max_dist),
-    arguments.light * sqrt(max_dist)
+    arguments.light,
+    -arguments.light,
+    arguments.light
 )
 
 # fit the view to the entire hold + scale it down a bit
