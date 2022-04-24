@@ -9,9 +9,9 @@ The <strong>cli</strong>mber's <strong>ed</strong>itor – a 3D editor designed 
 This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](github.com/climber-Apps/Clis), released under the GPLv3 license.
 
 ## Running Cled
-First, head over to the [`Releases` page](https://github.com/Climber-Tools/Cled/releases) and download the lastest version for your system.
+First, download the lastest version from the [Releases page](https://github.com/Climber-Tools/Cled/releases).
 
-To actually use Cled, you need a wall and holds dataset.
+To use Cled, you need a wall and holds dataset.
 A dataset example, along with the specification, can be found in `Models/Example`.
 This dataset can then be imported to Cled either by `File > New`, or by pressing `Ctrl+N`.
 
