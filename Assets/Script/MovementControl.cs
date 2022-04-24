@@ -49,6 +49,9 @@ public class MovementControl : MonoBehaviour
 
     void Update()
     {
+	    if (!PreferencesManager.Initialized)
+		    return;
+        
         // when time stops, don't do anything in the editor
         // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
         if (Time.timeScale == 0)

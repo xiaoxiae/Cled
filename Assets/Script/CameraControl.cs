@@ -25,7 +25,11 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     public void PointCameraAt(Vector3 point) => transform.LookAt(point);
 
-    void Update() {
+    void Update()
+    {
+	    if (!PreferencesManager.Initialized)
+		    return;
+	    
 	    // don't move the camera when time doesn't run
         if (Time.timeScale == 0)
             return;

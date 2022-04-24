@@ -220,14 +220,15 @@ public class StateImportExportManager : MonoBehaviour
             lightManager.PlayerLightEnabled = obj.Player.Light;
 
             holdPickerManager.Initialize();
+            
+            PreferencesManager.Initialized = true;
+            return true;
         }
         catch (Exception e)
         {
             popupManager.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
             return false;
         }
-
-        return true;
     }
 
     /// <summary>
@@ -315,6 +316,7 @@ public class StateImportExportManager : MonoBehaviour
             
             holdPickerManager.Initialize();
 
+            PreferencesManager.Initialized = true;
             return true;
         }
         catch (Exception e)

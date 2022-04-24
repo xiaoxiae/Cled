@@ -144,8 +144,6 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Capture the screen as a coroutine, hiding all of the UI in the process.
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
     public IEnumerator CaptureScreen(string path)
     {
         yield return null;
@@ -261,11 +259,6 @@ public class ToolbarMenuManager : MonoBehaviour
                     _openButton.SendEvent(e);
         }
     }
-    
-    /// <summary>
-    /// Attach an open project operation to a button.
-    /// </summary>
-    void AddOpenButtonOperation(Button button) => button.clicked += Open;
 
     /// <summary>
     /// Prompt opening an existing project.
@@ -291,11 +284,6 @@ public class ToolbarMenuManager : MonoBehaviour
         
         StateImportExportManager.ImportState(PreferencesManager.LastOpenWallPath);
     }
-
-    /// <summary>
-    /// Attach a new project operation to a button.
-    /// </summary>
-    public void AddNewButtonOperation(Button button) => button.clicked += New;
 
     /// <summary>
     /// Prompt opening a new wall and holds.
