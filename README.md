@@ -6,32 +6,63 @@
 The <strong>cli</strong>mber's <strong>ed</strong>itor – a 3D editor designed for efficient virtual routesetting.
 </p>
 
-This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](github.com/climber-Apps/Clis).
+This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](github.com/climber-Apps/Clis), released under the GPLv3 license.
 
 ## Running Cled
-TODO
+First, head over to the [`Releases` page](https://github.com/Climber-Tools/Cled/releases) and download the lastest version for your system.
 
-## Controls
-The application has three modes (the current one being on the top right):
+To actually use Cled, you need a wall and holds dataset.
+A dataset example, along with the specification, can be found in `Models/Example`.
+This dataset can then be imported to Cled either by `File > New`, or by pressing `Ctrl+N`.
 
-- **NORMAL** – the default mode you're in
-- **EDITING** – the mode when you're in when you're placing a hold
-- **ROUTE** – the mode you're in when you're editing a route
+For additional information, see the [thesis](https://github.com/Climber-Tools/Thesis).
 
 ### Key bindings
+While most of the controls are accessible via the UI, here is a comprehensive list of key bindings for efficiently controlling the editor:
 
-| Key                                  | Action                                        |
-| ---                                  | ---                                           |
-| left click                           | pick up/place the hovered/held hold           |
-| right click                          | select the hovered route                      |
-|                                      |                                               |
-| escape                               | opens the escape menu                         |
-| `e`                                  | toggles between NORMAL and EDITING            |
-| `tab` or `q`                         | opens holds menu                              |
-|                                      |                                               |
-| `d` or `delete`                      | delete the hovered hold                       |
-| shift + left press + mouse (EDITING) | rotate the held hold                          |
-| `t`/`b`                              | toggle the hovered hold as ending/starting    |
-| control + left click (ROUTE)         | toggle the hovered hold as being in the route |
-| wheel up/down                        | cycle the selected holds                      |
+#### Movement
+|         |                                  |
+| ---     | ---                              |
+| `WSAD`  | move forward/backward/left/right |
+| `space` | fly upward                       |
+| `shift` | fly downward                     |
 
+#### UI
+|                                        |                          |
+| ---                                    | ---                      |
+| `Esc`                                  | pause                    |
+| `Q` or `Tab`                           | open holds menu          |
+| right button on selected route (ROUTE) | open route settings menu |
+
+#### Editing
+|                                 |                                           |
+| ---                             | ---                                       |
+| left button                     | pick up/place the hovered/held hold       |
+| right button                    | select the hovered route                  |
+| `E`                             | toggle between NORMAL and EDITING         |
+| `R` or `Delete`                 | delete hovered hold                       |
+| middle button (EDITING) + mouse | rotate held hold                          |
+| `T`/`B`                         | toggle hovered hold as ending/starting    |
+| control + left click (ROUTE)    | toggle hovered hold as being in the route |
+| wheel up/down                   | cycle filtered holds                      |
+
+#### Import/Export
+|                |                            |
+| ---            | ---                        |
+| `Ctrl+N`       | open new dataset           |
+| `Ctrl+O`       | open existing Cled project |
+| `Ctrl+S`       | save project               |
+| `Ctrl+Shift+S` | save project as            |
+| `Ctrl+Q`       | quit                       |
+
+#### Images
+|                |                  |
+| ---            | ---              |
+| `Ctrl+P`       | capture image    |
+| `Ctrl+Shift+P` | capture image as |
+
+#### Lighting
+|          |                                    |
+| ---      | ---                                |
+| `F`      | toggle user light                  |
+| `Ctrl+F` | add new light at the user position |
