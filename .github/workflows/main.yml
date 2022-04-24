@@ -60,15 +60,16 @@ jobs:
       - name: Return license
         uses: game-ci/unity-return-license@v1
         if: always()
+        continue-on-error: true
 
-#      - name: Zip build
-#        run: |
-#          pushd build/StandaloneWindows64
-#          zip -r ../../StandaloneWindows64.zip .
-#          popd
-#
-#      - name: Release
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: StandaloneWindows64.zip
-#          name: Release ${{ github.ref }}
+      - name: Zip Linux build
+        run: |
+          pushd build/StandaloneLinux64
+          zip -r ../../StandaloneLinux64.zip .
+          popd
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: StandaloneLinux64.zip
+          name: Release ${{ github.ref }}
