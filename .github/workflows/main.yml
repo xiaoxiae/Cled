@@ -1,13 +1,9 @@
 name: Build
 
-# on:
-#   push:
-#     tags:
-#       - '*'
-
 on:
   push:
-    branches: '**'
+    tags:
+      - '*'
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
