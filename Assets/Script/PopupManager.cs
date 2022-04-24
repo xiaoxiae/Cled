@@ -32,7 +32,7 @@ public class PopupManager : MonoBehaviour
         var root = document.rootVisualElement;
         Utilities.DisableElementFocusable(root);
 
-        pauseManager.Pause(PauseType.Popup);
+        pauseManager.PauseType(PauseType.Popup);
 
         root.Q<Label>("contents").text = contents;
         root.Q<Button>("ok-button").clicked += Close;
@@ -47,7 +47,7 @@ public class PopupManager : MonoBehaviour
 
         var root = document.rootVisualElement;
 
-        pauseManager.Pause(PauseType.Popup);
+        pauseManager.PauseType(PauseType.Popup);
 
         root.Q<Button>("operation-button").text = operationName;
         root.Q<Button>("operation-button").clicked += operationAction;

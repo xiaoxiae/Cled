@@ -180,8 +180,6 @@ public class HoldPickerManager : MonoBehaviour
             _holdToGridDictionary[blueprint] = item;
             _gridStateDictionary[item] = false;
 
-            Deselect(item);
-
             item.styleSheets.Add(globalStyleSheets);
             item.AddToClassList("hold-picker-hold");
 
@@ -214,6 +212,8 @@ public class HoldPickerManager : MonoBehaviour
 
             item.style.backgroundImage =
                 new StyleBackground(Background.FromTexture2D(_gridTextureDictionary[item]));
+
+            Deselect(item);
         }
 
         FillGrid(_allHolds);
@@ -331,7 +331,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         // CTRL+A selects all filtered holds (when the holdpicker is open)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
-            pauseManager.IsPaused(PauseType.HoldPicker))
+            pauseManager.IsTypePaused(PauseType.HoldPicker))
             foreach (var hold in _currentlyFilteredHolds)
                 Select(_holdToGridDictionary[hold]);
 
@@ -339,7 +339,7 @@ public class HoldPickerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
             // don't open it when popups or route settings are present
-            if (pauseManager.IsPaused(PauseType.Popup) || pauseManager.IsPaused(PauseType.RouteSettings))
+            if (pauseManager.IsTypePaused(PauseType.Popup) || pauseManager.IsTypePaused(PauseType.RouteSettings))
                 return;
 
             // if there are no holds, don't show it at all
@@ -350,14 +350,14 @@ public class HoldPickerManager : MonoBehaviour
             }
 
 
-            if (pauseManager.IsPaused(PauseType.HoldPicker))
+            if (pauseManager.IsTypePaused(PauseType.HoldPicker))
             {
                 Close();
             }
             else
             {
                 _root.visible = true;
-                pauseManager.Pause(PauseType.HoldPicker);
+                pauseManager.PauseType(PauseType.HoldPicker);
             }
 
             // TODO: while this does fix it, it is pretty buggy

@@ -23,35 +23,35 @@ public class GeneralUIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             // if we're not paused at all, pause
-            if (pauseManager.IsUnpaused())
+            if (pauseManager.IsAllUnpaused())
             {
-                pauseManager.Pause(PauseType.Normal);
+                pauseManager.PauseType(PauseType.Normal);
                 return;
             }
             
             // else close popups first
-            if (pauseManager.IsPaused(PauseType.Popup)) {
+            if (pauseManager.IsTypePaused(PauseType.Popup)) {
                 pauseManager.UnpauseType(PauseType.Popup);
                 popupManager.Close();
                 return;
             }
             
             // then hold picker
-            if (pauseManager.IsPaused(PauseType.HoldPicker)) {
+            if (pauseManager.IsTypePaused(PauseType.HoldPicker)) {
                 pauseManager.UnpauseType(PauseType.HoldPicker);
                 holdPickerManager.Close();
                 return;
             }
                 
             // then route settings
-            if (pauseManager.IsPaused(PauseType.RouteSettings)) {
+            if (pauseManager.IsTypePaused(PauseType.RouteSettings)) {
                 pauseManager.UnpauseType(PauseType.RouteSettings);
                 routeSettingsMenuManager.Close();
                 return;
             }
             
             // then normal pause
-            if (pauseManager.IsPaused(PauseType.Normal)) {
+            if (pauseManager.IsTypePaused(PauseType.Normal)) {
                 pauseManager.UnpauseType(PauseType.Normal);
                 return;
             }

@@ -168,6 +168,6 @@ public class RouteSettingsMenuManager : MonoBehaviour
         
         _setFromRoute(route);
 
-        pauseManager.Pause(PauseType.RouteSettings);
+        pauseManager.PauseType(PauseType.RouteSettings);
     }
 }

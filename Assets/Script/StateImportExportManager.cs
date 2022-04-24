@@ -131,10 +131,7 @@ public class StateImportExportManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Import the preferences (path to holds and to wall).
-    ///
-    /// Since this is a static function called either from the main menu or ingame, a popup manager object
-    /// must be passed for the popup to properly show.
+    /// Import the preferences (path to holds and to wall), returning true if successful.
     /// </summary>
     public bool ImportPreferences(string path)
     {
@@ -160,7 +157,7 @@ public class StateImportExportManager : MonoBehaviour
     /// 
     /// Return true if successful, else false.
     /// </summary>
-    public bool ImportState(string path)
+    public void ImportState(string path)
     {
         try
         {
@@ -222,12 +219,13 @@ public class StateImportExportManager : MonoBehaviour
             holdPickerManager.Initialize();
             
             PreferencesManager.Initialized = true;
-            return true;
+            return;
         }
         catch (Exception e)
         {
+            Clear();
             popupManager.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
-            return false;
+            return;
         }
     }
 
@@ -304,6 +302,8 @@ public class StateImportExportManager : MonoBehaviour
 
     /// <summary>
     /// Initialize a new state from a wall model and holds folder.
+    ///
+    /// Returns true if successful, else false.
     /// </summary>
     public bool ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
     {
@@ -321,6 +321,7 @@ public class StateImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
+            Clear();
             popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }

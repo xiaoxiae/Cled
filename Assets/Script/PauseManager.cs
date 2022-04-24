@@ -35,14 +35,14 @@ public class PauseManager : MonoBehaviour
     {
         _pauses.Remove(type);
         
-        if (_pauses.Count == 1 && _pauses.Contains(PauseType.Normal))
-            UnpauseType(PauseType.Normal);
+        if (_pauses.Count == 1 && _pauses.Contains(global::PauseType.Normal))
+            UnpauseType(global::PauseType.Normal);
         
         if (_pauses.Count == 0)
             _unpause();
     }
 
-    public void Pause(PauseType type)
+    public void PauseType(PauseType type)
     {
         _pauses.Add(type);
         
@@ -78,12 +78,12 @@ public class PauseManager : MonoBehaviour
     /// <summary>
     /// Return true if the editor is currently unpaused.
     /// </summary>
-    public bool IsUnpaused() => _pauses.Count == 0;
+    public bool IsAllUnpaused() => _pauses.Count == 0;
 
     /// <summary>
     /// Return true if the editor is currently unpaused via this pause type.
     /// </summary>
-    public bool IsPaused(PauseType type) => _pauses.Contains(type);
+    public bool IsTypePaused(PauseType type) => _pauses.Contains(type);
 
     /// <summary>
     /// Add a hook function that gets called every time the editor is paused.

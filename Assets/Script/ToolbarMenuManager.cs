@@ -130,8 +130,16 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save, possibly failing if the save path doesn't exist yet.
     /// </summary>
-    private bool Save()
+    private bool Save(bool popup=true)
     {
+        if (!PreferencesManager.Initialized && popup)
+        {
+            if (!PauseManager.IsTypePaused(PauseType.Popup))
+                PopupManager.CreateInfoPopup("Nothing to save as!");
+            
+            return false;
+        }
+
         if (String.IsNullOrWhiteSpace(PreferencesManager.LastOpenWallPath))
             return false;
 
@@ -175,10 +183,31 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save as.
     /// </summary>
-    private bool SaveAs()
+    private bool SaveAs(bool popup=true)
     {
-        var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
-            new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
+        if (!PreferencesManager.Initialized && popup)
+        {
+                if (!PauseManager.IsTypePaused(PauseType.Popup))
+                    PopupManager.CreateInfoPopup("Nothing to save!");
+            
+            return false;
+        }
+
+        string path;
+        if (!PauseManager.IsTypePaused(PauseType.Popup))
+        {
+            PauseManager.PauseType(PauseType.Popup);
+            
+            path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
+                new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
+
+            PauseManager.UnpauseType(PauseType.Popup);
+        }
+        else
+        {
+            path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
+                new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
+        }
 
         if (string.IsNullOrWhiteSpace(path))
             return false;
@@ -216,7 +245,7 @@ public class ToolbarMenuManager : MonoBehaviour
             PopupManager.CreateSavePopup("Save As",
                 () =>
                 {
-                    if (SaveAs())
+                    if (SaveAs(false))
                         action();
                 },
                 action,
@@ -228,7 +257,7 @@ public class ToolbarMenuManager : MonoBehaviour
             PopupManager.CreateSavePopup("Save",
                 () =>
                 {
-                    if (Save())
+                    if (Save(false))
                         action();
                 },
                 action,
@@ -240,7 +269,7 @@ public class ToolbarMenuManager : MonoBehaviour
     void Update()
     {
         // only work if a popup isn't already present
-        if (!PauseManager.IsPaused(PauseType.Popup))
+        if (!PauseManager.IsTypePaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
                 using (var e = new NavigationSubmitEvent { target = _saveAsButton })

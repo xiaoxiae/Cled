@@ -15,8 +15,6 @@ public class EditorController : MonoBehaviour
     public CameraControl CameraControl;
     public HighlightManager HighlightManager;
     public RouteManager RouteManager;
-    public WallManager WallManager;
-    public StateImportExportManager StateImportExportManager;
     public ToolbarMenuManager ToolbarMenuManager;
     public PopupManager PopupManager;
     public HoldPickerManager HoldPickerManager;
