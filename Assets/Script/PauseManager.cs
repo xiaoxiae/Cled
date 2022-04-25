@@ -11,6 +11,7 @@ public enum PauseType
     Popup,
     HoldPicker,
     RouteSettings,
+    Settings,
 }
 
 /// <summary>

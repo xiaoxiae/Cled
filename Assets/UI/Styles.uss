@@ -147,7 +147,7 @@ Label:disabled { color: var(--disabled-text-color); }
     max-width: 600px;
 }
 
-/* --- SETTINGS --- */
+/* --- ROUTE SETTINGS --- */
 .settings-panel Label { background-color: var(--popup-color); }
 .settings-panel TextField > Label { min-width: 80px; }
 .settings-panel Dropdown { min-width: 100px; }
@@ -158,3 +158,13 @@ Label:disabled { color: var(--disabled-text-color); }
     border-color: var(--border-color);
     -unity-text-align: middle-left;
 }
+
+/* --- SETTINGS --- */
+.all-settings-panel {
+    background-color: var(--popup-color);
+    border-width: 1px;
+    border-color: var(--border-color);
+    -unity-text-align: middle-left;
+}
+
+.all-settings-panel TextField > TextInput { -unity-text-align: middle-right; }

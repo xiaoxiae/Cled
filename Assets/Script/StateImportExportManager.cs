@@ -17,24 +17,36 @@ public class SerializableState
     public SerializablePlayer Player;
 
     // paths to wall and models
-    public string WallModelPath { get; set; }
-    public string HoldModelsPath { get; set; }
+    public string WallModelPath;
+    public string HoldModelsPath;
 
     // given a hold instance, store its id and state
-    public Dictionary<string, SerializableHold> Holds { get; set; }
+    public Dictionary<string, SerializableHold> Holds;
 
     // all routes
-    public List<SerializableRoute> Routes { get; set; }
+    public List<SerializableRoute> Routes;
 
     // starting/ending holds
-    public List<string> StartingHoldIDs { get; set; }
-    public List<string> EndingHoldIDs { get; set; }
+    public List<string> StartingHoldIDs;
+    public List<string> EndingHoldIDs;
     
     // selected holds
-    public List<string> SelectedHoldBlueprintIDs { get; set; }
+    public List<string> SelectedHoldBlueprintIDs;
 
     // lights
-    public SerializableLights Lights { get; set; }
+    public SerializableLights Lights;
+
+    // capture
+    public SerializableCaptureSettings CaptureSettings;
+}
+
+/// <summary>
+/// Image capture settings.
+/// </summary>
+public class SerializableCaptureSettings
+{
+    public string ImagePath;
+    public int ImageSupersize;
 }
 
 /// <summary>
@@ -42,7 +54,7 @@ public class SerializableState
 /// </summary>
 public class SerializableRoute
 {
-    public List<string> HoldIDs { get; set; }
+    public List<string> HoldIDs;
 
     public string Name;
     public string Grade;
@@ -71,7 +83,6 @@ public class SerializableLights
     public float Intensity;
     public float ShadowStrength;
 }
-
 
 /// <summary>
 /// Player.
@@ -210,13 +221,18 @@ public class StateImportExportManager : MonoBehaviour
             movementControl.Position = obj.Player.Position;
             cameraControl.Orientation = obj.Player.Orientation;
             movementControl.Flying = obj.Player.Flying;
+            
+            // capture image settings
+            PreferencesManager.CaptureImagePath = obj.CaptureSettings.ImagePath;
+            PreferencesManager.ImageSupersize = obj.CaptureSettings.ImageSupersize;
 
             // import lights
+            PreferencesManager.LightIntensity = obj.Lights.Intensity;
+            PreferencesManager.ShadowStrength = obj.Lights.ShadowStrength;
+            
             foreach (Vector3 position in obj.Lights.Positions)
                 lightManager.AddLight(position);
 
-            lightManager.Intensity = obj.Lights.Intensity;
-            lightManager.ShadowStrength = obj.Lights.ShadowStrength;
             lightManager.PlayerLightEnabled = obj.Player.Light;
 
             holdPickerManager.Initialize();
@@ -293,8 +309,13 @@ public class StateImportExportManager : MonoBehaviour
                     Lights = new SerializableLights
                     {
                         Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
-                        Intensity = lightManager.Intensity,
-                        ShadowStrength = lightManager.ShadowStrength,
+                        Intensity = PreferencesManager.LightIntensity,
+                        ShadowStrength = PreferencesManager.LightIntensity,
+                    },
+                    CaptureSettings = new SerializableCaptureSettings
+                    {
+                        ImagePath = PreferencesManager.CaptureImagePath,
+                        ImageSupersize = PreferencesManager.ImageSupersize,
                     }
                 });
 
@@ -323,6 +344,8 @@ public class StateImportExportManager : MonoBehaviour
             
             holdPickerManager.Initialize();
 
+            PreferencesManager.SetToDefault();
+            
             PreferencesManager.Initialized = true;
             return true;
         }

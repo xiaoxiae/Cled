@@ -7,6 +7,7 @@ public class GeneralUIManager : MonoBehaviour
 {
     public HoldPickerManager holdPickerManager;
     public RouteSettingsMenuManager routeSettingsMenuManager;
+    public SettingsMenuManager settingsMenuManager;
     public PopupManager popupManager;
     
     public PauseManager pauseManager;
@@ -47,6 +48,13 @@ public class GeneralUIManager : MonoBehaviour
             if (pauseManager.IsTypePaused(PauseType.RouteSettings)) {
                 pauseManager.UnpauseType(PauseType.RouteSettings);
                 routeSettingsMenuManager.Close();
+                return;
+            }
+            
+            // then general settings
+            if (pauseManager.IsTypePaused(PauseType.Settings)) {
+                pauseManager.UnpauseType(PauseType.Settings);
+                settingsMenuManager.Close();
                 return;
             }
             

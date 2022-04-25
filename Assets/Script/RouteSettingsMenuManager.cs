@@ -18,7 +18,7 @@ public class RouteSettingsMenuManager : MonoBehaviour
 
     private bool _initialized;
 
-    void Start()
+    void Awake()
     {
         var document = GetComponent<UIDocument>();
         

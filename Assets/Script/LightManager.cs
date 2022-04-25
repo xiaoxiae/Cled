@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,14 +18,14 @@ public class LightManager : MonoBehaviour
         set
         {
             _playerLightEnabled = value;
-            
+
             PlayerLight.GetComponent<Light>().enabled = value;
-            
+
             foreach (var action in _playerLightWatchers)
                 action(value);
         }
     }
-    
+
     public void AddPlayerLightWatcher(Action<bool> action) => _playerLightWatchers.Add(action);
 
     /// <summary>
@@ -34,11 +33,14 @@ public class LightManager : MonoBehaviour
     /// </summary>
     public void Clear()
     {
-        foreach(GameObject light in _lights)
+        foreach (GameObject light in _lights)
             Destroy(light);
-        
+
         _lights.Clear();
         PlayerLightEnabled = true;
+        
+        UpdateLightIntensity();
+        UpdateShadowStrength();
     }
 
     /// <summary>
@@ -47,35 +49,17 @@ public class LightManager : MonoBehaviour
     /// <returns></returns>
     public List<Vector3> GetPositions() => _lights.Select(x => x.transform.position).ToList();
 
-    private float _intensity = 0.2f;
+    /// <summary>
+    /// Update shadow strength according to the preferences manager.
+    /// </summary>
+    public void UpdateShadowStrength() =>
+        _applyActionToLights(light => { light.shadowStrength = PreferencesManager.ShadowStrength; });
 
     /// <summary>
-    /// The intensity of the lights.
+    /// Update light intensity according to the preferences manager.
     /// </summary>
-    public float Intensity
-    {
-        get => _intensity;
-        set
-        {
-            _applyActionToLights(light => { light.intensity = value; });
-            _intensity = value;
-        }
-    }
-
-    private float _shadowStrength = 0.2f;
-
-    /// <summary>
-    /// The strength of the shadows.
-    /// </summary>
-    public float ShadowStrength
-    {
-        get => _shadowStrength;
-        set
-        {
-            _applyActionToLights(light => { light.shadowStrength = value; });
-            _intensity = value;
-        }
-    }
+    public void UpdateLightIntensity() =>
+        _applyActionToLights(light => { light.intensity = PreferencesManager.LightIntensity; });
 
     /// <summary>
     /// Apply a given action to all of the lights.
@@ -102,7 +86,7 @@ public class LightManager : MonoBehaviour
         GameObject lightGameObject = Instantiate(PlayerLight);
         lightGameObject.GetComponent<Light>().enabled = true;
         lightGameObject.transform.position = position;
-        
+
         _lights.Add(lightGameObject);
     }
 

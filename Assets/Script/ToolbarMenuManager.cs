@@ -12,6 +12,7 @@ public class ToolbarMenuManager : MonoBehaviour
     public PopupManager PopupManager;
     public PauseManager PauseManager;
     public LightManager lightManager;
+    public SettingsMenuManager settingsMenuManager;
 
     private bool _forceSaveAs;
 
@@ -27,6 +28,7 @@ public class ToolbarMenuManager : MonoBehaviour
     private Button _saveAsButton;
     private Button _newButton;
     private Button _openButton;
+    private Button _preferencesButton;
 
     void Start()
     {
@@ -64,6 +66,9 @@ public class ToolbarMenuManager : MonoBehaviour
 
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
+        
+        _preferencesButton = _root.Q<Button>("preferences-button");
+        _preferencesButton.clicked += () => settingsMenuManager.Show();
 
         var quitButton = _root.Q<Button>("quit-button");
         quitButton.clicked += Quit;
@@ -175,7 +180,7 @@ public class ToolbarMenuManager : MonoBehaviour
         // Take screenshot
         ScreenCapture.CaptureScreenshot(
             path,
-            PreferencesManager.CaptureImageMultiplier
+            PreferencesManager.ImageSupersize
         );
 
         // Show UI after we're done

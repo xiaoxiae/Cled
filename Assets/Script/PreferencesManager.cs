@@ -3,23 +3,37 @@ using UnityEngine;
 
 public static class PreferencesManager
 {
+    public static float DefaultShadowStrength = 0.2f;
+    public static float DefaultLightIntensity = 0.2f;
+    public static string DefaultCaptureImagePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+    public static int DefaultImageSupersize = 1;
+    
     /// <summary>
     /// The path to where the image captures are stored.
     /// Defaults to the pictures folder.
     /// </summary>
     public static string CaptureImagePath
     {
-        get => PlayerPrefs.GetString("CaptureImagePath", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+        get => PlayerPrefs.GetString("CaptureImagePath", DefaultCaptureImagePath);
         set => PlayerPrefs.SetString("CaptureImagePath", value);
     }
 
-    /// <summary>
-    /// How 
-    /// </summary>
-    public static int CaptureImageMultiplier
+    public static int ImageSupersize
     {
-        get => PlayerPrefs.GetInt("CaptureImageMultiplier", 1);
-        set => PlayerPrefs.GetInt("CaptureImageMultiplier", value);
+        get => PlayerPrefs.GetInt("ImageSupersize", DefaultImageSupersize);
+        set => PlayerPrefs.SetInt("ImageSupersize", value);
+    }
+    
+    public static float LightIntensity
+    {
+        get => PlayerPrefs.GetFloat("LightIntensity", DefaultLightIntensity);
+        set => PlayerPrefs.SetFloat("LightIntensity", value);
+    }
+    
+    public static float ShadowStrength
+    {
+        get => PlayerPrefs.GetFloat("ShadowStrength", DefaultShadowStrength);
+        set => PlayerPrefs.SetFloat("ShadowStrength", value);
     }
 
     /// <summary>
@@ -57,4 +71,15 @@ public static class PreferencesManager
     /// Used to determine things like whether to show "save or discard" when opening a new project.
     /// </summary>
     public static bool Initialized { get; set; }
+
+    /// <summary>
+    /// Reset settings to default.
+    /// </summary>
+    public static void SetToDefault()
+    {
+        ShadowStrength = DefaultShadowStrength;
+        LightIntensity = DefaultLightIntensity;
+        CaptureImagePath = DefaultCaptureImagePath;
+        ImageSupersize = DefaultImageSupersize;
+    }
 }

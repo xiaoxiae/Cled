@@ -2,6 +2,8 @@
     <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
     <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 1;">
         <ui:VisualElement tooltip="panel" class="settings-panel" style="padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;">
+            <ui:Label text="Route Settings" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; font-size: 28px;" />
+            <ui:VisualElement class="small-vspace" />
             <ui:TextField picking-mode="Ignore" label="Name" name="name-textfield" style="min-width: 500px;" />
             <ui:TextField picking-mode="Ignore" label="Grade" name="grade-textfield" style="min-width: 500px;">
                 <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="grade-dropdown" focusable="false" />

@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
+    <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 1;">
+        <ui:VisualElement tooltip="panel" class="settings-panel" style="padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px; width: 360px;">
+            <ui:Label text="Settings" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; font-size: 28px;" />
+            <ui:VisualElement name="spacing" class="small-vspace" />
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:Label text="Image Path" display-tooltip-when-elided="true" style="margin-left: 7px;" />
+                <ui:Button text="Button" display-tooltip-when-elided="true" name="image-path-button" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:TextField picking-mode="Ignore" label="Image supersize" value="1" text="1" name="image-superscale-textfield" />
+            <ui:VisualElement name="spacer" class="small-vspace" />
+            <ui:TextField picking-mode="Ignore" label="Light Intensity" value="0.2" text="0.2" name="light-intensity-textfield" />
+            <ui:TextField picking-mode="Ignore" label="Shadow Strength" value="0.2" text="0.2" name="shadow-strength-textfield" />
+            <ui:VisualElement name="spacer" class="small-vspace" />
+            <ui:VisualElement style="flex-direction: row; justify-content: center;">
+                <ui:Button text="Apply" display-tooltip-when-elided="true" name="apply-button" />
+                <ui:Button text="Discard" display-tooltip-when-elided="true" name="discard-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
