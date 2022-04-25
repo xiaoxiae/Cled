@@ -1,5 +1,10 @@
 .idea/
-Models/
+
+!Models/
+
+Models/*
+!Models/Example/
+
 Ignored/*
 
 # This .gitignore file should be placed at the root of your Unity project directory

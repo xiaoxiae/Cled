@@ -1,0 +1,174 @@
+11b8c0403160:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 13:32:08.687279
+  volume: 5.23169694632327e-05
+259dbe737256:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:20:24.957746
+  volume: 0.001079539814562287
+  type: pinch
+28a0ee9828bf:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 13:15:26.345419
+  volume: 0.0008124105718773283
+  type: jug
+468d50cd2aba:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 13:12:28.840441
+  volume: 0.0011042294375416782
+  type: jug
+493bc8fd0a60:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 12:49:30.904372
+  volume: 0.0003135281475540829
+  type: jug
+52d576425a6f:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 13:25:46.160780
+  volume: 0.0010186852542802948
+  type: pinch
+60a09f2d32f1:
+  color:
+  - blue
+  - '#0000FF'
+  date: 2022-04-23 17:46:20.542935
+  volume: 0.0009301309237023398
+  type: pinch
+60aa100bb8c2:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 12:51:17.888521
+  volume: 0.00014570296141951832
+  type: foothold
+61049f545219:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 13:34:25.311731
+  volume: 7.336110468097984e-05
+  type: crimp
+68f3315c68bb:
+  color:
+  - blue
+  - '#0000FF'
+  date: 2022-04-23 18:29:59.810045
+  volume: 0.0015752826601622368
+  type: sloper
+73444b85c112:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:23:35.509661
+  volume: 3.0037188376540157e-05
+  type: foothold
+76cbe509498d:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:26:25.361332
+  volume: 8.654207022098e-05
+8511eb3d128d:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:36:49.221042
+  volume: 0.0004840246442007513
+878a22650ff9:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 13:18:30.580395
+  volume: 0.00078741412517578
+  type: jug
+8a06b6afd207:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:29:14.289528
+  volume: 4.6083316845085276e-05
+  type: crimp
+8d4a5a14c082:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 12:59:27.705763
+  volume: 0.0007802683330200063
+  type: jug
+94fae257366a:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 13:23:53.209831
+  volume: 0.0006121957812753809
+  type: jug
+b684f837cfa4:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 13:28:48.118960
+  volume: 0.00021704691159248773
+b6d603bda0ea:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:15:13.945754
+  volume: 2.9212494292822416e-05
+  type: crimp
+b8876a64bbf2:
+  color:
+  - blue
+  - '#0000FF'
+  date: 2022-04-23 17:54:37.527324
+  volume: 0.0006579774964229543
+c09ae519c48f:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 12:53:34.866296
+  volume: 0.00019487244676522688
+  type: crimp
+cd6967e4b1d6:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:31:58.274638
+  volume: 7.720527327516585e-05
+  type: crimp
+d0c297bc9e0b:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 18:18:41.807407
+  volume: 0.00011391281128518117
+e89c3ad8e79a:
+  color:
+  - salmon
+  - '#FA8072'
+  date: 2022-04-23 17:34:31.532994
+  volume: 8.856487380506855e-05
+ebdea74a9547:
+  color:
+  - blue
+  - '#0000FF'
+  date: 2022-04-23 18:35:11.169462
+  volume: 0.0032876820116326385
+  type: sloper
+f3165ee2cebc:
+  color:
+  - pink
+  - '#FFC0CB'
+  date: 2022-04-23 13:07:48.494314
+  volume: 0.00037834150149214233
