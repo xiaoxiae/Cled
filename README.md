@@ -6,16 +6,16 @@
 The <strong>cli</strong>mber's <strong>ed</strong>itor – a 3D editor designed for efficient virtual routesetting.
 </p>
 
-This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](github.com/climber-Apps/Clis), released under the GPLv3 license.
+This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](https://github.com/Climber-Apps/Cled/), released under the GPLv3 license.
 
 ## Running Cled
-First, download the lastest version from the [Releases page](https://github.com/Climber-Tools/Cled/releases).
+First, download the lastest version from the [Releases page](https://github.com/Climber-Apps/Cled/releases).
 
 To use Cled, you need a wall and holds dataset.
 A dataset example, along with the specification, can be found in `Models/Example`.
 This dataset can then be imported to Cled either by `File > New`, or by pressing `Ctrl+N`.
 
-For additional information, see the [thesis](https://github.com/Climber-Tools/Thesis).
+For additional information, see the [thesis](https://github.com/Climber-Apps/Thesis).
 
 ### Key bindings
 While most of the controls are accessible via the UI, here is a comprehensive list of key bindings for efficiently controlling the editor:
