@@ -48,11 +48,25 @@ public class HighlightManager : MonoBehaviour
     private static void SetHoldOpacity(GameObject hold, float opacity)
     {
         var renderer = hold.transform.GetChild(0).GetComponent<Renderer>();
-        var mtl = renderer.material;
+        
+        SetRendererOpacity(renderer, opacity);
+        
+        // TODO: this is super dirty
+        // set opacity of marker too
+        if (hold.transform.childCount == 2)
+        {
+            var renderer2 = hold.transform.GetChild(1).transform.GetChild(0).GetComponent<MeshRenderer>();
+            SetRendererOpacity(renderer2, opacity);
+        }
+    }
 
+    private static void SetRendererOpacity(Renderer renderer, float opacity)
+    {
+        var mtl = renderer.material;
+        
         // https://stackoverflow.com/questions/39366888/unity-mesh-renderer-wont-be-completely-transparent
         // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/
-        mtl.color = new Color(1f, 1f, 1f, opacity);
+        mtl.color = new Color(mtl.color.r, mtl.color.g, mtl.color.b, opacity);
 
         if (Math.Abs(opacity - 1) < 0.01)
         {

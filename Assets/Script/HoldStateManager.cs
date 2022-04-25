@@ -253,6 +253,9 @@ public class HoldStateManager : MonoBehaviour
 
     public void Clear()
     {
+        foreach(var (placedHold, (bp, state)) in _placedHolds)
+            DestroyImmediate(placedHold);
+        
         _placedHolds.Clear();
     
         _heldObject = null;

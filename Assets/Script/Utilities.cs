@@ -98,4 +98,14 @@ public class Utilities
             DisableElementFocusable(child);
         }
     }
+    
+    public class MarkerUpdate : MonoBehaviour
+    {
+        public event System.Action OnUpdate;
+        
+        public Vector3 LastPosition;
+        public Quaternion LastRotation;
+
+        void Update() => OnUpdate?.Invoke();
+    }
 }

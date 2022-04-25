@@ -17,12 +17,12 @@ public class HoldPickerManager : MonoBehaviour
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
     private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
-    
+
     // store all holds
-    private HoldBlueprint[] _allHolds = {};
-    
+    private HoldBlueprint[] _allHolds = { };
+
     // and the filtered ones
-    private HoldBlueprint[] _currentlyFilteredHolds = {};
+    private HoldBlueprint[] _filteredHoldIDs = { };
 
     // UI elements
     private VisualElement _root;
@@ -114,7 +114,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
-        
+
         Utilities.DisableElementFocusable(_root);
 
         _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
@@ -124,13 +124,14 @@ public class HoldPickerManager : MonoBehaviour
         _deselectFilteredButton = _root.Q<Button>("deselect-filtered-button");
         _deselectFilteredButton.clicked += () =>
         {
-            foreach (var bp in _currentlyFilteredHolds) Deselect(_holdToGridDictionary[bp]);
+            foreach (var bp in _filteredHoldIDs) Deselect(_holdToGridDictionary[bp]);
         };
 
         _deselectAllButton = _root.Q<Button>("deselect-all-button");
         _deselectAllButton.clicked += () =>
         {
-            foreach (var bp in _gridStateDictionary.Keys.ToList()) Deselect(bp);
+            foreach (var bp in _gridStateDictionary.Keys.ToList())
+                Deselect(bp);
         };
 
         _totalHoldCounter = _root.Q<Label>("total-hold-counter");
@@ -151,12 +152,12 @@ public class HoldPickerManager : MonoBehaviour
     public void Initialize()
     {
         _allHolds = HoldManager.Filter(_ => true);
-        
+
         // dropdowns
         var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
         var choiceFunctions = new Func<List<string>>[]
             { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
-        
+
         for (int i = 0; i < dropdowns.Length; i++)
         {
             var allValues = choiceFunctions[i]();
@@ -216,14 +217,14 @@ public class HoldPickerManager : MonoBehaviour
             Deselect(item);
         }
 
-        FillGrid(_allHolds);
+        FillGrid(_allHolds, true);
     }
 
 
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
     /// </summary>
-    private void UpdateFilterCounters() => _filteredHoldCounter.text = _currentlyFilteredHolds.Length.ToString();
+    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Length.ToString();
 
     /// <summary>
     /// Update the counters that change when filtered holds are selected/deselected.
@@ -234,8 +235,13 @@ public class HoldPickerManager : MonoBehaviour
             _gridStateDictionary.Values.Count(value => value).ToString();
 
         _filteredSelectedHoldCounter.text =
-            _currentlyFilteredHolds.Count(value => _gridStateDictionary[_holdToGridDictionary[value]]).ToString();
+            _filteredHoldIDs.Count(value => _gridStateDictionary[_holdToGridDictionary[value]]).ToString();
     }
+
+    /// <summary>
+    /// Select the hold.
+    /// </summary>
+    public void Select(HoldBlueprint blueprint) => Select(_holdToGridDictionary[blueprint]);
 
     /// <summary>
     /// Select a grid element.
@@ -291,25 +297,24 @@ public class HoldPickerManager : MonoBehaviour
     /// </summary>
     private void ClearGrid()
     {
-        foreach (var blueprint in _currentlyFilteredHolds)
+        foreach (var blueprint in _filteredHoldIDs)
             _grid.Remove(_holdToGridDictionary[blueprint]);
-
     }
 
     /// <summary>
     /// Fill the grid with a selection of the holds.
-    /// </summary>
-    private void FillGrid(HoldBlueprint[] holdBlueprints)
+    private void FillGrid(HoldBlueprint[] holdBlueprints, bool initialFill = false)
     {
         ClearGrid();
-        
+
         foreach (var blueprint in holdBlueprints
                      .OrderBy(x => x.holdMetadata.colorHex)
                      .ThenBy(x => x.holdMetadata.type)
                      .ThenBy(x => x.holdMetadata.volume))
             _grid.Add(_holdToGridDictionary[blueprint]);
 
-        _currentlyFilteredHolds = holdBlueprints;
+        if (!initialFill)
+            _filteredHoldIDs = holdBlueprints;
 
         UpdateFilterCounters();
     }
@@ -332,7 +337,7 @@ public class HoldPickerManager : MonoBehaviour
         // CTRL+A selects all filtered holds (when the holdpicker is open)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
             pauseManager.IsTypePaused(PauseType.HoldPicker))
-            foreach (var hold in _currentlyFilteredHolds)
+            foreach (var hold in _filteredHoldIDs)
                 Select(_holdToGridDictionary[hold]);
 
         // only open the hold menu if some holds were actually loaded in
@@ -366,16 +371,20 @@ public class HoldPickerManager : MonoBehaviour
     }
 
     public void Clear()
-    {  
+    {
         ClearGrid();
-        
-        _allHolds = new HoldBlueprint[]{};
-    
-        _currentlyFilteredHolds = new HoldBlueprint[] { };
+
+        _allHolds = new HoldBlueprint[] { };
+
+        _filteredHoldIDs = new HoldBlueprint[] { };
         _gridStateDictionary.Clear();
         _holdToGridDictionary.Clear();
+        
+        foreach (var texture in _gridTextureDictionary.Values)
+            Destroy(texture);
+                
         _gridTextureDictionary.Clear();
-       
+
         Close();
     }
 }

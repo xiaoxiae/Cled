@@ -2,15 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// Add this to any GameObject then assign
-/// parameter-less functions to OnUpdate.
-public class CustomUpdate : MonoBehaviour
-{
-    public event System.Action OnUpdate;
-
-    void Update() => OnUpdate?.Invoke();
-}
-
 /// <summary>
 /// A class for a collection of holds that form it.
 /// </summary>
@@ -113,20 +104,46 @@ public class Route
         else
             RemoveMarker(hold);
     }
-
+    
     /// <summary>
     /// Add the marker to the hold.
     /// </summary>
     void AddMarker(GameObject hold, GameObject marker)
     {
-        GameObject child = Object.Instantiate(marker);
-        child.SetActive(true);
-        child.transform.parent = hold.transform;
-        child.transform.localPosition = Vector3.zero;
+        GameObject markerInstance = Object.Instantiate(marker);
+        markerInstance.SetActive(true);
+        markerInstance.transform.parent = hold.transform;
+        markerInstance.transform.localPosition = Vector3.zero;
 
-        var customUpdate = child.AddComponent<CustomUpdate>();
+        var customUpdate = markerInstance.AddComponent<Utilities.MarkerUpdate>();
         customUpdate.OnUpdate += () =>
-            child.transform.LookAt(hold.transform.forward + hold.transform.position, Vector3.up);
+        {
+            // only update when hold position or rotation changed
+            if (customUpdate.LastPosition == hold.transform.position &&
+                customUpdate.LastRotation == hold.transform.rotation)
+                return;
+
+            var holdPosition = hold.transform.position;
+
+            customUpdate.LastPosition = holdPosition;
+            customUpdate.LastRotation = hold.transform.rotation;
+            
+            var c1 = hold.GetComponent<MeshCollider>();
+            var c2 = markerInstance.transform.GetChild(0).GetComponent<MeshCollider>();
+            
+            markerInstance.transform.position = holdPosition;
+            markerInstance.transform.LookAt(hold.transform.forward + holdPosition, Vector3.up);
+
+            float step = 0.001f;
+            float stepsBack = 30;
+            
+            // a little dangerous but whatever
+            while (Physics.ComputePenetration(c1, c1.transform.position, c1.transform.rotation, c2,
+                                        c2.transform.position, c2.transform.rotation, out _, out _))
+                markerInstance.transform.position -= markerInstance.transform.up * step;
+            
+            markerInstance.transform.position += markerInstance.transform.up * step * stepsBack;
+        };
     }
 
     /// <summary>

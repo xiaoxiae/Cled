@@ -26,9 +26,12 @@ public class SerializableState
     // all routes
     public List<SerializableRoute> Routes { get; set; }
 
-    // starting/ending markers
+    // starting/ending holds
     public List<string> StartingHoldIDs { get; set; }
     public List<string> EndingHoldIDs { get; set; }
+    
+    // selected holds
+    public List<string> SelectedHoldBlueprintIDs { get; set; }
 
     // lights
     public SerializableLights Lights { get; set; }
@@ -218,6 +221,9 @@ public class StateImportExportManager : MonoBehaviour
 
             holdPickerManager.Initialize();
             
+            foreach (string blueprintId in obj.SelectedHoldBlueprintIDs)
+                holdPickerManager.Select(holdManager.GetHoldBlueprint(blueprintId));
+            
             PreferencesManager.Initialized = true;
             return;
         }
@@ -283,6 +289,7 @@ public class StateImportExportManager : MonoBehaviour
                     Routes = routes,
                     StartingHoldIDs = routeManager.StartingHolds.Select(Utilities.GetObjectId).ToList(),
                     EndingHoldIDs = routeManager.EndingHolds.Select(Utilities.GetObjectId).ToList(),
+                    SelectedHoldBlueprintIDs = holdPickerManager.GetPickedHolds().Select(val => val.Id).ToList(),
                     Lights = new SerializableLights
                     {
                         Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
