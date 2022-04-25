@@ -79,12 +79,12 @@ public class HoldPickerManager : MonoBehaviour
     {
         FillGrid(HoldManager.Filter(hold =>
         {
-            if (!string.IsNullOrWhiteSpace(_colorDropdown.value) && _colorDropdown.value != NoSelectionString &&
-                hold.colorName != _colorDropdown.value)
+            if (!string.IsNullOrWhiteSpace(_colorDropdown.value) &&
+                _colorDropdown.value != NoSelectionString && hold.colorName != _colorDropdown.value)
                 return false;
 
-            if (!string.IsNullOrWhiteSpace(_labelsDropdown.value) && _labelsDropdown.value != NoSelectionString &&
-                hold.labels.Contains(_labelsDropdown.value))
+            if (!string.IsNullOrWhiteSpace(_labelsDropdown.value) &&
+                _labelsDropdown.value != NoSelectionString && hold.labels.Contains(_labelsDropdown.value))
                 return false;
 
             if (!string.IsNullOrWhiteSpace(_manufacturerDropdown.value) &&
@@ -92,7 +92,7 @@ public class HoldPickerManager : MonoBehaviour
                 return false;
 
             if (!string.IsNullOrWhiteSpace(_typeDropdown.value) &&
-                _typeDropdown.value != NoSelectionString && hold.manufacturer != _typeDropdown.value)
+                _typeDropdown.value != NoSelectionString && hold.type != _typeDropdown.value)
                 return false;
 
             return true;
@@ -379,10 +379,10 @@ public class HoldPickerManager : MonoBehaviour
         _filteredHoldIDs = new HoldBlueprint[] { };
         _gridStateDictionary.Clear();
         _holdToGridDictionary.Clear();
-        
+
         foreach (var texture in _gridTextureDictionary.Values)
             Destroy(texture);
-                
+
         _gridTextureDictionary.Clear();
 
         Close();
