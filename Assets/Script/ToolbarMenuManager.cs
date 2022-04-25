@@ -45,7 +45,7 @@ public class ToolbarMenuManager : MonoBehaviour
     void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
-        
+
         Utilities.DisableElementFocusable(_root);
 
         // files
@@ -69,11 +69,14 @@ public class ToolbarMenuManager : MonoBehaviour
         quitButton.clicked += Quit;
 
         // help
+        var helpButton = _root.Q<Button>("help-button");
+        helpButton.clicked += () => Application.OpenURL("https://github.com/Climber-Tools/Cled");
+
         var aboutButton = _root.Q<Button>("about-button");
         aboutButton.clicked += () =>
         {
             PopupManager.CreateInfoPopup(
-                "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3 and is open to pull requests, should you find any bugs or missing features.");
+                "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3.");
         };
 
         // capturing
@@ -130,13 +133,13 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save, possibly failing if the save path doesn't exist yet.
     /// </summary>
-    private bool Save(bool popup=true)
+    private bool Save(bool popup = true)
     {
         if (!PreferencesManager.Initialized && popup)
         {
             if (!PauseManager.IsTypePaused(PauseType.Popup))
                 PopupManager.CreateInfoPopup("Nothing to save as!");
-            
+
             return false;
         }
 
@@ -183,13 +186,13 @@ public class ToolbarMenuManager : MonoBehaviour
     /// <summary>
     /// Attempt to save as.
     /// </summary>
-    private bool SaveAs(bool popup=true)
+    private bool SaveAs(bool popup = true)
     {
         if (!PreferencesManager.Initialized && popup)
         {
-                if (!PauseManager.IsTypePaused(PauseType.Popup))
-                    PopupManager.CreateInfoPopup("Nothing to save!");
-            
+            if (!PauseManager.IsTypePaused(PauseType.Popup))
+                PopupManager.CreateInfoPopup("Nothing to save!");
+
             return false;
         }
 
@@ -197,7 +200,7 @@ public class ToolbarMenuManager : MonoBehaviour
         if (!PauseManager.IsTypePaused(PauseType.Popup))
         {
             PauseManager.PauseType(PauseType.Popup);
-            
+
             path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
                 new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
@@ -305,12 +308,12 @@ public class ToolbarMenuManager : MonoBehaviour
     {
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
-        
+
         if (!StateImportExportManager.ImportPreferences(paths[0]))
             return;
 
         PreferencesManager.LastOpenWallPath = paths[0];
-        
+
         StateImportExportManager.ImportState(PreferencesManager.LastOpenWallPath);
     }
 
@@ -349,7 +352,8 @@ public class ToolbarMenuManager : MonoBehaviour
 
         PreferencesManager.LastOpenWallPath = null;
 
-        StateImportExportManager.ImportFromNew(PreferencesManager.CurrentWallModelPath, PreferencesManager.CurrentHoldModelsPath);
+        StateImportExportManager.ImportFromNew(PreferencesManager.CurrentWallModelPath,
+            PreferencesManager.CurrentHoldModelsPath);
         ForceSaveAs();
     }
 }

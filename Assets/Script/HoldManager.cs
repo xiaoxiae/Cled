@@ -10,7 +10,7 @@ using YamlDotNet.Serialization;
 /// A class for storing the information about the given hold.
 /// It is deserialized from the `holds.yaml` file.
 /// </summary>
-public class HoldInformation
+public class HoldMetadata
 {
     public string[] color;
     public string type;
@@ -31,17 +31,17 @@ public class HoldBlueprint
     public readonly string Id;
 
     public readonly GameObject Model;
-    public readonly HoldInformation HoldInformation;
+    public readonly HoldMetadata holdMetadata;
 
     public readonly string PreviewVideoPath;
     public readonly string PreviewImagePath;
 
-    public HoldBlueprint(string id, GameObject model, HoldInformation holdInformation, string previewImagePath,
+    public HoldBlueprint(string id, GameObject model, HoldMetadata holdMetadata, string previewImagePath,
         string previewVideoPath)
     {
         Id = id;
         Model = model;
-        HoldInformation = holdInformation;
+        this.holdMetadata = holdMetadata;
         PreviewImagePath = previewImagePath;
         PreviewVideoPath = previewVideoPath;
     }
@@ -63,15 +63,15 @@ public class HoldManager : MonoBehaviour
     public int HoldCount => _holds.Keys.Count;
 
     /// <summary>
-    /// Aggregates an attribute from HoldInformation (like all colors, types, etc.).
+    /// Aggregates an attribute from HoldMetadata (like all colors, types, etc.).
     /// </summary>
-    private List<string> AttributeAggregate(Func<HoldInformation, List<string>> aggregateFunction)
+    private List<string> AttributeAggregate(Func<HoldMetadata, List<string>> aggregateFunction)
     {
         var set = new HashSet<string>();
 
         foreach (var bp in _holds.Values)
         {
-            var info = bp.HoldInformation;
+            var info = bp.holdMetadata;
 
             foreach (string str in aggregateFunction(info).Where(str => !string.IsNullOrWhiteSpace(str)))
                 set.Add(str);
@@ -107,7 +107,7 @@ public class HoldManager : MonoBehaviour
     public void Initialize(string path)
     {
         string yml = File.ReadAllText(Path.Combine(path, HoldsYamlName));
-        var holdInformation = new Deserializer().Deserialize<Dictionary<string, HoldInformation>>(yml);
+        var holdInformation = new Deserializer().Deserialize<Dictionary<string, HoldMetadata>>(yml);
 
         foreach (var pair in holdInformation)
         {
@@ -128,8 +128,8 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Return a set of holds, given a filter delegate.
     /// </summary>
-    public HoldBlueprint[] Filter(Func<HoldInformation, bool> filter) => (from holdId in _holds.Keys
-            where filter(_holds[holdId].HoldInformation)
+    public HoldBlueprint[] Filter(Func<HoldMetadata, bool> filter) => (from holdId in _holds.Keys
+            where filter(_holds[holdId].holdMetadata)
             select _holds[holdId])
         .ToArray();
 

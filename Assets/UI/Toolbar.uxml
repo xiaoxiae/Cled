@@ -75,9 +75,9 @@
             </ui:VisualElement>
         </ui:Foldout>
         <ui:Foldout text="Help" value="false" name="help-foldout" style="flex-direction: column;">
-            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 74px;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 126px;">
                 <ui:Button display-tooltip-when-elided="true" name="help-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
-                    <ui:Label text="Controls" display-tooltip-when-elided="true" name="help-label" />
+                    <ui:Label text="Help (opens URL)" display-tooltip-when-elided="true" name="help-label" />
                 </ui:Button>
                 <ui:Button text="&#10;" display-tooltip-when-elided="true" name="about-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="About" display-tooltip-when-elided="true" name="about-label" />
