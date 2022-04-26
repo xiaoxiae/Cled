@@ -30,6 +30,8 @@ public class ToolbarMenu : MonoBehaviour
     private Button _newButton;
     private Button _openButton;
     private Button _preferencesButton;
+    private Button _captureImageButton;
+    private Button _captureImageAsButton;
 
     void Start()
     {
@@ -91,16 +93,16 @@ public class ToolbarMenu : MonoBehaviour
         };
 
         // capturing
-        var captureImageButton = _root.Q<Button>("capture-image-button");
-        captureImageButton.clicked += () =>
+        _captureImageButton = _root.Q<Button>("capture-image-button");
+        _captureImageButton.clicked += () =>
         {
             // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
             StartCoroutine(CaptureScreen(Path.Join(Preferences.CaptureImagePath,
                 $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
         };
 
-        var captureImageAsButton = _root.Q<Button>("capture-image-as-button");
-        captureImageAsButton.clicked += () =>
+        _captureImageAsButton = _root.Q<Button>("capture-image-as-button");
+        _captureImageAsButton.clicked += () =>
         {
             // TODO: this is copy-pasted from loading code
             var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
@@ -248,8 +250,10 @@ public class ToolbarMenu : MonoBehaviour
     private void _ensureSavedAction(Action action)
     {
         // don't actually ensure save when nothing is initialized
+        // however, make sure to pause if we're not paused
         if (!Preferences.Initialized)
         {
+            pauseMenu.PauseType(PauseType.Normal);
             action();
             return;
         }
@@ -283,6 +287,7 @@ public class ToolbarMenu : MonoBehaviour
     void Update()
     {
         // only work if a popup isn't already present
+        // TODO: a bit of messy code
         if (!pauseMenu.IsTypePaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
@@ -300,6 +305,14 @@ public class ToolbarMenu : MonoBehaviour
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
                 using (var e = new NavigationSubmitEvent { target = _openButton })
                     _openButton.SendEvent(e);
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
+                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
+                    _captureImageButton.SendEvent(e);
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.P))
+                using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
+                    _captureImageAsButton.SendEvent(e);
         }
     }
 

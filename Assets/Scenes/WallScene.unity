@@ -542,8 +542,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 665042415}
   cameraController: {fileID: 963194229}
-  editorModeManager: {fileID: 0}
-  pauseMenu: {fileID: 0}
+  editorModeManager: {fileID: 2118895150}
+  pauseMenu: {fileID: 816695697}
 --- !u!114 &665042419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -560,12 +560,10 @@ MonoBehaviour:
   cameraController: {fileID: 963194229}
   highlightManager: {fileID: 674212781}
   routeManager: {fileID: 651512647}
-  toolbarMenu: {fileID: 17711623}
   popupMenu: {fileID: 547134781}
   holdPickerMenu: {fileID: 693249231}
   routeSettingsMenu: {fileID: 1132278475}
   editorModeManager: {fileID: 2118895150}
-  mouseSensitivity: 5
 --- !u!114 &665042420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578,7 +576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d53e3253e30fb1158fc3b6a4c9a7741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerLight: {fileID: 705507993}
+  playerLight: {fileID: 705507993}
 --- !u!1 &674212779
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,8 +656,8 @@ MonoBehaviour:
   pauseMenu: {fileID: 816695697}
   popupMenu: {fileID: 547134781}
   holdLoader: {fileID: 1579647979}
-  RenderTexture: {fileID: 8400000, guid: a6c4919686560fc9fb642ff93b22c63e, type: 2}
-  VideoPlayer: {fileID: 1448058875}
+  renderTexture: {fileID: 8400000, guid: a6c4919686560fc9fb642ff93b22c63e, type: 2}
+  videoPlayer: {fileID: 1448058875}
 --- !u!114 &693249232
 MonoBehaviour:
   m_ObjectHideFlags: 0

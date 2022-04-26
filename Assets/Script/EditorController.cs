@@ -17,7 +17,7 @@ public class EditorController : MonoBehaviour
 
     private HoldBlueprint _currentlyPickedHold;
 
-    private const float HoldRotationSensitivity = 1f;
+    private const float HoldRotationSensitivity = 5f;
 
     void Awake()
     {
