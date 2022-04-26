@@ -59,7 +59,7 @@ public class HoldPickerManager : MonoBehaviour
     // styling
     // TODO: this should be moved to the USS file
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
-    private readonly StyleColor _deselectedBorderColor = new(new Color(0.35f, 0.35f, 0.35f));
+    private readonly StyleColor _deselectedBorderColor = new(new Color(0.25f, 0.25f, 0.25f));
 
     public RenderTexture RenderTexture;
     public VideoPlayer VideoPlayer;
@@ -213,13 +213,17 @@ public class HoldPickerManager : MonoBehaviour
 
             item.style.backgroundImage =
                 new StyleBackground(Background.FromTexture2D(_gridTextureDictionary[item]));
-
-            Deselect(item);
         }
 
         FillGrid(_allHolds, true);
-    }
 
+        // done like this to select 
+        foreach (HoldBlueprint blueprint in _allHolds)
+        {
+            Select(_holdToGridDictionary[blueprint]);
+            Deselect(_holdToGridDictionary[blueprint]);
+        }
+    }
 
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
