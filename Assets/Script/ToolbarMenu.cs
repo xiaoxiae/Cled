@@ -6,15 +6,14 @@ using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ToolbarMenuManager : MonoBehaviour
+public class ToolbarMenu : MonoBehaviour
 {
-    public StateImportExportManager StateImportExportManager;
-    public PopupManager PopupManager;
-    public PauseManager PauseManager;
+    public ImportExportManager importExportManager;
+    public PopupMenu popupMenu;
+    public PauseMenu pauseMenu;
     public LightManager lightManager;
-    public SettingsMenuManager settingsMenuManager;
-
-    private bool _forceSaveAs;
+    public SettingsMenu settingsMenu;
+    public EditorModeManager editorModeManager;
 
     private VisualElement _root;
 
@@ -24,6 +23,8 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     public void ForceSaveAs() => _forceSaveAs = true;
 
+    private bool _forceSaveAs;
+
     private Button _saveButton;
     private Button _saveAsButton;
     private Button _newButton;
@@ -32,21 +33,26 @@ public class ToolbarMenuManager : MonoBehaviour
 
     void Start()
     {
-        // lighting
-        var addLightingButton = _root.Q<Button>("add-lighting-button");
-        addLightingButton.clicked += lightManager.AddLight;
-
-        var clearLightingButton = _root.Q<Button>("clear-lighting-button");
-        clearLightingButton.clicked += lightManager.Clear;
-
         var playerLightToggle = _root.Q<Toggle>("player-light-toggle");
         playerLightToggle.RegisterValueChangedCallback(evt => lightManager.PlayerLightEnabled = evt.newValue);
-        lightManager.AddPlayerLightWatcher(value => { playerLightToggle.SetValueWithoutNotify(value); });
+        lightManager.AddPlayerLightCallback(value => { playerLightToggle.SetValueWithoutNotify(value); });
     }
 
     void Awake()
     {
+        var currentModeLabel = GetComponent<UIDocument>().rootVisualElement
+            .Q<Label>("current-mode-label");
+
+        editorModeManager.AddModeChangeCallback(mode => { currentModeLabel.text = mode.ToString().ToUpper(); });
+
         _root = GetComponent<UIDocument>().rootVisualElement;
+
+        // lighting
+        var addLightingButton = _root.Q<Button>("add-lighting-button");
+        addLightingButton.clicked += lightManager.AddLightAtPlayer;
+
+        var clearLightingButton = _root.Q<Button>("clear-lighting-button");
+        clearLightingButton.clicked += lightManager.Clear;
 
         Utilities.DisableElementFocusable(_root);
 
@@ -66,9 +72,9 @@ public class ToolbarMenuManager : MonoBehaviour
 
         _saveAsButton = _root.Q<Button>("save-as-button");
         _saveAsButton.clicked += () => SaveAs();
-        
+
         _preferencesButton = _root.Q<Button>("preferences-button");
-        _preferencesButton.clicked += () => settingsMenuManager.Show();
+        _preferencesButton.clicked += () => settingsMenu.Show();
 
         var quitButton = _root.Q<Button>("quit-button");
         quitButton.clicked += Quit;
@@ -80,7 +86,7 @@ public class ToolbarMenuManager : MonoBehaviour
         var aboutButton = _root.Q<Button>("about-button");
         aboutButton.clicked += () =>
         {
-            PopupManager.CreateInfoPopup(
+            popupMenu.CreateInfoPopup(
                 "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3.");
         };
 
@@ -89,7 +95,7 @@ public class ToolbarMenuManager : MonoBehaviour
         captureImageButton.clicked += () =>
         {
             // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
-            StartCoroutine(CaptureScreen(Path.Join(PreferencesManager.CaptureImagePath,
+            StartCoroutine(CaptureScreen(Path.Join(Preferences.CaptureImagePath,
                 $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
         };
 
@@ -130,8 +136,8 @@ public class ToolbarMenuManager : MonoBehaviour
                 }
             });
 
-            PauseManager.AddPausedHook(() => { foldout.value = false; });
-            PauseManager.AddUnpausedHook(() => { foldout.value = false; });
+            pauseMenu.AddPausedHook(() => { foldout.value = false; });
+            pauseMenu.AddUnpausedHook(() => { foldout.value = false; });
         }
     }
 
@@ -140,18 +146,18 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private bool Save(bool popup = true)
     {
-        if (!PreferencesManager.Initialized && popup)
+        if (!Preferences.Initialized && popup)
         {
-            if (!PauseManager.IsTypePaused(PauseType.Popup))
-                PopupManager.CreateInfoPopup("Nothing to save as!");
+            if (!pauseMenu.IsTypePaused(PauseType.Popup))
+                popupMenu.CreateInfoPopup("Nothing to save as!");
 
             return false;
         }
 
-        if (String.IsNullOrWhiteSpace(PreferencesManager.LastOpenWallPath))
+        if (String.IsNullOrWhiteSpace(Preferences.LastOpenWallPath))
             return false;
 
-        if (!StateImportExportManager.Export(PreferencesManager.LastOpenWallPath))
+        if (!importExportManager.Export(Preferences.LastOpenWallPath))
             return false;
 
         return true;
@@ -180,7 +186,7 @@ public class ToolbarMenuManager : MonoBehaviour
         // Take screenshot
         ScreenCapture.CaptureScreenshot(
             path,
-            PreferencesManager.ImageSupersize
+            Preferences.ImageSupersize
         );
 
         // Show UI after we're done
@@ -193,23 +199,23 @@ public class ToolbarMenuManager : MonoBehaviour
     /// </summary>
     private bool SaveAs(bool popup = true)
     {
-        if (!PreferencesManager.Initialized && popup)
+        if (!Preferences.Initialized && popup)
         {
-            if (!PauseManager.IsTypePaused(PauseType.Popup))
-                PopupManager.CreateInfoPopup("Nothing to save!");
+            if (!pauseMenu.IsTypePaused(PauseType.Popup))
+                popupMenu.CreateInfoPopup("Nothing to save!");
 
             return false;
         }
 
         string path;
-        if (!PauseManager.IsTypePaused(PauseType.Popup))
+        if (!pauseMenu.IsTypePaused(PauseType.Popup))
         {
-            PauseManager.PauseType(PauseType.Popup);
+            pauseMenu.PauseType(PauseType.Popup);
 
             path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
                 new[] { new ExtensionFilter("Cled Data Files (.yaml)", "yaml") });
 
-            PauseManager.UnpauseType(PauseType.Popup);
+            pauseMenu.UnpauseType(PauseType.Popup);
         }
         else
         {
@@ -222,10 +228,10 @@ public class ToolbarMenuManager : MonoBehaviour
 
         path = Utilities.EnsureExtension(path, "yaml");
 
-        if (!StateImportExportManager.Export(path))
+        if (!importExportManager.Export(path))
             return false;
 
-        PreferencesManager.LastOpenWallPath = path;
+        Preferences.LastOpenWallPath = path;
 
         _forceSaveAs = false;
         return true;
@@ -242,7 +248,7 @@ public class ToolbarMenuManager : MonoBehaviour
     private void _ensureSavedAction(Action action)
     {
         // don't actually ensure save when nothing is initialized
-        if (!PreferencesManager.Initialized)
+        if (!Preferences.Initialized)
         {
             action();
             return;
@@ -250,7 +256,7 @@ public class ToolbarMenuManager : MonoBehaviour
 
         if (_forceSaveAs)
         {
-            PopupManager.CreateSavePopup("Save As",
+            popupMenu.CreateSavePopup("Save As",
                 () =>
                 {
                     if (SaveAs(false))
@@ -262,7 +268,7 @@ public class ToolbarMenuManager : MonoBehaviour
         }
         else
         {
-            PopupManager.CreateSavePopup("Save",
+            popupMenu.CreateSavePopup("Save",
                 () =>
                 {
                     if (Save(false))
@@ -277,7 +283,7 @@ public class ToolbarMenuManager : MonoBehaviour
     void Update()
     {
         // only work if a popup isn't already present
-        if (!PauseManager.IsTypePaused(PauseType.Popup))
+        if (!pauseMenu.IsTypePaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
                 using (var e = new NavigationSubmitEvent { target = _saveAsButton })
@@ -314,12 +320,12 @@ public class ToolbarMenuManager : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        if (!StateImportExportManager.ImportPreferences(paths[0]))
+        if (!importExportManager.ImportPreferences(paths[0]))
             return;
 
-        PreferencesManager.LastOpenWallPath = paths[0];
+        Preferences.LastOpenWallPath = paths[0];
 
-        StateImportExportManager.ImportState(PreferencesManager.LastOpenWallPath);
+        importExportManager.ImportState(Preferences.LastOpenWallPath);
     }
 
     /// <summary>
@@ -340,7 +346,7 @@ public class ToolbarMenuManager : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        PreferencesManager.CurrentWallModelPath = paths[0];
+        Preferences.CurrentWallModelPath = paths[0];
 
         StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, OnOpenNewHolds);
     }
@@ -353,12 +359,12 @@ public class ToolbarMenuManager : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        PreferencesManager.CurrentHoldModelsPath = paths[0];
+        Preferences.CurrentHoldModelsPath = paths[0];
 
-        PreferencesManager.LastOpenWallPath = null;
+        Preferences.LastOpenWallPath = null;
 
-        StateImportExportManager.ImportFromNew(PreferencesManager.CurrentWallModelPath,
-            PreferencesManager.CurrentHoldModelsPath);
+        importExportManager.ImportFromNew(Preferences.CurrentWallModelPath,
+            Preferences.CurrentHoldModelsPath);
         ForceSaveAs();
     }
 }

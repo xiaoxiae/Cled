@@ -3,12 +3,13 @@ using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-public class MovementControl : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public CharacterController controller;
-    public CameraControl cameraControl;
-
-    public EditorController editorController;
+    
+    public CameraController cameraController;
+    public EditorModeManager editorModeManager;
+    public PauseMenu pauseMenu;
 
     private const float ForwardBackwardSpeed = 5;
     private const float SideSpeed = 4;
@@ -49,12 +50,11 @@ public class MovementControl : MonoBehaviour
 
     void Update()
     {
-	    if (!PreferencesManager.Initialized)
+	    if (!Preferences.Initialized)
 		    return;
         
-        // when time stops, don't do anything in the editor
-        // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
-        if (Time.timeScale == 0)
+        // don't move when we're paused
+        if (pauseMenu.IsAnyPaused())
             return;
 
         float x = Input.GetAxis("Horizontal") * SideSpeed;
@@ -92,7 +92,7 @@ public class MovementControl : MonoBehaviour
             _flyingSpeed = 0;
 
         // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
-        if (Input.GetMouseButton(2) && editorController.currentMode == Mode.Holding)
+        if (Input.GetMouseButton(2) && editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
         {
             controller.velocity.Set(0, 0, 0);
             _flyingSpeed = 0;
@@ -101,9 +101,9 @@ public class MovementControl : MonoBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
-        // ensure that we're pointing towards where the camera is 
+        // ensure that we're pointing towards where the camera
         // not elegant but functional
-        move = cameraControl.transform.TransformDirection(move);
+        move = cameraController.transform.TransformDirection(move);
         var mag = move.magnitude;
         move.y = 0;
         move = move.normalized * mag;

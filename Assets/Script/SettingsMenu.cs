@@ -6,10 +6,10 @@ using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SettingsMenuManager : MonoBehaviour
+public class SettingsMenu : MonoBehaviour
 {
-    public PauseManager pauseManager;
-    public PopupManager popupManager;
+    public PauseMenu pauseMenu;
+    public PopupMenu popupMenu;
     public LightManager lightManager;
 
     private VisualElement _root;
@@ -70,13 +70,13 @@ public class SettingsMenuManager : MonoBehaviour
             lightIntensity = float.Parse(lightIntensityTextfield.value, CultureInfo.InvariantCulture);
 
             if (lightIntensity < 0) {
-                popupManager.CreateInfoPopup("The light intensity value must be non-negative.");
+                popupMenu.CreateInfoPopup("The light intensity value must be non-negative.");
                 return;
             }
         }
         catch (FormatException)
         {
-            popupManager.CreateInfoPopup("The light intensity must be a float.");
+            popupMenu.CreateInfoPopup("The light intensity must be a float.");
             return;
         }
 
@@ -86,13 +86,13 @@ public class SettingsMenuManager : MonoBehaviour
             shadowStrength = float.Parse(shadowStrengthTextfield.value, CultureInfo.InvariantCulture);
 
             if (shadowStrength is < 0 or > 1) {
-                popupManager.CreateInfoPopup("The shadow strength value must be between 0 and 1.");
+                popupMenu.CreateInfoPopup("The shadow strength value must be between 0 and 1.");
                 return;
             }
         }
         catch (FormatException)
         {
-            popupManager.CreateInfoPopup("The shadow strength must be a float.");
+            popupMenu.CreateInfoPopup("The shadow strength must be a float.");
             return;
         }
 
@@ -103,24 +103,24 @@ public class SettingsMenuManager : MonoBehaviour
 
             if (imageSupersize < 0)
             {
-                popupManager.CreateInfoPopup("The image supersize value must be greater than 0.");
+                popupMenu.CreateInfoPopup("The image supersize value must be greater than 0.");
                 return;
             }
         }
         catch (FormatException)
         {
-            popupManager.CreateInfoPopup("The image supersize must be an integer.");
+            popupMenu.CreateInfoPopup("The image supersize must be an integer.");
             return;
         }
 
-        PreferencesManager.ShadowStrength = shadowStrength;
-        PreferencesManager.ImageSupersize = imageSupersize;
-        PreferencesManager.LightIntensity = lightIntensity;
+        Preferences.ShadowStrength = shadowStrength;
+        Preferences.ImageSupersize = imageSupersize;
+        Preferences.LightIntensity = lightIntensity;
         
         lightManager.UpdateLightIntensity();
         lightManager.UpdateShadowStrength();
 
-        PreferencesManager.CaptureImagePath = imagePathButtonValue;
+        Preferences.CaptureImagePath = imagePathButtonValue;
 
         Close();
     }
@@ -131,7 +131,7 @@ public class SettingsMenuManager : MonoBehaviour
     public void Close()
     {
         _root.visible = false;
-        pauseManager.UnpauseType(PauseType.Settings);
+        pauseMenu.UnpauseType(PauseType.Settings);
 
         SetToDefault();
     }
@@ -141,11 +141,11 @@ public class SettingsMenuManager : MonoBehaviour
     /// </summary>
     private void SetToDefault()
     {
-        lightIntensityTextfield.SetValueWithoutNotify(PreferencesManager.LightIntensity.ToString());
-        shadowStrengthTextfield.SetValueWithoutNotify(PreferencesManager.ShadowStrength.ToString());
-        imageSupersize.SetValueWithoutNotify(PreferencesManager.ImageSupersize.ToString());
+        lightIntensityTextfield.SetValueWithoutNotify(Preferences.LightIntensity.ToString());
+        shadowStrengthTextfield.SetValueWithoutNotify(Preferences.ShadowStrength.ToString());
+        imageSupersize.SetValueWithoutNotify(Preferences.ImageSupersize.ToString());
 
-        imagePathButton.text = PreferencesManager.CaptureImagePath;
+        imagePathButton.text = Preferences.CaptureImagePath;
 
         if (imagePathButton.text.Length > 20)
             imagePathButton.text = imagePathButton.text[..10] + "..." + imagePathButton.text[^10..];
@@ -159,6 +159,6 @@ public class SettingsMenuManager : MonoBehaviour
         _root.visible = true;
         SetToDefault();
         
-        pauseManager.PauseType(PauseType.Settings);
+        pauseMenu.PauseType(PauseType.Settings);
     }
 }

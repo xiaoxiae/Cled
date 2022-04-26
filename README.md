@@ -35,16 +35,17 @@ While most of the controls are accessible via the UI, here is a comprehensive li
 | right button on selected route (ROUTE) | open route settings menu |
 
 #### Editing
-|                                 |                                           |
-| ---                             | ---                                       |
-| left button                     | pick up/place the hovered/held hold       |
-| right button                    | select the hovered route                  |
-| `E`                             | toggle between NORMAL and EDITING         |
-| `R` or `Delete`                 | delete hovered hold                       |
-| middle button (EDITING) + mouse | rotate held hold                          |
-| `T`/`B`                         | toggle hovered hold as ending/starting    |
-| control + left click (ROUTE)    | toggle hovered hold as being in the route |
-| wheel up/down                   | cycle filtered holds                      |
+|                                 |                                                 |
+| ---                             | ---                                             |
+| left button                     | pick up/place the hovered/held hold             |
+| right button                    | select the hovered route                        |
+| `E`                             | toggle between NORMAL and EDITING               |
+| `R` or `Delete`                 | delete hovered/held hold                        |
+| `Ctrl+R` or `Ctrl+Delete`       | delete hovered route/route containing held hold |
+| middle button (EDITING) + mouse | rotate held hold                                |
+| `T`/`B`                         | toggle hovered hold as ending/starting          |
+| control + left click (ROUTE)    | toggle hovered hold as being in the route       |
+| wheel up/down                   | cycle filtered holds                            |
 
 #### Import/Export
 |                |                            |

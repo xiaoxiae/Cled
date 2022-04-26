@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class RouteSettingsMenuManager : MonoBehaviour
+public class RouteSettingsMenu : MonoBehaviour
 {
-    public WallManager wallManager;
-    public PauseManager pauseManager;
+    public WallLoader wallLoader;
+    public PauseMenu pauseMenu;
 
     private VisualElement _root;
     private Dictionary<string, TextField> _textfields;
@@ -29,9 +29,9 @@ public class RouteSettingsMenuManager : MonoBehaviour
         _attributeMapping = new Dictionary<string, Func<List<string>>>
         {
             { "name", () => null },
-            { "grade", () => wallManager.Metadata.Grades },
-            { "zone", () => wallManager.Metadata.Zones },
-            { "setter", () => wallManager.Metadata.Setters }
+            { "grade", () => wallLoader.Metadata.Grades },
+            { "zone", () => wallLoader.Metadata.Zones },
+            { "setter", () => wallLoader.Metadata.Setters }
         };
 
         _textfields = new Dictionary<string, TextField>();
@@ -85,7 +85,7 @@ public class RouteSettingsMenuManager : MonoBehaviour
     public void Close()
     {
         _root.visible = false;
-        pauseManager.UnpauseType(PauseType.RouteSettings);
+        pauseMenu.UnpauseType(PauseType.RouteSettings);
     }
 
     private void _initialize()
@@ -168,6 +168,6 @@ public class RouteSettingsMenuManager : MonoBehaviour
         
         _setFromRoute(route);
 
-        pauseManager.PauseType(PauseType.RouteSettings);
+        pauseMenu.PauseType(PauseType.RouteSettings);
     }
 }

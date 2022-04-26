@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 
-public static class PreferencesManager
+public static class Preferences
 {
-    public static float DefaultShadowStrength = 0.2f;
-    public static float DefaultLightIntensity = 0.2f;
-    public static string DefaultCaptureImagePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-    public static int DefaultImageSupersize = 1;
-    
+    private const float DefaultShadowStrength = 0.2f;
+    private const float DefaultLightIntensity = 0.2f;
+    private static readonly string DefaultCaptureImagePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+    private const int DefaultImageSupersize = 1;
+
     /// <summary>
     /// The path to where the image captures are stored.
     /// Defaults to the pictures folder.

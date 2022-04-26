@@ -7,7 +7,7 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 
 /// <summary>
-/// A class for storing the information about the given hold.
+/// A class for storing the hold metadata.
 /// It is deserialized from the `holds.yaml` file.
 /// </summary>
 public class HoldMetadata
@@ -51,7 +51,7 @@ public class HoldBlueprint
 /// A class that handles various hold-related things, such as loading them, filtering them,
 /// managing the ones that are selected and creating hold objects out of them.
 /// </summary>
-public class HoldManager : MonoBehaviour
+public class HoldLoader : MonoBehaviour
 {
     private readonly IDictionary<string, HoldBlueprint> _holds = new Dictionary<string, HoldBlueprint>();
 
@@ -83,12 +83,14 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Return all possible hold colors.
     /// </summary>
-    public List<string> AllColors() => AttributeAggregate(info => new List<string> { info.colorName });
+    public List<string> AllColors() =>
+        AttributeAggregate(info => new List<string> { info.colorName });
 
     /// <summary>
     /// Return all possible hold colors.
     /// </summary>
-    public List<string> AllTypes() => AttributeAggregate(info => new List<string> { info.type });
+    public List<string> AllTypes() =>
+        AttributeAggregate(info => new List<string> { info.type });
 
     /// <summary>
     /// Return all possible labels.
@@ -99,7 +101,8 @@ public class HoldManager : MonoBehaviour
     /// <summary>
     /// Return all possible hold manufacturers.
     /// </summary>
-    public List<string> AllManufacturers() => AttributeAggregate(info => new List<string> { info.manufacturer });
+    public List<string> AllManufacturers() =>
+        AttributeAggregate(info => new List<string> { info.manufacturer });
 
     /// <summary>
     /// Initialize holds from the given directory.
@@ -152,17 +155,17 @@ public class HoldManager : MonoBehaviour
         return hold;
     }
 
-    private string GetHoldPreviewVideoPath(string id)
-        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + "-preview.webm");
+    private static string GetHoldPreviewVideoPath(string id)
+        => Path.Combine(Preferences.CurrentHoldModelsPath, id + "-preview.webm");
 
-    private string GetHoldPreviewImagePath(string id)
-        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + "-preview.jpg");
+    private static string GetHoldPreviewImagePath(string id)
+        => Path.Combine(Preferences.CurrentHoldModelsPath, id + "-preview.jpg");
 
-    private string GetHoldModelPath(string id)
-        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + ".obj");
+    private static string GetHoldModelPath(string id)
+        => Path.Combine(Preferences.CurrentHoldModelsPath, id + ".obj");
 
-    private string GetHoldMaterialPath(string id)
-        => Path.Combine(PreferencesManager.CurrentHoldModelsPath, id + ".mtl");
+    private static string GetHoldMaterialPath(string id)
+        => Path.Combine(Preferences.CurrentHoldModelsPath, id + ".mtl");
 
     /// <summary>
     /// Remove all holds, destroying them in the process.
@@ -171,7 +174,7 @@ public class HoldManager : MonoBehaviour
     {
         foreach (var (key, value) in _holds)
             DestroyImmediate(value.Model);
-        
+
         _holds.Clear();
     }
 }

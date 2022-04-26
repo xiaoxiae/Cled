@@ -5,6 +5,60 @@ using System.Linq;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
+/// <summary>
+/// By default, serialization emits all public fields, which includes things like magnitude and normalized form.
+/// This class ensures that only x, y and z coordinates of the Vector3 are stored and the serialization looks nice.
+/// There is probably a different way to do this, but this works well enough.
+/// </summary>
+public struct SerializableVector3
+{
+    public float x;
+    public float y;
+    public float z;
+
+    public SerializableVector3(float rX, float rY, float rZ)
+    {
+        x = rX;
+        y = rY;
+        z = rZ;
+    }
+
+    /// <summary>
+    /// Automatic conversion from SerializableVector3 to Vector3.
+    /// </summary>
+    public static implicit operator Vector3(SerializableVector3 rValue) => new(rValue.x, rValue.y, rValue.z);
+
+    /// <summary>
+    /// Automatic conversion from Vector3 to SerializableVector3.
+    /// </summary>
+    public static implicit operator SerializableVector3(Vector3 rValue) => new(rValue.x, rValue.y, rValue.z);
+}
+
+/// <summary>
+/// Same as SerializableVector2.
+/// </summary>
+public struct SerializableVector2
+{
+    public float x;
+    public float y;
+
+    public SerializableVector2(float rX, float rY)
+    {
+        x = rX;
+        y = rY;
+    }
+
+    /// <summary>
+    /// Automatic conversion from SerializableVector3 to Vector3.
+    /// </summary>
+    public static implicit operator Vector2(SerializableVector2 rValue) => new(rValue.x, rValue.y);
+
+    /// <summary>
+    /// Automatic conversion from Vector3 to SerializableVector3.
+    /// </summary>
+    public static implicit operator SerializableVector2(Vector2 rValue) => new(rValue.x, rValue.y);
+}
+
 
 /// <summary>
 /// The object that gets serialized when exporting.
@@ -12,7 +66,7 @@ using YamlDotNet.Serialization;
 public class SerializableState
 {
     public string Version;
-    
+
     // player
     public SerializablePlayer Player;
 
@@ -29,7 +83,7 @@ public class SerializableState
     // starting/ending holds
     public List<string> StartingHoldIDs;
     public List<string> EndingHoldIDs;
-    
+
     // selected holds
     public List<string> SelectedHoldBlueprintIDs;
 
@@ -92,7 +146,7 @@ public class SerializablePlayer
     // the player position and orientation
     public SerializableVector3 Position { get; set; }
     public SerializableVector2 Orientation { get; set; }
-    
+
     // whether the player is flying
     public bool Flying { get; set; }
 
@@ -100,20 +154,20 @@ public class SerializablePlayer
     public bool Light;
 }
 
-public class StateImportExportManager : MonoBehaviour
+public class ImportExportManager : MonoBehaviour
 {
     public HoldStateManager holdStateManager;
-    public HoldPickerManager holdPickerManager;
-    public HoldManager holdManager;
+    public HoldPickerMenu holdPickerMenu;
+    public HoldLoader holdLoader;
     public RouteManager routeManager;
-    public WallManager wallManager;
+    public WallLoader wallLoader;
     public LightManager lightManager;
-    public PauseManager pauseManager;
+    public PauseMenu pauseMenu;
 
-    public PopupManager popupManager;
-    
-    public MovementControl movementControl;
-    public CameraControl cameraControl;
+    public PopupMenu popupMenu;
+
+    public PlayerController playerController;
+    public CameraController cameraController;
 
     /// <summary>
     /// Return the deserialized state object, given its path.
@@ -132,18 +186,18 @@ public class StateImportExportManager : MonoBehaviour
     private void Clear()
     {
         holdStateManager.Clear();
-        holdManager.Clear();
+        holdLoader.Clear();
         routeManager.Clear();
-        wallManager.Clear();
-        holdPickerManager.Clear();
+        wallLoader.Clear();
+        holdPickerMenu.Clear();
         lightManager.Clear();
-        
-        movementControl.Position = Vector3.zero;
-        cameraControl.Orientation = Vector3.forward;
-        
-        pauseManager.UnpauseAll();
+
+        playerController.Position = Vector3.zero;
+        cameraController.Orientation = Vector3.forward;
+
+        pauseMenu.UnpauseAll();
     }
-    
+
     /// <summary>
     /// Import the preferences (path to holds and to wall), returning true if successful.
     /// </summary>
@@ -153,12 +207,12 @@ public class StateImportExportManager : MonoBehaviour
         {
             var obj = Deserialize(path);
 
-            PreferencesManager.CurrentWallModelPath = obj.WallModelPath;
-            PreferencesManager.CurrentHoldModelsPath = obj.HoldModelsPath;
+            Preferences.CurrentWallModelPath = obj.WallModelPath;
+            Preferences.CurrentHoldModelsPath = obj.HoldModelsPath;
         }
         catch (Exception e)
         {
-            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
 
@@ -178,11 +232,11 @@ public class StateImportExportManager : MonoBehaviour
             Clear();
 
             // initialize wall
-            wallManager.Initialize(PreferencesManager.CurrentWallModelPath);
-            
+            wallLoader.Initialize(Preferences.CurrentWallModelPath);
+
             // initialize holds
-            holdManager.Initialize(PreferencesManager.CurrentHoldModelsPath);
-            
+            holdLoader.Initialize(Preferences.CurrentHoldModelsPath);
+
             var obj = Deserialize(path);
 
             var holds = new Dictionary<string, GameObject>();
@@ -190,8 +244,8 @@ public class StateImportExportManager : MonoBehaviour
             // import holds
             foreach (var (id, serializableHold) in obj.Holds)
             {
-                var hold = holdStateManager.Place(
-                    holdManager.GetHoldBlueprint(serializableHold.BlueprintId), serializableHold.State);
+                var hold = holdStateManager.InstantiatePlace(
+                    holdLoader.GetHoldBlueprint(serializableHold.BlueprintId), serializableHold.State);
                 holds[id] = hold;
             }
 
@@ -218,35 +272,35 @@ public class StateImportExportManager : MonoBehaviour
                 routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
 
             // set player position
-            movementControl.Position = obj.Player.Position;
-            cameraControl.Orientation = obj.Player.Orientation;
-            movementControl.Flying = obj.Player.Flying;
-            
+            playerController.Position = obj.Player.Position;
+            cameraController.Orientation = obj.Player.Orientation;
+            playerController.Flying = obj.Player.Flying;
+
             // capture image settings
-            PreferencesManager.CaptureImagePath = obj.CaptureSettings.ImagePath;
-            PreferencesManager.ImageSupersize = obj.CaptureSettings.ImageSupersize;
+            Preferences.CaptureImagePath = obj.CaptureSettings.ImagePath;
+            Preferences.ImageSupersize = obj.CaptureSettings.ImageSupersize;
 
             // import lights
-            PreferencesManager.LightIntensity = obj.Lights.Intensity;
-            PreferencesManager.ShadowStrength = obj.Lights.ShadowStrength;
-            
+            Preferences.LightIntensity = obj.Lights.Intensity;
+            Preferences.ShadowStrength = obj.Lights.ShadowStrength;
+
             foreach (Vector3 position in obj.Lights.Positions)
                 lightManager.AddLight(position);
 
             lightManager.PlayerLightEnabled = obj.Player.Light;
 
-            holdPickerManager.Initialize();
-            
+            holdPickerMenu.Initialize();
+
             foreach (string blueprintId in obj.SelectedHoldBlueprintIDs)
-                holdPickerManager.Select(holdManager.GetHoldBlueprint(blueprintId));
-            
-            PreferencesManager.Initialized = true;
+                holdPickerMenu.Select(holdLoader.GetHoldBlueprint(blueprintId));
+
+            Preferences.Initialized = true;
             return;
         }
         catch (Exception e)
         {
             Clear();
-            popupManager.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
             return;
         }
     }
@@ -266,7 +320,7 @@ public class StateImportExportManager : MonoBehaviour
 
             // save holds
             var holds = new Dictionary<string, SerializableHold>();
-            foreach (GameObject hold in holdStateManager.GetAllHolds())
+            foreach (GameObject hold in holdStateManager.PlacedHolds)
             {
                 var holdBlueprint = holdStateManager.GetHoldBlueprint(hold);
                 var holdState = holdStateManager.GetHoldState(hold);
@@ -294,28 +348,28 @@ public class StateImportExportManager : MonoBehaviour
                     Version = Application.version,
                     Player = new SerializablePlayer
                     {
-                        Position = movementControl.Position,
-                        Orientation = cameraControl.Orientation,
-                        Flying = movementControl.Flying,
+                        Position = playerController.Position,
+                        Orientation = cameraController.Orientation,
+                        Flying = playerController.Flying,
                         Light = lightManager.PlayerLightEnabled
                     },
-                    WallModelPath = PreferencesManager.CurrentWallModelPath,
-                    HoldModelsPath = PreferencesManager.CurrentHoldModelsPath,
+                    WallModelPath = Preferences.CurrentWallModelPath,
+                    HoldModelsPath = Preferences.CurrentHoldModelsPath,
                     Holds = holds,
                     Routes = routes,
                     StartingHoldIDs = routeManager.StartingHolds.Select(Utilities.GetObjectId).ToList(),
                     EndingHoldIDs = routeManager.EndingHolds.Select(Utilities.GetObjectId).ToList(),
-                    SelectedHoldBlueprintIDs = holdPickerManager.GetPickedHolds().Select(val => val.Id).ToList(),
+                    SelectedHoldBlueprintIDs = holdPickerMenu.GetPickedHolds().Select(val => val.Id).ToList(),
                     Lights = new SerializableLights
                     {
                         Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
-                        Intensity = PreferencesManager.LightIntensity,
-                        ShadowStrength = PreferencesManager.LightIntensity,
+                        Intensity = Preferences.LightIntensity,
+                        ShadowStrength = Preferences.LightIntensity,
                     },
                     CaptureSettings = new SerializableCaptureSettings
                     {
-                        ImagePath = PreferencesManager.CaptureImagePath,
-                        ImageSupersize = PreferencesManager.ImageSupersize,
+                        ImagePath = Preferences.CaptureImagePath,
+                        ImageSupersize = Preferences.ImageSupersize,
                     }
                 });
 
@@ -323,7 +377,7 @@ public class StateImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
     }
@@ -339,20 +393,20 @@ public class StateImportExportManager : MonoBehaviour
         {
             Clear();
 
-            wallManager.Initialize(currentWallModelPath);
-            holdManager.Initialize(currentHoldModelsPath);
-            
-            holdPickerManager.Initialize();
+            wallLoader.Initialize(currentWallModelPath);
+            holdLoader.Initialize(currentHoldModelsPath);
 
-            PreferencesManager.SetToDefault();
-            
-            PreferencesManager.Initialized = true;
+            holdPickerMenu.Initialize();
+
+            Preferences.SetToDefault();
+
+            Preferences.Initialized = true;
             return true;
         }
         catch (Exception e)
         {
             Clear();
-            popupManager.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
             return false;
         }
     }

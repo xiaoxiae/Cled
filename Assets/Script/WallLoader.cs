@@ -15,7 +15,7 @@ public class WallMetadata
     public List<SerializableVector3> Lights { get; set; }
 }
 
-public class WallManager : MonoBehaviour
+public class WallLoader : MonoBehaviour
 {
     public GameObject Wall;
     public WallMetadata Metadata;

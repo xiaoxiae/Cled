@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
 
-public class HoldPickerManager : MonoBehaviour
+public class HoldPickerMenu : MonoBehaviour
 {
     // a dictionary for storing each visual element's state
     private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
@@ -47,10 +47,10 @@ public class HoldPickerManager : MonoBehaviour
     private StyleBackground _videoBackground;
 
     // manager-related things
-    public PauseManager pauseManager;
-    public PopupManager popupManager;
+    public PauseMenu pauseMenu;
+    public PopupMenu popupMenu;
 
-    public HoldManager HoldManager;
+    public HoldLoader holdLoader;
 
     // hacks
     private const long UIBugWorkaroundDurations = 100;
@@ -61,8 +61,8 @@ public class HoldPickerManager : MonoBehaviour
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
     private readonly StyleColor _deselectedBorderColor = new(new Color(0.25f, 0.25f, 0.25f));
 
-    public RenderTexture RenderTexture;
-    public VideoPlayer VideoPlayer;
+    public RenderTexture renderTexture;
+    public VideoPlayer videoPlayer;
 
     private const string NoSelectionString = "-";
 
@@ -77,7 +77,7 @@ public class HoldPickerManager : MonoBehaviour
     /// </summary>
     private void UpdateGrid()
     {
-        FillGrid(HoldManager.Filter(hold =>
+        FillGrid(holdLoader.Filter(hold =>
         {
             if (!string.IsNullOrWhiteSpace(_colorDropdown.value) &&
                 _colorDropdown.value != NoSelectionString && hold.colorName != _colorDropdown.value)
@@ -107,7 +107,7 @@ public class HoldPickerManager : MonoBehaviour
     public void Close()
     {
         _root.visible = false;
-        pauseManager.UnpauseType(PauseType.HoldPicker);
+        pauseMenu.UnpauseType(PauseType.HoldPicker);
     }
 
     void Awake()
@@ -117,7 +117,7 @@ public class HoldPickerManager : MonoBehaviour
 
         Utilities.DisableElementFocusable(_root);
 
-        _videoBackground = new StyleBackground(Background.FromRenderTexture(RenderTexture));
+        _videoBackground = new StyleBackground(Background.FromRenderTexture(renderTexture));
 
         _grid = _root.Q<VisualElement>("hold-grid");
 
@@ -146,17 +146,20 @@ public class HoldPickerManager : MonoBehaviour
         _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
         _filteredSelectedHoldCounter = _root.Q<Label>("filtered-selected-hold-counter");
 
-        _totalHoldCounter.text = HoldManager.HoldCount.ToString();
+        _totalHoldCounter.text = holdLoader.HoldCount.ToString();
     }
 
+    /// <summary>
+    /// Initialize the hold picker menu using the hold loader data.
+    /// </summary>
     public void Initialize()
     {
-        _allHolds = HoldManager.Filter(_ => true);
+        _allHolds = holdLoader.Filter(_ => true);
 
         // dropdowns
         var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
         var choiceFunctions = new Func<List<string>>[]
-            { HoldManager.AllColors, HoldManager.AllTypes, HoldManager.AllLabels, HoldManager.AllManufacturers };
+            { holdLoader.AllColors, holdLoader.AllTypes, holdLoader.AllLabels, holdLoader.AllManufacturers };
 
         for (int i = 0; i < dropdowns.Length; i++)
         {
@@ -186,10 +189,10 @@ public class HoldPickerManager : MonoBehaviour
 
             item.RegisterCallback<MouseOverEvent>(evt =>
             {
-                VideoPlayer.url = blueprint.PreviewVideoPath;
+                videoPlayer.url = blueprint.PreviewVideoPath;
 
-                RenderTexture.DiscardContents();
-                Graphics.Blit(_gridTextureDictionary[item], RenderTexture);
+                renderTexture.DiscardContents();
+                Graphics.Blit(_gridTextureDictionary[item], renderTexture);
 
                 item.style.backgroundImage = _videoBackground;
             });
@@ -217,7 +220,7 @@ public class HoldPickerManager : MonoBehaviour
 
         FillGrid(_allHolds, true);
 
-        // done like this to select 
+        // done like this to prevent issue where the border is not visible
         foreach (HoldBlueprint blueprint in _allHolds)
         {
             Select(_holdToGridDictionary[blueprint]);
@@ -307,6 +310,7 @@ public class HoldPickerManager : MonoBehaviour
 
     /// <summary>
     /// Fill the grid with a selection of the holds.
+    /// </summary>
     private void FillGrid(HoldBlueprint[] holdBlueprints, bool initialFill = false)
     {
         ClearGrid();
@@ -340,7 +344,7 @@ public class HoldPickerManager : MonoBehaviour
     {
         // CTRL+A selects all filtered holds (when the holdpicker is open)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
-            pauseManager.IsTypePaused(PauseType.HoldPicker))
+            pauseMenu.IsTypePaused(PauseType.HoldPicker))
             foreach (var hold in _filteredHoldIDs)
                 Select(_holdToGridDictionary[hold]);
 
@@ -348,25 +352,25 @@ public class HoldPickerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
         {
             // don't open it when popups or route settings are present
-            if (pauseManager.IsTypePaused(PauseType.Popup) || pauseManager.IsTypePaused(PauseType.RouteSettings))
+            if (pauseMenu.IsTypePaused(PauseType.Popup) || pauseMenu.IsTypePaused(PauseType.RouteSettings))
                 return;
 
             // if there are no holds, don't show it at all
-            if (HoldManager.HoldCount == 0)
+            if (holdLoader.HoldCount == 0)
             {
-                popupManager.CreateInfoPopup("No holds loaded, nothing to filter.");
+                popupMenu.CreateInfoPopup("No holds loaded, nothing to filter.");
                 return;
             }
 
 
-            if (pauseManager.IsTypePaused(PauseType.HoldPicker))
+            if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
             {
                 Close();
             }
             else
             {
                 _root.visible = true;
-                pauseManager.PauseType(PauseType.HoldPicker);
+                pauseMenu.PauseType(PauseType.HoldPicker);
             }
 
             // TODO: while this does fix it, it is pretty buggy
@@ -374,6 +378,9 @@ public class HoldPickerManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Clear the hold picker menu, destroying the hold textures in the process.
+    /// </summary>
     public void Clear()
     {
         ClearGrid();

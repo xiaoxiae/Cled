@@ -1,17 +1,27 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
-/// How should the highlight look like - whether it's primary, secondary, or tertiary.
+/// The type of the highlight.
 /// </summary>
 public enum HighlightType
 {
-    Primary,
+    /// <summary>
+    /// A main highlighted object.
+    /// </summary>
+    Main,
+    
+    /// <summary>
+    /// A secondarily highlighted object.
+    /// </summary>
     Secondary,
-    Tertiary,
+    
+    /// <summary>
+    /// A transparent object.
+    /// </summary>
+    Transparent,
 }
 
 /// <summary>
@@ -21,25 +31,26 @@ public class HighlightManager : MonoBehaviour
 {
     public HoldStateManager holdStateManager;
 
-    private readonly Dictionary<GameObject, HighlightType> _highlighted = new();
+    private readonly Dictionary<GameObject, HighlightType> _currentlyHighlighted = new();
 
     /// <summary>
     /// Return true if the given object is highlighted.
     /// </summary>
-    public bool IsHighlighted(GameObject obj) => _highlighted.ContainsKey(obj);
+    public bool IsHighlighted(GameObject obj) => _currentlyHighlighted.ContainsKey(obj);
 
     /// <summary>
-    /// Highlight an entire route, de-highlighting every other one.
+    /// Highlight an entire route, possibly de-highlighting holds outside it.
     /// </summary>
-    public void Highlight(Route route, bool fadeOtherHolds = false)
+    public void HighlightRoute(Route route, bool fadeOtherHolds = false)
     {
         foreach (var hold in route.Holds)
             Highlight(hold, HighlightType.Secondary);
 
-        if (fadeOtherHolds)
-            foreach (var hold in holdStateManager.GetAllHolds())
-                if (!route.ContainsHold(hold))
-                    Highlight(hold, HighlightType.Tertiary);
+        if (!fadeOtherHolds) return;
+
+        foreach (var hold in holdStateManager.PlacedHolds)
+            if (!route.ContainsHold(hold))
+                Highlight(hold, HighlightType.Transparent);
     }
 
     /// <summary>
@@ -49,73 +60,40 @@ public class HighlightManager : MonoBehaviour
     {
         var renderer = hold.transform.GetChild(0).GetComponent<Renderer>();
         
-        SetRendererOpacity(renderer, opacity);
+        Utilities.SetRendererOpacity(renderer, opacity);
         
-        // TODO: this is super dirty
+        // TODO: this is super dirty (2nd children of holds are only markers in this version)
         // set opacity of marker too
         if (hold.transform.childCount == 2)
         {
             var renderer2 = hold.transform.GetChild(1).transform.GetChild(0).GetComponent<MeshRenderer>();
-            SetRendererOpacity(renderer2, opacity);
-        }
-    }
-
-    private static void SetRendererOpacity(Renderer renderer, float opacity)
-    {
-        var mtl = renderer.material;
-        
-        // https://stackoverflow.com/questions/39366888/unity-mesh-renderer-wont-be-completely-transparent
-        // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/
-        mtl.color = new Color(mtl.color.r, mtl.color.g, mtl.color.b, opacity);
-
-        if (Math.Abs(opacity - 1) < 0.01)
-        {
-            mtl.SetFloat("_Mode", 0);
-            mtl.SetOverrideTag("RenderType", "");
-            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-            mtl.SetInt("_ZWrite", 1);
-            mtl.DisableKeyword("_ALPHATEST_ON");
-            mtl.DisableKeyword("_ALPHABLEND_ON");
-            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            mtl.renderQueue = -1;
-        }
-        else
-        {
-            mtl.SetFloat("_Mode", 2);
-            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            mtl.SetInt("_ZWrite", 0);
-            mtl.DisableKeyword("_ALPHATEST_ON");
-            mtl.EnableKeyword("_ALPHABLEND_ON");
-            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            mtl.renderQueue = 3000;
+            Utilities.SetRendererOpacity(renderer2, opacity);
         }
     }
 
     /// <summary>
     /// Highlight the given object.
-    /// If it is already, only change the highlighting from secondary to primary (or tertiary to primary).
+    /// If it is already, only change the highlighting to main from others.
     /// </summary>
     public void Highlight(GameObject obj, HighlightType highlightType)
     {
         if (IsHighlighted(obj))
         {
-            if (_highlighted[obj] == highlightType)
+            if (_currentlyHighlighted[obj] == highlightType)
                 return;
 
             // highlight only if we're going up in highlights
-            if (!(_highlighted[obj] == HighlightType.Tertiary && highlightType == HighlightType.Primary ||
-                _highlighted[obj] == HighlightType.Secondary && highlightType == HighlightType.Primary))
+            if (!(_currentlyHighlighted[obj] == HighlightType.Transparent && highlightType == HighlightType.Main ||
+                _currentlyHighlighted[obj] == HighlightType.Secondary && highlightType == HighlightType.Main))
                 return;
         }
 
-        _highlighted[obj] = highlightType;
+        _currentlyHighlighted[obj] = highlightType;
 
         Outline outline;
         switch (highlightType)
         {
-            case HighlightType.Primary:
+            case HighlightType.Main:
                 outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
                 outline.OutlineColor = Color.white;
@@ -129,7 +107,7 @@ public class HighlightManager : MonoBehaviour
                 outline.UpdateMaterialProperties();
                 SetHoldOpacity(obj, 1f);
                 break;
-            case HighlightType.Tertiary:
+            case HighlightType.Transparent:
                 SetHoldOpacity(obj, 0.3f);
                 break;
         }
@@ -142,10 +120,8 @@ public class HighlightManager : MonoBehaviour
     {
         if (!IsHighlighted(obj)) return;
 
-        _highlighted.Remove(obj);
-
-        if (obj.GetComponent<Outline>() != null)
-            DestroyImmediate(obj.GetComponent<Outline>());
+        _currentlyHighlighted.Remove(obj);
+        DestroyImmediate(obj.GetComponent<Outline>());
 
         SetHoldOpacity(obj, 1.0f);
     }
@@ -156,9 +132,9 @@ public class HighlightManager : MonoBehaviour
     /// </summary>
     public void UnhighlightAll(HighlightType? highlightType = null)
     {
-        // ToList is used since we're modifying the collection
-        foreach (GameObject obj in _highlighted.Keys.ToList())
-            if (highlightType == null || highlightType.Value == _highlighted[obj])
+        // .ToList() is used since we're modifying the collection
+        foreach (GameObject obj in _currentlyHighlighted.Keys.ToList())
+            if (highlightType == null || highlightType.Value == _currentlyHighlighted[obj])
                 if (obj)
                     Unhighlight(obj);
     }

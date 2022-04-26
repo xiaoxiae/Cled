@@ -2,26 +2,26 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PopupManager : MonoBehaviour
+public class PopupMenu : MonoBehaviour
 {
     public VisualTreeAsset InfoPopup;
     public VisualTreeAsset SavePopup;
 
-    private UIDocument document;
+    private UIDocument _document;
 
-    public PauseManager pauseManager;
+    public PauseMenu pauseMenu;
 
     public void Awake()
     {
-        document = GetComponent<UIDocument>();
+        _document = GetComponent<UIDocument>();
     }
 
     public void Close()
     {
-        document.visualTreeAsset = null;
-        pauseManager.UnpauseType(PauseType.Popup);
+        _document.visualTreeAsset = null;
+        pauseMenu.UnpauseType(PauseType.Popup);
         
-        pauseManager.PauseScreenToBack();
+        pauseMenu.PauseScreenToBack();
     }
 
     /// <summary>
@@ -29,13 +29,13 @@ public class PopupManager : MonoBehaviour
     /// </summary>
     public void CreateInfoPopup(string contents)
     {
-        document.visualTreeAsset = InfoPopup;
+        _document.visualTreeAsset = InfoPopup;
 
-        var root = document.rootVisualElement;
+        var root = _document.rootVisualElement;
         Utilities.DisableElementFocusable(root);
 
-        pauseManager.PauseType(PauseType.Popup);
-        pauseManager.PauseScreenToFront();
+        pauseMenu.PauseType(PauseType.Popup);
+        pauseMenu.PauseScreenToFront();
 
         root.Q<Label>("contents").text = contents;
         root.Q<Button>("ok-button").clicked += Close;
@@ -46,12 +46,12 @@ public class PopupManager : MonoBehaviour
     /// </summary>
     public void CreateSavePopup(string operationName, Action operationAction, Action discardAction, Action cancelButton)
     {
-        document.visualTreeAsset = SavePopup;
+        _document.visualTreeAsset = SavePopup;
 
-        var root = document.rootVisualElement;
+        var root = _document.rootVisualElement;
 
-        pauseManager.PauseType(PauseType.Popup);
-        pauseManager.PauseScreenToFront();
+        pauseMenu.PauseType(PauseType.Popup);
+        pauseMenu.PauseScreenToFront();
 
         root.Q<Button>("operation-button").text = operationName;
         root.Q<Button>("operation-button").clicked += operationAction;

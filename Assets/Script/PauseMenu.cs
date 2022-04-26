@@ -1,10 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
+/// <summary>
+/// The types of pauses there can be.
+/// Some (like popup pauses) behave differently, since it has to be dealt with first.
+/// </summary>
 public enum PauseType
 {
     Normal,
@@ -17,11 +20,14 @@ public enum PauseType
 /// <summary>
 /// A manager that handles pausing due to various reasons.
 /// </summary>
-public class PauseManager : MonoBehaviour
+public class PauseMenu : MonoBehaviour
 {
     private readonly HashSet<PauseType> _pauses = new();
 
     private UIDocument _root;
+
+    private readonly List<Action> _pauseHooks = new();
+    private readonly List<Action> _unpauseHooks = new();
 
     public void Awake()
     {
@@ -62,6 +68,9 @@ public class PauseManager : MonoBehaviour
             hook();
     }
 
+    /// <summary>
+    /// Reset timescale, unlock cursor.
+    /// </summary>
     private void _unpause()
     {
         Time.timeScale = 1;
@@ -73,13 +82,15 @@ public class PauseManager : MonoBehaviour
             hook();
     }
 
-    private List<Action> _pauseHooks = new();
-    private List<Action> _unpauseHooks = new();
-
     /// <summary>
     /// Return true if the editor is currently unpaused.
     /// </summary>
     public bool IsAllUnpaused() => _pauses.Count == 0;
+
+    /// <summary>
+    /// Return true if the editor is currently paused.
+    /// </summary>
+    public bool IsAnyPaused() => !IsAllUnpaused();
 
     /// <summary>
     /// Return true if the editor is currently unpaused via this pause type.
@@ -105,7 +116,13 @@ public class PauseManager : MonoBehaviour
         _unpause();
     }
 
+    /// <summary>
+    /// Move the pause screen to the back (behind everything).
+    /// </summary>
     public void PauseScreenToBack() => _root.sortingOrder = -10;
 
+    /// <summary>
+    /// Move the pause screen to the front (right behind popups).
+    /// </summary>
     public void PauseScreenToFront() => _root.sortingOrder = 10;
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -75,7 +77,7 @@ public class Utilities
     public static string Sha256(string randomString)
     {
         var crypt = new System.Security.Cryptography.SHA256Managed();
-        var hash = new System.Text.StringBuilder();
+        var hash = new StringBuilder();
         byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
         foreach (byte theByte in crypto)
         {
@@ -84,7 +86,6 @@ public class Utilities
 
         return hash.ToString();
     }
-    
 
     /// <summary>
     /// Disable the element being able to be focused.
@@ -99,13 +100,47 @@ public class Utilities
         }
     }
     
-    public class MarkerUpdate : MonoBehaviour
+    /// <summary>
+    /// Toggle the object being in the given set.
+    /// </summary>
+    public static void ToggleInCollection<T>(T obj, HashSet<T> set)
     {
-        public event System.Action OnUpdate;
-        
-        public Vector3 LastPosition;
-        public Quaternion LastRotation;
+        if (set.Contains(obj))
+            set.Remove(obj);
+        else
+            set.Add(obj);
+    }
 
-        void Update() => OnUpdate?.Invoke();
+    public static void SetRendererOpacity(Renderer renderer, float opacity)
+    {
+        var mtl = renderer.material;
+        
+        // https://stackoverflow.com/questions/39366888/unity-mesh-renderer-wont-be-completely-transparent
+        // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/
+        mtl.color = new Color(mtl.color.r, mtl.color.g, mtl.color.b, opacity);
+
+        if (Math.Abs(opacity - 1) < 0.01)
+        {
+            mtl.SetFloat("_Mode", 0);
+            mtl.SetOverrideTag("RenderType", "");
+            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+            mtl.SetInt("_ZWrite", 1);
+            mtl.DisableKeyword("_ALPHATEST_ON");
+            mtl.DisableKeyword("_ALPHABLEND_ON");
+            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            mtl.renderQueue = -1;
+        }
+        else
+        {
+            mtl.SetFloat("_Mode", 2);
+            mtl.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mtl.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mtl.SetInt("_ZWrite", 0);
+            mtl.DisableKeyword("_ALPHATEST_ON");
+            mtl.EnableKeyword("_ALPHABLEND_ON");
+            mtl.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            mtl.renderQueue = 3000;
+        }
     }
 }

@@ -4,9 +4,10 @@ using UnityEngine;
 /// <summary>
 /// A class for controlling the movement of the camera.
 /// </summary>
-public class CameraControl : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
-	public EditorController editorController;
+	public EditorModeManager editorModeManager;
+	public PauseMenu pauseMenu;
 	
 	public float mouseSensitivity = 100f;
 
@@ -27,15 +28,15 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
-	    if (!PreferencesManager.Initialized)
+	    if (!Preferences.Initialized)
 		    return;
 	    
-	    // don't move the camera when time doesn't run
-        if (Time.timeScale == 0)
+	    // don't move the camera when we're paused
+        if (pauseMenu.IsAnyPaused())
             return;
         
         // don't move when middle button is pressed in edit mode (holds turn)
-        if (Input.GetMouseButton(2) && editorController.currentMode == Mode.Holding)
+        if (Input.GetMouseButton(2) && editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
 			return;
 		
 		var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

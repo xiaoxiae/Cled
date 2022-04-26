@@ -84,7 +84,7 @@ public class Route
     /// </summary>
     public void ToggleStarting(GameObject hold)
     {
-        ToggleInCollection(hold, _starting);
+        Utilities.ToggleInCollection(hold, _starting);
 
         if (_starting.Contains(hold))
             AddMarker(hold, _startMarkerPrefab);
@@ -97,12 +97,26 @@ public class Route
     /// </summary>
     public void ToggleEnding(GameObject hold)
     {
-        ToggleInCollection(hold, _ending);
+        Utilities.ToggleInCollection(hold, _ending);
 
         if (_ending.Contains(hold))
             AddMarker(hold, _endMarkerPrefab);
         else
             RemoveMarker(hold);
+    }
+    
+    /// <summary>
+    /// A component for updating the marker.
+    /// It remembers the last hold position and rotation to only update the marker if necessary.
+    /// </summary>
+    public class MarkerUpdate : MonoBehaviour
+    {
+        public event System.Action OnUpdate;
+        
+        public Vector3 LastPosition;
+        public Quaternion LastRotation;
+
+        void Update() => OnUpdate?.Invoke();
     }
     
     /// <summary>
@@ -115,7 +129,7 @@ public class Route
         markerInstance.transform.parent = hold.transform;
         markerInstance.transform.localPosition = Vector3.zero;
 
-        var customUpdate = markerInstance.AddComponent<Utilities.MarkerUpdate>();
+        var customUpdate = markerInstance.AddComponent<MarkerUpdate>();
         customUpdate.OnUpdate += () =>
         {
             // only update when hold position or rotation changed
@@ -151,17 +165,6 @@ public class Route
     /// </summary>
     void RemoveMarker(GameObject hold)
         => Object.DestroyImmediate(hold.transform.GetChild(hold.transform.childCount - 1).gameObject);
-
-    /// <summary>
-    /// Toggle the object being in the given set.
-    /// </summary>
-    private void ToggleInCollection<T>(T obj, HashSet<T> set)
-    {
-        if (set.Contains(obj))
-            set.Remove(obj);
-        else
-            set.Add(obj);
-    }
 
     /// <summary>
     /// Return True if the given route is empty.
