@@ -82,7 +82,7 @@ jobs:
           files: |
             "Linux (64 bit).zip"
             "Windows (64 bit).zip"
-          name: Release ${{ github.ref }}
+          name: Cled ${{ github.ref_name }}
           body: TODO
           draft: true
           prerelease: false
