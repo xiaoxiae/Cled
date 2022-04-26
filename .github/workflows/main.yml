@@ -32,9 +32,23 @@ jobs:
       - name: Build project
         uses: game-ci/unity-builder@v2
         with:
-          targetPlatform:
-            - StandaloneWindows64
-            - StandaloneLinux64
+          targetPlatform: StandaloneWindows64
+          lfs: true
+          allowDirtyBuild: true
+
+            #      # Build Mac
+            #      - name: Build project
+            #        uses: game-ci/unity-builder@v2
+            #        with:
+            #          targetPlatform: StandaloneOSX
+
+      # Build Linux
+      - name: Build project
+        uses: game-ci/unity-builder@v2
+        with:
+          targetPlatform: StandaloneLinux64
+          lfs: true
+          allowDirtyBuild: true
 
       # Output
       - uses: actions/upload-artifact@v2
