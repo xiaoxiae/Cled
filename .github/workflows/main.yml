@@ -66,22 +66,22 @@ jobs:
       - name: Zip Linux build
         run: |
           pushd build/StandaloneLinux64
-          zip -r ../../Linux (64 bit).zip .
+          zip -r "../../Linux (64 bit).zip" .
           popd
 
       # Windows ZIP
       - name: Zip Linux build
         run: |
           pushd build/StandaloneWindows64
-          zip -r ../../Windows (64 bit).zip .
+          zip -r "../../Windows (64 bit).zip" .
           popd
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            Linux (64 bit).zip
-            Windows (64 bit).zip
+            "Linux (64 bit).zip"
+            "Windows (64 bit).zip"
           name: Release ${{ github.ref }}
           body: TODO
           draft: true
