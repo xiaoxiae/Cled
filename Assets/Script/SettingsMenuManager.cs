@@ -120,7 +120,7 @@ public class SettingsMenuManager : MonoBehaviour
         lightManager.UpdateLightIntensity();
         lightManager.UpdateShadowStrength();
 
-        imagePathButton.text = PreferencesManager.CaptureImagePath;
+        PreferencesManager.CaptureImagePath = imagePathButtonValue;
 
         Close();
     }
