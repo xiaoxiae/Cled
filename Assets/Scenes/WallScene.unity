@@ -156,7 +156,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 22e16ec0d7c1972cca08550c61992607, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 10
 --- !u!4 &17711622
 Transform:
   m_ObjectHideFlags: 0
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 2f39aa616c29995ee9605cf55a0ae1d9, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: -1
 --- !u!4 &84805218
 Transform:
   m_ObjectHideFlags: 0
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 0}
-  m_SortingOrder: 10
+  m_SortingOrder: 15
 --- !u!4 &547134780
 Transform:
   m_ObjectHideFlags: 0
@@ -710,7 +710,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: e178af0a1b6fee5e8aff151536274f50, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 5
 --- !u!4 &693249233
 Transform:
   m_ObjectHideFlags: 0
@@ -853,7 +853,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 30ff604549b09532cb59202f4ff84f25, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 3
 --- !u!4 &727763032
 Transform:
   m_ObjectHideFlags: 0
@@ -1184,7 +1184,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 69f084bcc71c9081db53bb1c78d47c24, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 3
 --- !u!4 &1132278477
 Transform:
   m_ObjectHideFlags: 0

@@ -104,4 +104,8 @@ public class PauseManager : MonoBehaviour
         _pauses.Clear();
         _unpause();
     }
+
+    public void PauseScreenToBack() => _root.sortingOrder = -10;
+
+    public void PauseScreenToFront() => _root.sortingOrder = 10;
 }

@@ -20,6 +20,8 @@ public class PopupManager : MonoBehaviour
     {
         document.visualTreeAsset = null;
         pauseManager.UnpauseType(PauseType.Popup);
+        
+        pauseManager.PauseScreenToBack();
     }
 
     /// <summary>
@@ -33,6 +35,7 @@ public class PopupManager : MonoBehaviour
         Utilities.DisableElementFocusable(root);
 
         pauseManager.PauseType(PauseType.Popup);
+        pauseManager.PauseScreenToFront();
 
         root.Q<Label>("contents").text = contents;
         root.Q<Button>("ok-button").clicked += Close;
@@ -48,6 +51,7 @@ public class PopupManager : MonoBehaviour
         var root = document.rootVisualElement;
 
         pauseManager.PauseType(PauseType.Popup);
+        pauseManager.PauseScreenToFront();
 
         root.Q<Button>("operation-button").text = operationName;
         root.Q<Button>("operation-button").clicked += operationAction;
