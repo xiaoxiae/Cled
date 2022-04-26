@@ -331,16 +331,15 @@ public class ImportExportManager : MonoBehaviour
 
             // save only routes that either contain one or more holds, or contain a starting/ending hold
             var routes = new List<SerializableRoute>();
-            foreach (Route route in routeManager.GetRoutes())
-                if (route.Holds.Length > 1 || route.StartingHolds.Length != 0 || route.EndingHolds.Length != 0)
-                    routes.Add(new SerializableRoute
-                    {
-                        HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList(),
-                        Name = route.Name,
-                        Setter = route.Setter,
-                        Zone = route.Zone,
-                        Grade = route.Grade,
-                    });
+            foreach (Route route in routeManager.GetUsableRoutes())
+                routes.Add(new SerializableRoute
+                {
+                    HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList(),
+                    Name = route.Name,
+                    Setter = route.Setter,
+                    Zone = route.Zone,
+                    Grade = route.Grade,
+                });
 
             serializer.Serialize(writer,
                 new SerializableState

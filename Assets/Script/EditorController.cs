@@ -14,6 +14,7 @@ public class EditorController : MonoBehaviour
     public HoldPickerMenu holdPickerMenu;
     public RouteSettingsMenu routeSettingsMenu;
     public EditorModeManager editorModeManager;
+    public RouteViewMenu routeViewMenu;
 
     private HoldBlueprint _currentlyPickedHold;
 
@@ -26,6 +27,14 @@ public class EditorController : MonoBehaviour
         {
             if (mode != EditorModeManager.Mode.Route)
                 routeManager.DeselectRoute();
+        });
+
+        routeViewMenu.AddSelectedRouteCallback(route =>
+        {
+            routeManager.SelectRoute(route);
+            highlightManager.UnhighlightAll();
+            highlightManager.HighlightRoute(route, true);
+            editorModeManager.CurrentMode = EditorModeManager.Mode.Route;
         });
     }
 

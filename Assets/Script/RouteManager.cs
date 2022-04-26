@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// A class for a collection of holds that form it.
@@ -12,19 +14,74 @@ public class Route
     private readonly GameObject _startMarkerPrefab;
     private readonly GameObject _endMarkerPrefab;
 
-    public string Name;
+    private string _name;
 
-    public string Grade;
-    public string Zone;
-    public string Setter;
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            RoutesChanged();
+            _name = value;
+        }
+    }
+
+    private string _grade;
+
+    public string Grade
+    {
+        get => _grade;
+        set
+        {
+            RoutesChanged();
+            _grade = value;
+        }
+    }
+
+    private string _zone;
+
+    public string Zone
+    {
+        get => _zone;
+        set
+        {
+            RoutesChanged();
+            _zone = value;
+        }
+    }
+
+    private string _setter;
+
+    public string Setter
+    {
+        get => _setter;
+        set
+        {
+            RoutesChanged();
+            _setter = value;
+        }
+    }
 
     private readonly HashSet<GameObject> _starting = new();
     private readonly HashSet<GameObject> _ending = new();
 
-    public Route(GameObject startMarkerPrefab, GameObject endMarkerPrefab)
+    private readonly List<Action> _routesChangedCallbacks;
+
+    /// <summary>
+    /// Calls route changed callbacks; called when a route is changed.
+    /// </summary>
+    private void RoutesChanged()
+    {
+        foreach (var callback in _routesChangedCallbacks)
+            callback();
+    }
+
+    public Route(GameObject startMarkerPrefab, GameObject endMarkerPrefab, List<Action> RouteChangedCallbacks)
     {
         _startMarkerPrefab = startMarkerPrefab;
         _endMarkerPrefab = endMarkerPrefab;
+
+        _routesChangedCallbacks = RouteChangedCallbacks;
     }
 
     /// <summary>
@@ -51,6 +108,8 @@ public class Route
 
         if (isStarting) _starting.Add(hold);
         if (isEnding) _ending.Add(hold);
+
+        RoutesChanged();
     }
 
     /// <summary>
@@ -61,6 +120,8 @@ public class Route
         _holds.Remove(hold);
         _starting.Remove(hold);
         _ending.Remove(hold);
+
+        RoutesChanged();
     }
 
     /// <summary>
@@ -90,6 +151,8 @@ public class Route
             AddMarker(hold, _startMarkerPrefab);
         else
             RemoveMarker(hold);
+
+        RoutesChanged();
     }
 
     /// <summary>
@@ -103,8 +166,10 @@ public class Route
             AddMarker(hold, _endMarkerPrefab);
         else
             RemoveMarker(hold);
+
+        RoutesChanged();
     }
-    
+
     /// <summary>
     /// A component for updating the marker.
     /// It remembers the last hold position and rotation to only update the marker if necessary.
@@ -112,13 +177,13 @@ public class Route
     public class MarkerUpdate : MonoBehaviour
     {
         public event System.Action OnUpdate;
-        
+
         public Vector3 LastPosition;
         public Quaternion LastRotation;
 
         void Update() => OnUpdate?.Invoke();
     }
-    
+
     /// <summary>
     /// Add the marker to the hold.
     /// </summary>
@@ -141,21 +206,21 @@ public class Route
 
             customUpdate.LastPosition = holdPosition;
             customUpdate.LastRotation = hold.transform.rotation;
-            
+
             var c1 = hold.GetComponent<MeshCollider>();
             var c2 = markerInstance.transform.GetChild(0).GetComponent<MeshCollider>();
-            
+
             markerInstance.transform.position = holdPosition;
             markerInstance.transform.LookAt(hold.transform.forward + holdPosition, Vector3.up);
 
             float step = 0.001f;
             float stepsBack = 30;
-            
+
             // a little dangerous but whatever
             while (Physics.ComputePenetration(c1, c1.transform.position, c1.transform.rotation, c2,
-                                        c2.transform.position, c2.transform.rotation, out _, out _))
+                       c2.transform.position, c2.transform.rotation, out _, out _))
                 markerInstance.transform.position -= markerInstance.transform.up * step;
-            
+
             markerInstance.transform.position += markerInstance.transform.up * step * stepsBack;
         };
     }
@@ -183,7 +248,19 @@ public class RouteManager : MonoBehaviour
 {
     private readonly HashSet<Route> _routes = new();
 
-    public Route SelectedRoute;
+    private Route _selectedRoute;
+
+    public Route SelectedRoute
+    {
+        get => _selectedRoute;
+        set
+        {
+            _selectedRoute = value;
+
+            foreach (var callback in _selectedRouteChangedCallbacks)
+                callback();
+        }
+    }
 
     public GameObject StartMarkerPrefab;
     public GameObject EndMarkerPrefab;
@@ -191,11 +268,37 @@ public class RouteManager : MonoBehaviour
     public readonly HashSet<GameObject> StartingHolds = new();
     public readonly HashSet<GameObject> EndingHolds = new();
 
+    private readonly List<Action> _routesChangedCallbacks = new();
+
+    /// <summary>
+    /// Add a callback for when the routes change, either by one being added, removed, or edited.
+    /// </summary>
+    public void AddRoutesChangedCallback(Action action) => _routesChangedCallbacks.Add(action);
+
+    private readonly List<Action> _selectedRouteChangedCallbacks = new();
+
+    /// <summary>
+    /// Add a callback for when the selected route is changed.
+    /// </summary>
+    public void AddSelectedRouteChangedCallback(Action action) => _selectedRouteChangedCallbacks.Add(action);
+
     /// <summary>
     /// Get all routes.
     /// </summary>
-    /// <returns></returns>
     public Route[] GetRoutes() => _routes.ToArray();
+
+    /// <summary>
+    /// Get only routes that are "usable."
+    /// By this we mean routes that are interesting to the user.
+    /// 
+    /// They must either contain more than one hold, contain a top or bottom, or have some attribute be not null or empty.
+    /// </summary>
+    public Route[] GetUsableRoutes() => GetRoutes().Where(route =>
+        route.Holds.Length > 1 || route.StartingHolds.Length != 0 || route.EndingHolds.Length != 0
+        || !string.IsNullOrEmpty(route.Setter)
+        || !string.IsNullOrEmpty(route.Name)
+        || !string.IsNullOrEmpty(route.Zone)
+        || !string.IsNullOrEmpty(route.Grade)).ToArray();
 
     /// <summary>
     /// Select the given route.
@@ -296,10 +399,21 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     public Route CreateRoute()
     {
-        var newRoute = new Route(StartMarkerPrefab, EndMarkerPrefab);
+        var newRoute = new Route(StartMarkerPrefab, EndMarkerPrefab, _routesChangedCallbacks);
         _routes.Add(newRoute);
 
+        RoutesChanged();
+
         return newRoute;
+    }
+
+    /// <summary>
+    /// Calls route changed callbacks; called when a route is changed.
+    /// </summary>
+    private void RoutesChanged()
+    {
+        foreach (var callback in _routesChangedCallbacks)
+            callback();
     }
 
     /// <summary>
@@ -321,13 +435,20 @@ public class RouteManager : MonoBehaviour
         route = CreateRoute();
         route.AddHold(hold, blueprint);
 
+        RoutesChanged();
+
         return route;
     }
 
     /// <summary>
     /// Remove a route from the manager.
     /// </summary>
-    private void RemoveRoute(Route route) => _routes.Remove(route);
+    private void RemoveRoute(Route route)
+    {
+        _routes.Remove(route);
+
+        RoutesChanged();
+    }
 
     public void Clear()
     {

@@ -14,6 +14,7 @@ public class ToolbarMenu : MonoBehaviour
     public LightManager lightManager;
     public SettingsMenu settingsMenu;
     public EditorModeManager editorModeManager;
+    public RouteViewMenu routeViewMenu;
 
     private VisualElement _root;
 
@@ -42,12 +43,12 @@ public class ToolbarMenu : MonoBehaviour
 
     void Awake()
     {
-        var currentModeLabel = GetComponent<UIDocument>().rootVisualElement
-            .Q<Label>("current-mode-label");
-
-        editorModeManager.AddModeChangeCallback(mode => { currentModeLabel.text = mode.ToString().ToUpper(); });
-
         _root = GetComponent<UIDocument>().rootVisualElement;
+        Utilities.DisableElementFocusable(_root);
+
+        // mode label
+        var currentModeLabel = _root.Q<Label>("current-mode-label");
+        editorModeManager.AddModeChangeCallback(mode => { currentModeLabel.text = mode.ToString().ToUpper(); });
 
         // lighting
         var addLightingButton = _root.Q<Button>("add-lighting-button");
@@ -56,7 +57,13 @@ public class ToolbarMenu : MonoBehaviour
         var clearLightingButton = _root.Q<Button>("clear-lighting-button");
         clearLightingButton.clicked += lightManager.Clear;
 
-        Utilities.DisableElementFocusable(_root);
+        // lighting
+        var routeViewToggle = _root.Q<Toggle>("routes-toggle");
+        routeViewToggle.RegisterValueChangedCallback(evt =>
+        {
+            if (evt.newValue) routeViewMenu.Show();
+            else routeViewMenu.Close();
+        });
 
         // files
         _openButton = _root.Q<Button>("open-button");
@@ -310,7 +317,8 @@ public class ToolbarMenu : MonoBehaviour
                 using (var e = new NavigationSubmitEvent { target = _captureImageButton })
                     _captureImageButton.SendEvent(e);
 
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.P))
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
+                     Input.GetKeyDown(KeyCode.P))
                 using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
                     _captureImageAsButton.SendEvent(e);
         }
