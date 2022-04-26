@@ -212,7 +212,7 @@ public class ImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project: {e.Message}");
             return false;
         }
 
@@ -300,7 +300,7 @@ public class ImportExportManager : MonoBehaviour
         catch (Exception e)
         {
             Clear();
-            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project: {e.Message}");
             return;
         }
     }
@@ -377,7 +377,7 @@ public class ImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project: {e.Message}");
             return false;
         }
     }
@@ -406,7 +406,7 @@ public class ImportExportManager : MonoBehaviour
         catch (Exception e)
         {
             Clear();
-            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project:\n\n{e}");
+            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project: {e.Message}");
             return false;
         }
     }
