@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.ServiceModel.Configuration;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
@@ -64,6 +62,7 @@ public class HoldPickerMenu : MonoBehaviour
     // styling
     // TODO: this should be moved to the USS file
     private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
+    private readonly StyleColor _pickedBorderColor = new(new Color(0f, 0.5f, 0.4f));
     private readonly StyleColor _deselectedBorderColor = new(new Color(0.25f, 0.25f, 0.25f));
 
     public RenderTexture renderTexture;
@@ -74,10 +73,11 @@ public class HoldPickerMenu : MonoBehaviour
     public HoldBlueprint CurrentlySelectedHold { get; private set; }
 
     /// <summary>
-    /// Return the currently picked holds.
+    /// Return the currently picked holds, in the order they're displayed in the menu.
     /// </summary>
     public List<HoldBlueprint> GetPickedHolds() =>
-        _holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]]).ToList();
+        OrderBlueprintsToGrid(_holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]])
+            .ToArray()).ToList();
 
     /// <summary>
     /// Update the grid according to the dropdown button filters.
@@ -280,14 +280,43 @@ public class HoldPickerMenu : MonoBehaviour
         if (_gridStateDictionary[item])
             return;
 
-        item.style.borderBottomColor = _selectedBorderColor;
-        item.style.borderTopColor = _selectedBorderColor;
-        item.style.borderLeftColor = _selectedBorderColor;
-        item.style.borderRightColor = _selectedBorderColor;
-
         _gridStateDictionary[item] = true;
 
+        UpdateItemBorders();
+
         UpdateSelectCounters();
+    }
+
+    private void UpdateItemBorders()
+    {
+        var pickedHolds = GetPickedHolds();
+
+        foreach (var hold in _allHolds)
+        {
+            var holdItem = _holdToGridDictionary[hold];
+
+            if (hold == CurrentlySelectedHold)
+            {
+                holdItem.style.borderBottomColor = _pickedBorderColor;
+                holdItem.style.borderTopColor = _pickedBorderColor;
+                holdItem.style.borderLeftColor = _pickedBorderColor;
+                holdItem.style.borderRightColor = _pickedBorderColor;
+            }
+            else if (pickedHolds.Contains(hold))
+            {
+                holdItem.style.borderBottomColor = _selectedBorderColor;
+                holdItem.style.borderTopColor = _selectedBorderColor;
+                holdItem.style.borderLeftColor = _selectedBorderColor;
+                holdItem.style.borderRightColor = _selectedBorderColor;
+            }
+            else
+            {
+                holdItem.style.borderBottomColor = _deselectedBorderColor;
+                holdItem.style.borderTopColor = _deselectedBorderColor;
+                holdItem.style.borderLeftColor = _deselectedBorderColor;
+                holdItem.style.borderRightColor = _deselectedBorderColor;
+            }
+        }
     }
 
     /// <summary>
@@ -317,12 +346,9 @@ public class HoldPickerMenu : MonoBehaviour
         if (!_gridStateDictionary[item])
             return;
 
-        item.style.borderBottomColor = _deselectedBorderColor;
-        item.style.borderTopColor = _deselectedBorderColor;
-        item.style.borderLeftColor = _deselectedBorderColor;
-        item.style.borderRightColor = _deselectedBorderColor;
-
         _gridStateDictionary[item] = false;
+
+        UpdateItemBorders();
 
         UpdateSelectCounters();
     }
@@ -350,6 +376,11 @@ public class HoldPickerMenu : MonoBehaviour
             _grid.Remove(_holdToGridDictionary[blueprint]);
     }
 
+    private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(HoldBlueprint[] blueprints) =>
+        blueprints.OrderBy(x => x.holdMetadata.colorHex)
+            .ThenBy(x => x.holdMetadata.type)
+            .ThenBy(x => x.holdMetadata.volume);
+
     /// <summary>
     /// Fill the grid with a selection of the holds.
     /// </summary>
@@ -357,10 +388,7 @@ public class HoldPickerMenu : MonoBehaviour
     {
         ClearGrid();
 
-        foreach (var blueprint in holdBlueprints
-                     .OrderBy(x => x.holdMetadata.colorHex)
-                     .ThenBy(x => x.holdMetadata.type)
-                     .ThenBy(x => x.holdMetadata.volume))
+        foreach (var blueprint in OrderBlueprintsToGrid(holdBlueprints))
             _grid.Add(_holdToGridDictionary[blueprint]);
 
         _filteredHoldIDs = holdBlueprints;
@@ -459,5 +487,7 @@ public class HoldPickerMenu : MonoBehaviour
         int newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
 
         CurrentlySelectedHold = pickedHolds[newIndex];
+
+        UpdateItemBorders();
     }
 }
