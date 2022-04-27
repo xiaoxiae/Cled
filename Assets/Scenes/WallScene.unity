@@ -346,6 +346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   routeManager: {fileID: 651512647}
+  routeSettingsMenu: {fileID: 1132278475}
 --- !u!114 &288166341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1195,6 +1196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d07d104bcf350439b48984b8f2d98b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  routeManager: {fileID: 651512647}
   wallLoader: {fileID: 244077567}
   pauseMenu: {fileID: 816695697}
 --- !u!114 &1132278476
@@ -1364,7 +1366,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d890cce064a55301a704f73fd64f54c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingScreen: {fileID: 1409923715}
 --- !u!1 &1448058874
 GameObject:
   m_ObjectHideFlags: 0

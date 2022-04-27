@@ -280,16 +280,11 @@ public class EditorController : MonoBehaviour
             cameraController.PointCameraAt(hold.transform.position);
         }
 
-        // b/t for bottom/top marks
         if (Input.GetKeyDown(KeyCode.B))
-        {
             routeManager.ToggleStarting(hold, holdStateManager.GetHoldBlueprint(hold));
-        }
 
         if (Input.GetKeyDown(KeyCode.T))
-        {
             routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
-        }
 
         Route route = routeManager.GetOrCreateRouteWithHold(hold, holdStateManager.GetHoldBlueprint(hold));
 
@@ -326,7 +321,7 @@ public class EditorController : MonoBehaviour
             }
             else
             {
-                routeSettingsMenu.Show(routeManager.SelectedRoute);
+                routeSettingsMenu.Show();
             }
         }
 

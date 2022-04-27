@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 public class RouteViewMenu : MonoBehaviour
 {
     public RouteManager routeManager;
+    public RouteSettingsMenu routeSettingsMenu;
 
     private ListView _listView;
     private VisualElement _root;
@@ -39,12 +40,29 @@ public class RouteViewMenu : MonoBehaviour
         _listView = _root.Q<ListView>("route-list-view");
         _listView.makeItem = MakeItem;
         _listView.bindItem = BindItem;
+        
+        _listView.onItemsChosen += items =>
+        {
+            foreach (var route in items.Select(item => (Route)item))
+            {
+                if (routeManager.SelectedRoute == route)
+                    routeSettingsMenu.Show();
+                
+                foreach (var callback in _selectedRouteCallbacks)
+                    callback(route);
+            }
+        };
 
         _listView.onSelectionChange += items =>
         {
             foreach (var route in items.Select(item => (Route)item))
-            foreach (var callback in _selectedRouteCallbacks)
-                callback(route);
+            {
+                if (routeManager.SelectedRoute == route)
+                    routeSettingsMenu.Show();
+                
+                foreach (var callback in _selectedRouteCallbacks)
+                    callback(route);
+            }
         };
 
         routeManager.AddRoutesChangedCallback(Rebuild);

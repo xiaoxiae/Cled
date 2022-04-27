@@ -31,28 +31,24 @@ public class UIKeyboardController : MonoBehaviour
             
             // else close popups first
             if (pauseMenu.IsTypePaused(PauseType.Popup)) {
-                pauseMenu.UnpauseType(PauseType.Popup);
                 popupMenu.Close();
                 return;
             }
             
             // then hold picker
             if (pauseMenu.IsTypePaused(PauseType.HoldPicker)) {
-                pauseMenu.UnpauseType(PauseType.HoldPicker);
                 holdPickerMenu.Close();
                 return;
             }
                 
             // then route settings
             if (pauseMenu.IsTypePaused(PauseType.RouteSettings)) {
-                pauseMenu.UnpauseType(PauseType.RouteSettings);
                 routeSettingsMenu.Close();
                 return;
             }
             
             // then general settings
             if (pauseMenu.IsTypePaused(PauseType.Settings)) {
-                pauseMenu.UnpauseType(PauseType.Settings);
                 settingsMenu.Close();
                 return;
             }

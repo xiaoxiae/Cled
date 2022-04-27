@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class RouteSettingsMenu : MonoBehaviour
 {
+    public RouteManager routeManager;
     public WallLoader wallLoader;
     public PauseMenu pauseMenu;
 
@@ -13,8 +14,6 @@ public class RouteSettingsMenu : MonoBehaviour
     private Dictionary<string, DropdownField> _dropdowns;
 
     private Dictionary<string, Func<List<string>>> _attributeMapping;
-
-    private Route _selectedRoute;
 
     private bool _initialized;
 
@@ -62,16 +61,16 @@ public class RouteSettingsMenu : MonoBehaviour
             switch (attribute)
             {
                 case "name":
-                    _selectedRoute.Name = textfield.value;
+                    routeManager.SelectedRoute.Name = textfield.value;
                     break;
                 case "zone":
-                    _selectedRoute.Zone = textfield.value;
+                    routeManager.SelectedRoute.Zone = textfield.value;
                     break;
                 case "grade":
-                    _selectedRoute.Grade = textfield.value;
+                    routeManager.SelectedRoute.Grade = textfield.value;
                     break;
                 case "setter":
-                    _selectedRoute.Setter = textfield.value;
+                    routeManager.SelectedRoute.Setter = textfield.value;
                     break;
             }
         }
@@ -158,15 +157,14 @@ public class RouteSettingsMenu : MonoBehaviour
     /// <summary>
     /// Show the route settings for this route.
     /// </summary>
-    public void Show(Route route)
+    public void Show()
     {
-        _selectedRoute = route;
         _root.visible = true;
 
         if (!_initialized)
             _initialize();
         
-        _setFromRoute(route);
+        _setFromRoute(routeManager.SelectedRoute);
 
         pauseMenu.PauseType(PauseType.RouteSettings);
     }
