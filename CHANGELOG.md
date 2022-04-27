@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Improve error messages.
+- Allow setting top/bottom marks while holding.
 
 
 ## [1.0.0] - 2022-04-26

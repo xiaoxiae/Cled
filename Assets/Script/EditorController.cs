@@ -177,6 +177,14 @@ public class EditorController : MonoBehaviour
     {
         if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
         {
+            if (Input.GetKeyDown(KeyCode.B))
+                routeManager.ToggleStarting(holdStateManager.HeldHold,
+                    holdStateManager.GetHoldBlueprint(holdStateManager.HeldHold));
+
+            if (Input.GetKeyDown(KeyCode.T))
+                routeManager.ToggleEnding(holdStateManager.HeldHold,
+                    holdStateManager.GetHoldBlueprint(holdStateManager.HeldHold));
+
             // rotate hold on middle mouse button
             if (Input.GetMouseButton(2))
                 holdStateManager.RotateHeld(Input.GetAxis("Mouse X") * HoldRotationSensitivity * Time.deltaTime);
