@@ -28,7 +28,7 @@ public class PopupMenu : MonoBehaviour
     /// <summary>
     /// Create an info popup with the given content.
     /// </summary>
-    public void CreateInfoPopup(string contents)
+    public void CreateInfoPopup(string contents, Action okAction = null)
     {
         _document.visualTreeAsset = InfoPopup;
 
@@ -40,6 +40,9 @@ public class PopupMenu : MonoBehaviour
 
         root.Q<Label>("contents").text = contents;
         root.Q<Button>("ok-button").clicked += Close;
+        
+        if (okAction != null)
+            root.Q<Button>("ok-button").clicked += okAction;
     }
 
     /// <summary>

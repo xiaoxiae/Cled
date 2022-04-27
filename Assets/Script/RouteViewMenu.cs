@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,8 +10,6 @@ public class RouteViewMenu : MonoBehaviour
 
     private ListView _listView;
     private VisualElement _root;
-
-    public object Toggle { get; set; }
 
     // Start is called before the first frame update
     void Awake()

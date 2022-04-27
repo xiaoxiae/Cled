@@ -384,8 +384,11 @@ public class ToolbarMenu : MonoBehaviour
 
         Preferences.LastOpenWallPath = null;
 
-        importExportManager.ImportFromNew(Preferences.CurrentWallModelPath,
-            Preferences.CurrentHoldModelsPath);
+        importExportManager.ImportFromNew(
+            Preferences.CurrentWallModelPath,
+            Preferences.CurrentHoldModelsPath
+        );
+        
         ForceSaveAs();
     }
 }

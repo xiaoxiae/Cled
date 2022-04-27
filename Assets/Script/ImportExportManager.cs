@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -163,8 +164,8 @@ public class ImportExportManager : MonoBehaviour
     public WallLoader wallLoader;
     public LightManager lightManager;
     public PauseMenu pauseMenu;
-
     public PopupMenu popupMenu;
+    public LoadingScreenMenu loadingScreenMenu;
 
     public PlayerController playerController;
     public CameraController cameraController;
@@ -219,25 +220,67 @@ public class ImportExportManager : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Import the state from the given path.
-    /// Must be called after ImportPreferences and after the Awake functions of managers were called.
-    /// 
-    /// Return true if successful, else false.
-    /// </summary>
-    public void ImportState(string path)
+    private void CloseWithException(string action, string errorMessage)
     {
+        Clear();
+        
+        popupMenu.CreateInfoPopup(
+            $"The following exception occurred while {action}: {errorMessage}",
+            loadingScreenMenu.Close
+        );
+        
+        loadingScreenMenu.ToBehindPopup();
+    }
+
+    /// <summary>
+    /// Asynchronously import state while showing the loading screen.
+    /// </summary>
+    private IEnumerator ImportStateAsync(string path)
+    {
+        loadingScreenMenu.Show("Clearing current state...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        Clear();
+
+        loadingScreenMenu.Show("Loading the wall.");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
         try
         {
-            Clear();
-
             // initialize wall
             wallLoader.Initialize(Preferences.CurrentWallModelPath);
+        }
+        catch (Exception e)
+        {
+            CloseWithException("loading the wall", e.Message);
+            yield break;
+        }
 
+        loadingScreenMenu.Show("Loading the holds...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
             // initialize holds
             holdLoader.Initialize(Preferences.CurrentHoldModelsPath);
+        }
+        catch (Exception e)
+        {
+            CloseWithException("loading the holds", e.Message);
+            yield break;
+        }
 
-            var obj = Deserialize(path);
+        loadingScreenMenu.Show("Populating the wall...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        SerializableState obj;
+        try
+        {
+            obj = Deserialize(path);
 
             var holds = new Dictionary<string, GameObject>();
 
@@ -270,7 +313,19 @@ public class ImportExportManager : MonoBehaviour
             // import ending holds
             foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
                 routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
+        }
+        catch (Exception e)
+        {
+            CloseWithException("populating the wall", e.Message);
+            yield break;
+        }
 
+        loadingScreenMenu.Show("Configuring...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
             // set player position
             playerController.Position = obj.Player.Position;
             cameraController.Orientation = obj.Player.Orientation;
@@ -295,15 +350,23 @@ public class ImportExportManager : MonoBehaviour
                 holdPickerMenu.Select(holdLoader.GetHoldBlueprint(blueprintId));
 
             Preferences.Initialized = true;
-            return;
         }
         catch (Exception e)
         {
-            Clear();
-            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project: {e.Message}");
-            return;
+            CloseWithException("configuring", e.Message);
+            yield break;
         }
+
+        loadingScreenMenu.Close();
     }
+
+    /// <summary>
+    /// Import the state from the given path.
+    /// Must be called after ImportPreferences and after the Awake functions of managers were called.
+    /// 
+    /// Return true if successful, else false.
+    /// </summary>
+    public void ImportState(string path) => StartCoroutine(ImportStateAsync(path));
 
     /// <summary>
     /// Export the state to the given path.
@@ -381,32 +444,72 @@ public class ImportExportManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Initialize a new state from a wall model and holds folder.
-    ///
-    /// Returns true if successful, else false.
-    /// </summary>
-    public bool ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
+    private IEnumerator ImportFromNewAsync(string currentWallModelPath, string currentHoldModelsPath)
     {
+        loadingScreenMenu.Show("Clearing current state...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        Clear();
+
+        loadingScreenMenu.Show("Loading the wall...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
         try
         {
-            Clear();
-
+            // initialize wall
             wallLoader.Initialize(currentWallModelPath);
-            holdLoader.Initialize(currentHoldModelsPath);
+        }
+        catch (Exception e)
+        {
+            CloseWithException("loading the wall", e.Message);
+            yield break;
+        }
 
+        loadingScreenMenu.Show("Loading the holds...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
+            // initialize holds
+            holdLoader.Initialize(currentHoldModelsPath);
+        }
+        catch (Exception e)
+        {
+            CloseWithException("loading the holds", e.Message);
+            yield break;
+        }
+
+        loadingScreenMenu.Show("Configuring...");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
             holdPickerMenu.Initialize();
 
             Preferences.SetToDefault();
 
             Preferences.Initialized = true;
-            return true;
         }
         catch (Exception e)
         {
-            Clear();
-            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project: {e.Message}");
-            return false;
+            CloseWithException("configuring", e.Message);
+            yield break;
         }
+
+        loadingScreenMenu.Close();
+    }
+
+    /// <summary>
+    /// Initialize a new state from a wall model and holds folder.
+    ///
+    /// Returns true if successful, else false.
+    /// </summary>
+    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
+    {
+        StartCoroutine(ImportFromNewAsync(currentWallModelPath, currentHoldModelsPath));
     }
 }

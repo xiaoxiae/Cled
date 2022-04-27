@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - A route view window with the list of the project routes.
+- Loding screen when opening or creating a new project.
 
 ### Changed
-- More concise error messages
+- Improve error messages.
 
 
 ## [1.0.0] - 2022-04-26

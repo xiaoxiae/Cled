@@ -168,3 +168,10 @@ Label:disabled { color: var(--disabled-text-color); }
 }
 
 .all-settings-panel TextField > TextInput { -unity-text-align: middle-right; }
+
+/* --- LOADING SCREEN --- */
+.loading-screen {
+    background-color: var(--panel-color);
+}
+
+.loading-screen Label { font-size: 300%; }
