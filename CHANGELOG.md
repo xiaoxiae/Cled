@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Improve error messages.
+- Improve hold picking behavior with the currently held holds.
 - Allow setting top/bottom marks while holding.
 
 

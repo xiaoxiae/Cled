@@ -16,8 +16,6 @@ public class EditorController : MonoBehaviour
     public EditorModeManager editorModeManager;
     public RouteViewMenu routeViewMenu;
 
-    private HoldBlueprint _currentlyPickedHold;
-
     private const float HoldRotationSensitivity = 5f;
 
     void Awake()
@@ -39,25 +37,6 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Ensure that the currently picked hold is still picked.
-    /// If it isn't, pick some other one from the selected ones.
-    /// 
-    /// If there are no selected ones, return false.
-    /// </summary>
-    private bool EnsurePickedHold()
-    {
-        var pickedHolds = holdPickerMenu.GetPickedHolds();
-
-        if (pickedHolds.Count == 0)
-            return false;
-
-        if (!pickedHolds.Contains(_currentlyPickedHold))
-            _currentlyPickedHold = pickedHolds[0];
-
-        return true;
-    }
-
-    /// <summary>
     /// Called each update at the very beginning.
     /// </summary>
     private void CombinedBehaviorBefore()
@@ -68,7 +47,7 @@ public class EditorController : MonoBehaviour
         {
             // however, if the would-be-held hold is not picked any more, don't switch to holding mode
             // and display a warning message instead (what would we even pick?)
-            if (editorModeManager.CurrentMode != EditorModeManager.Mode.Holding && !EnsurePickedHold())
+            if (editorModeManager.CurrentMode != EditorModeManager.Mode.Holding && holdPickerMenu.GetPickedHolds().Count == 0)
                 popupMenu.CreateInfoPopup("No holds selected, can't start holding!");
             else
             {
@@ -83,8 +62,7 @@ public class EditorController : MonoBehaviour
                 }
                 else
                 {
-                    if (EnsurePickedHold())
-                        holdStateManager.InstantiateToHolding(_currentlyPickedHold);
+                    holdStateManager.InstantiateToHolding(holdPickerMenu.CurrentlySelectedHold);
                 }
             }
         }
@@ -193,25 +171,17 @@ public class EditorController : MonoBehaviour
 
             if (mouseDelta != 0)
             {
-                var pickedHolds = holdPickerMenu.GetPickedHolds();
-
-                // if the picked holds contain the one in hand, simply go up/down the list
-                int newIndex;
-                if (pickedHolds.Contains(_currentlyPickedHold))
-                    newIndex = (pickedHolds.IndexOf(_currentlyPickedHold) + (mouseDelta < 0 ? -1 : 1) +
-                                pickedHolds.Count) % pickedHolds.Count;
+                if (mouseDelta < 0)
+                    holdPickerMenu.MoveToPreviousHold();
                 else
-                    newIndex = 0;
+                    holdPickerMenu.MoveToNextHold();
 
-                // if only one hold is selected, it is quite pointless to swap the holds
-                if (pickedHolds.Count != 1)
+                // only swap if more than one hold is selected (it is pointless to swap to itself)
+                if (holdPickerMenu.GetPickedHolds().Count != 1)
                 {
-                    _currentlyPickedHold = pickedHolds[newIndex];
-
                     routeManager.RemoveHold(holdStateManager.HeldHold);
                     holdStateManager.StopHolding();
-
-                    holdStateManager.InstantiateToHolding(_currentlyPickedHold);
+                    holdStateManager.InstantiateToHolding(holdPickerMenu.CurrentlySelectedHold);
                 }
             }
         }

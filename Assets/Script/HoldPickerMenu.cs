@@ -2,18 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.ServiceModel.Configuration;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
 
 public class HoldPickerMenu : MonoBehaviour
 {
+    // manager-related things
+    public PauseMenu pauseMenu;
+    public PopupMenu popupMenu;
+    public HoldLoader holdLoader;
+
+    public EditorModeManager editorModeManager;
+    public HoldStateManager holdStateManager;
+
     // a dictionary for storing each visual element's state
     private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
 
     // a dictionary for mapping hold blueprints to grid tiles
     private readonly Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary = new();
+    private readonly Dictionary<VisualElement, HoldBlueprint> _gridToHoldDictionary = new();
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
     private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
@@ -46,12 +57,6 @@ public class HoldPickerMenu : MonoBehaviour
 
     private StyleBackground _videoBackground;
 
-    // manager-related things
-    public PauseMenu pauseMenu;
-    public PopupMenu popupMenu;
-
-    public HoldLoader holdLoader;
-
     // hacks
     private const long UIBugWorkaroundDurations = 100;
     private long _doubleTriggerTimestamp;
@@ -65,6 +70,8 @@ public class HoldPickerMenu : MonoBehaviour
     public VideoPlayer videoPlayer;
 
     private const string NoSelectionString = "-";
+
+    public HoldBlueprint CurrentlySelectedHold { get; private set; }
 
     /// <summary>
     /// Return the currently picked holds.
@@ -182,6 +189,8 @@ public class HoldPickerMenu : MonoBehaviour
             var item = new VisualElement();
 
             _holdToGridDictionary[blueprint] = item;
+            _gridToHoldDictionary[item] = blueprint;
+            
             _gridStateDictionary[item] = false;
 
             item.styleSheets.Add(globalStyleSheets);
@@ -255,6 +264,14 @@ public class HoldPickerMenu : MonoBehaviour
     /// </summary>
     private void Select(VisualElement item)
     {
+        HoldBlueprint blueprint = _gridToHoldDictionary[item];
+        
+        CurrentlySelectedHold = blueprint;
+
+        // if we selected a new hold and are holding another one, hold this one instead
+        if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
+            holdStateManager.InstantiateToHolding(CurrentlySelectedHold, true);
+
         // do nothing if it is already selected
         if (_gridStateDictionary[item])
             return;
@@ -274,6 +291,24 @@ public class HoldPickerMenu : MonoBehaviour
     /// </summary>
     private void Deselect(VisualElement item)
     {
+        HoldBlueprint blueprint = _gridToHoldDictionary[item];
+        
+        if (blueprint == CurrentlySelectedHold)
+        {
+            // switch to another hold if there are still some leftover
+            if (GetPickedHolds().Count != 1)
+                MoveByDelta(-1);
+            else
+                CurrentlySelectedHold = null;
+
+            // if we deselected the currently held hold, stop holding it
+            if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
+            {
+                editorModeManager.CurrentMode = EditorModeManager.Mode.Normal;
+                holdStateManager.StopHolding();
+            }
+        }
+
         // do nothing if it is already deselected
         if (!_gridStateDictionary[item])
             return;
@@ -290,6 +325,9 @@ public class HoldPickerMenu : MonoBehaviour
 
     /// <summary>
     /// Toggle the selection of the grid element.
+    ///
+    /// Additionally, make sure that when a new item is selected, make it the currently picked hold
+    /// and when an item is deselected, if it was the currently picked hold, remove it.
     /// </summary>
     private void ToggleSelect(VisualElement item)
     {
@@ -390,6 +428,7 @@ public class HoldPickerMenu : MonoBehaviour
         _filteredHoldIDs = new HoldBlueprint[] { };
         _gridStateDictionary.Clear();
         _holdToGridDictionary.Clear();
+        _gridToHoldDictionary.Clear();
 
         foreach (var texture in _gridTextureDictionary.Values)
             Destroy(texture);
@@ -397,5 +436,25 @@ public class HoldPickerMenu : MonoBehaviour
         _gridTextureDictionary.Clear();
 
         Close();
+    }
+
+    /// <summary>
+    /// Move to the previous filtered hold.
+    /// </summary>
+    public void MoveToPreviousHold() => MoveByDelta(-1);
+
+    /// <summary>
+    /// Move to the next filtered hold.
+    /// </summary>
+    public void MoveToNextHold() => MoveByDelta(1);
+
+    private void MoveByDelta(int delta)
+    {
+        var pickedHolds = GetPickedHolds();
+
+        int selectedIndex = pickedHolds.IndexOf(CurrentlySelectedHold);
+        int newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
+
+        CurrentlySelectedHold = pickedHolds[newIndex];
     }
 }

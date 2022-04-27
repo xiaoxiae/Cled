@@ -39,9 +39,20 @@ public class HoldStateManager : MonoBehaviour
 
     /// <summary>
     /// Start holding a hold from a hold object.
+    /// If replace is specified, we're replacing the currently held one with another one, saving the state.
     /// </summary>
-    public void InstantiateToHolding(HoldBlueprint holdBlueprint) =>
-        StartHolding(Instantiate(holdBlueprint.Model), holdBlueprint, new HoldState());
+    public void InstantiateToHolding(HoldBlueprint holdBlueprint, bool replace = false)
+    {
+        if (replace)
+        {
+            var state = _heldObjectState;
+            StopHolding();
+            StartHolding(Instantiate(holdBlueprint.Model), holdBlueprint, state);
+        }
+        else
+            StartHolding(Instantiate(holdBlueprint.Model), holdBlueprint, new HoldState());
+        
+    }
 
     /// <summary>
     /// Start holding a GameObject hold.
@@ -55,6 +66,9 @@ public class HoldStateManager : MonoBehaviour
         _heldObject = model;
         _heldObjectBlueprint = holdBlueprint;
         _heldObjectState = holdState;
+        
+        UpdateNormal(model, holdState.Normal, holdState.Rotation);
+        UpdatePosition(model, holdState.Position);
 
         // ignore this object until placed
         _heldObject.layer = LayerMask.NameToLayer("Ignore Raycast");

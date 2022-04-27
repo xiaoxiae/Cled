@@ -717,10 +717,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d172217a561ce786fb7b2d51191a2369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  globalStyleSheets: {fileID: 7433441132597879392, guid: e11f46a4365fa2bd09a3a61054c87ebf, type: 3}
   pauseMenu: {fileID: 816695697}
   popupMenu: {fileID: 547134781}
   holdLoader: {fileID: 1579647979}
+  editorModeManager: {fileID: 2118895150}
+  holdStateManager: {fileID: 1150806010}
+  globalStyleSheets: {fileID: 7433441132597879392, guid: e11f46a4365fa2bd09a3a61054c87ebf, type: 3}
   renderTexture: {fileID: 8400000, guid: a6c4919686560fc9fb642ff93b22c63e, type: 2}
   videoPlayer: {fileID: 1448058875}
 --- !u!114 &693249232
