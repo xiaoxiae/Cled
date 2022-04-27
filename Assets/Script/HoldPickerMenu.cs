@@ -227,7 +227,7 @@ public class HoldPickerMenu : MonoBehaviour
                 new StyleBackground(Background.FromTexture2D(_gridTextureDictionary[item]));
         }
 
-        FillGrid(_allHolds, true);
+        FillGrid(_allHolds);
 
         // done like this to prevent issue where the border is not visible
         foreach (HoldBlueprint blueprint in _allHolds)
@@ -359,8 +359,7 @@ public class HoldPickerMenu : MonoBehaviour
                      .ThenBy(x => x.holdMetadata.volume))
             _grid.Add(_holdToGridDictionary[blueprint]);
 
-        if (!initialFill)
-            _filteredHoldIDs = holdBlueprints;
+        _filteredHoldIDs = holdBlueprints;
 
         UpdateFilterCounters();
     }
