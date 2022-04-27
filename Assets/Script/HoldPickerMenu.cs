@@ -190,7 +190,7 @@ public class HoldPickerMenu : MonoBehaviour
 
             _holdToGridDictionary[blueprint] = item;
             _gridToHoldDictionary[item] = blueprint;
-            
+
             _gridStateDictionary[item] = false;
 
             item.styleSheets.Add(globalStyleSheets);
@@ -257,20 +257,24 @@ public class HoldPickerMenu : MonoBehaviour
     /// <summary>
     /// Select the hold.
     /// </summary>
-    public void Select(HoldBlueprint blueprint) => Select(_holdToGridDictionary[blueprint]);
+    public void Select(HoldBlueprint blueprint, bool switchHeld = true) =>
+        Select(_holdToGridDictionary[blueprint], switchHeld);
 
     /// <summary>
     /// Select a grid element.
     /// </summary>
-    private void Select(VisualElement item)
+    private void Select(VisualElement item, bool switchHeld = true)
     {
         HoldBlueprint blueprint = _gridToHoldDictionary[item];
-        
-        CurrentlySelectedHold = blueprint;
 
-        // if we selected a new hold and are holding another one, hold this one instead
-        if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
-            holdStateManager.InstantiateToHolding(CurrentlySelectedHold, true);
+        if (switchHeld)
+        {
+            CurrentlySelectedHold = blueprint;
+
+            // if we selected a new hold and are holding another one, hold this one instead
+            if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
+                holdStateManager.InstantiateToHolding(CurrentlySelectedHold, true);
+        }
 
         // do nothing if it is already selected
         if (_gridStateDictionary[item])
@@ -292,7 +296,7 @@ public class HoldPickerMenu : MonoBehaviour
     private void Deselect(VisualElement item)
     {
         HoldBlueprint blueprint = _gridToHoldDictionary[item];
-        
+
         if (blueprint == CurrentlySelectedHold)
         {
             // switch to another hold if there are still some leftover
@@ -349,7 +353,7 @@ public class HoldPickerMenu : MonoBehaviour
     /// <summary>
     /// Fill the grid with a selection of the holds.
     /// </summary>
-    private void FillGrid(HoldBlueprint[] holdBlueprints, bool initialFill = false)
+    private void FillGrid(HoldBlueprint[] holdBlueprints)
     {
         ClearGrid();
 
@@ -383,7 +387,7 @@ public class HoldPickerMenu : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
             pauseMenu.IsTypePaused(PauseType.HoldPicker))
             foreach (var hold in _filteredHoldIDs)
-                Select(_holdToGridDictionary[hold]);
+                Select(_holdToGridDictionary[hold], false);
 
         // only open the hold menu if some holds were actually loaded in
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
