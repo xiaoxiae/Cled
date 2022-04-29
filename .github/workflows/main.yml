@@ -33,7 +33,6 @@ jobs:
         uses: game-ci/unity-builder@v2
         with:
           targetPlatform: StandaloneWindows64
-          lfs: true
           allowDirtyBuild: true
 
             #      # Build Mac
@@ -47,7 +46,6 @@ jobs:
         uses: game-ci/unity-builder@v2
         with:
           targetPlatform: StandaloneLinux64
-          lfs: true
           allowDirtyBuild: true
 
       # Output
