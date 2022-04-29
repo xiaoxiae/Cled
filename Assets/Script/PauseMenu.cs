@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
@@ -24,15 +25,24 @@ public class PauseMenu : MonoBehaviour
 {
     private readonly HashSet<PauseType> _pauses = new();
 
-    private UIDocument _root;
+    private UIDocument document;
 
     private readonly List<Action> _pauseHooks = new();
     private readonly List<Action> _unpauseHooks = new();
 
+    private readonly Dictionary<PauseType, int> _pausePositions = new()
+    {
+        { global::PauseType.HoldPicker, 4 },
+        { global::PauseType.Normal, 0 },
+        { global::PauseType.Popup, 14 },
+        { global::PauseType.Settings, 3 },
+        { global::PauseType.RouteSettings, 3 },
+    };
+
     public void Awake()
     {
-        _root = GetComponent<UIDocument>();
-        _unpause();
+        document = GetComponent<UIDocument>();
+        Unpause();
     }
 
     /// <summary>
@@ -41,45 +51,61 @@ public class PauseMenu : MonoBehaviour
     public void UnpauseType(PauseType type)
     {
         _pauses.Remove(type);
-        
+
         if (_pauses.Count == 1 && _pauses.Contains(global::PauseType.Normal))
             UnpauseType(global::PauseType.Normal);
-        
+
         if (_pauses.Count == 0)
-            _unpause();
+            Unpause();
     }
 
     public void PauseType(PauseType type)
     {
         _pauses.Add(type);
-        
+
         if (_pauses.Count != 0)
-            _pause();
+            Pause();
+
+        UpdatePauseScreenPosition();
     }
 
-    private void _pause()
+    private void Pause()
     {
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
-        
-        _root.enabled = true;
+
+        document.enabled = true;
 
         foreach (var hook in _pauseHooks)
             hook();
+
+        UpdatePauseScreenPosition();
     }
 
     /// <summary>
     /// Reset timescale, unlock cursor.
     /// </summary>
-    private void _unpause()
+    private void Unpause()
     {
         Time.timeScale = 1;
         Cursor.lockState = CursorLockMode.Locked;
-        
-        _root.enabled = false;
+
+        document.enabled = false;
 
         foreach (var hook in _unpauseHooks)
             hook();
+    }
+
+    /// <summary>
+    /// The screen should be right behind the active widget.
+    /// </summary>
+    private void UpdatePauseScreenPosition()
+    {
+        var max = (from PauseType type in Enum.GetValues(typeof(PauseType))
+            where _pauses.Contains(type)
+            select _pausePositions[type]).Prepend(int.MinValue).Max();
+
+        document.sortingOrder = max;
     }
 
     /// <summary>
@@ -113,16 +139,6 @@ public class PauseMenu : MonoBehaviour
     public void UnpauseAll()
     {
         _pauses.Clear();
-        _unpause();
+        Unpause();
     }
-
-    /// <summary>
-    /// Move the pause screen to the back (behind everything).
-    /// </summary>
-    public void PauseScreenToBack() => _root.sortingOrder = -10;
-
-    /// <summary>
-    /// Move the pause screen to the front (right behind popups).
-    /// </summary>
-    public void PauseScreenToFront() => _root.sortingOrder = 10;
 }

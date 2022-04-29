@@ -21,8 +21,6 @@ public class PopupMenu : MonoBehaviour
     {
         _document.visualTreeAsset = null;
         pauseMenu.UnpauseType(PauseType.Popup);
-        
-        pauseMenu.PauseScreenToBack();
     }
 
     /// <summary>
@@ -36,7 +34,6 @@ public class PopupMenu : MonoBehaviour
         Utilities.DisableElementFocusable(root);
 
         pauseMenu.PauseType(PauseType.Popup);
-        pauseMenu.PauseScreenToFront();
 
         root.Q<Label>("contents").text = contents;
         root.Q<Button>("ok-button").clicked += Close;
@@ -55,7 +52,6 @@ public class PopupMenu : MonoBehaviour
         var root = _document.rootVisualElement;
 
         pauseMenu.PauseType(PauseType.Popup);
-        pauseMenu.PauseScreenToFront();
 
         root.Q<Button>("operation-button").text = operationName;
         root.Q<Button>("operation-button").clicked += operationAction;
