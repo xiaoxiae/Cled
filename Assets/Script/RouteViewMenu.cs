@@ -8,6 +8,8 @@ public class RouteViewMenu : MonoBehaviour
 {
     public RouteManager routeManager;
     public RouteSettingsMenu routeSettingsMenu;
+    public HighlightManager highlightManager;
+    public EditorModeManager editorModeManager;
 
     private ListView _listView;
     private VisualElement _root;
@@ -40,56 +42,58 @@ public class RouteViewMenu : MonoBehaviour
         _listView = _root.Q<ListView>("route-list-view");
         _listView.makeItem = MakeItem;
         _listView.bindItem = BindItem;
-        
-        _listView.onItemsChosen += items =>
-        {
-            foreach (var route in items.Select(item => (Route)item))
-            {
-                if (routeManager.SelectedRoute == route)
-                    routeSettingsMenu.Show();
-                
-                foreach (var callback in _selectedRouteCallbacks)
-                    callback(route);
-            }
-        };
 
-        _listView.onSelectionChange += items =>
-        {
-            foreach (var route in items.Select(item => (Route)item))
-            {
-                if (routeManager.SelectedRoute == route)
-                    routeSettingsMenu.Show();
-                
-                foreach (var callback in _selectedRouteCallbacks)
-                    callback(route);
-            }
-        };
+        _listView.onItemsChosen += ChosenItemCallback;
 
         routeManager.AddRoutesChangedCallback(Rebuild);
         routeManager.AddSelectedRouteChangedCallback(Rebuild);
     }
 
-    List<Route> GetSortedRoutes() => routeManager.GetUsableRoutes().OrderBy(route => route.Zone).ToList();
-
-    void Rebuild()
+    /// <summary>
+    /// A function that gets called when an item from the list view is clicked on.
+    /// </summary>
+    private void ChosenItemCallback(IEnumerable<object> items)
     {
-        _listView.itemsSource = GetSortedRoutes();
-        
-        // make sure that the current route is selected
-        if (routeManager.SelectedRoute != null)
-            _listView.SetSelectionWithoutNotify(new List<int> {_listView.itemsSource.IndexOf(routeManager.SelectedRoute)});
-        else
-            _listView.SetSelectionWithoutNotify(new List<int>());
-        
-        _listView.Rebuild();
+        foreach (var route in items.Select(item => (Route)item))
+        {
+            if (routeManager.SelectedRoute == route)
+                routeSettingsMenu.Show();
+            
+            // this is done to prevent an infinite loop between selecting 
+            routeManager.SelectRoute(route, false);
+            
+            highlightManager.UnhighlightAll();
+            highlightManager.HighlightRoute(route, true);
+            editorModeManager.CurrentMode = EditorModeManager.Mode.Route;
+        }
+            
+        Rebuild();
     }
 
-    private readonly List<Action<Route>> _selectedRouteCallbacks = new();
+    /// <summary>
+    /// Sort the given routes to be listed in the list view - by zones.
+    /// </summary>
+    private List<Route> GetSortedRoutes() => routeManager.GetUsableRoutes().OrderBy(route => route.Zone).ToList();
 
     /// <summary>
-    /// Add a callback that gets executed when a route is clicked on.
+    /// Rebuild the route view from the current state of the route manager.
     /// </summary>
-    public void AddSelectedRouteCallback(Action<Route> route) => _selectedRouteCallbacks.Add(route);
+    private void Rebuild()
+    {
+        _listView.itemsSource = GetSortedRoutes();
+
+        var selectedIndex = _listView.itemsSource.IndexOf(routeManager.SelectedRoute);
+        
+        // make sure that the current route is selected
+        _listView.SetSelectionWithoutNotify(selectedIndex >= 0
+            ? new List<int> { selectedIndex }
+            : new List<int>());
+
+        _listView.Rebuild();
+        
+        if (selectedIndex >= 0)
+            _listView.ScrollToId(selectedIndex);
+    }
 
     public void Show() => _root.visible = true;
 

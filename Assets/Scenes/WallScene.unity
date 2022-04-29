@@ -347,6 +347,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   routeManager: {fileID: 651512647}
   routeSettingsMenu: {fileID: 1132278475}
+  highlightManager: {fileID: 674212781}
+  editorModeManager: {fileID: 2118895150}
 --- !u!114 &288166341
 MonoBehaviour:
   m_ObjectHideFlags: 0
