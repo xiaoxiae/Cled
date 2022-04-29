@@ -30,7 +30,8 @@ While most of the controls are accessible via the UI, here is a comprehensive li
 #### UI
 |                                        |                          |
 | ---                                    | ---                      |
-| `Esc`                                  | pause                    |
+| `Esc`                                  | pause/cancel             |
+| `Enter`                                | confirm                  |
 | `Q` or `Tab`                           | open holds menu          |
 | right button on selected route (ROUTE) | open route settings menu |
 
