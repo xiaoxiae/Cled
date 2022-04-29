@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - A route view window with the list of the project routes.
-- Loding screen when opening or creating a new project.
+- Loading screen when opening or creating a new project.
 
 ### Changed
 - Improve error messages.
