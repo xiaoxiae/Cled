@@ -11,9 +11,6 @@ public class Route
 {
     private readonly Dictionary<GameObject, HoldBlueprint> _holds = new();
 
-    private readonly GameObject _startMarkerPrefab;
-    private readonly GameObject _endMarkerPrefab;
-
     private string _name;
 
     public string Name
@@ -62,9 +59,6 @@ public class Route
         }
     }
 
-    private readonly HashSet<GameObject> _starting = new();
-    private readonly HashSet<GameObject> _ending = new();
-
     private readonly List<Action> _routesChangedCallbacks;
 
     /// <summary>
@@ -76,12 +70,9 @@ public class Route
             callback();
     }
 
-    public Route(GameObject startMarkerPrefab, GameObject endMarkerPrefab, List<Action> RouteChangedCallbacks)
+    public Route(List<Action> routeChangedCallbacks)
     {
-        _startMarkerPrefab = startMarkerPrefab;
-        _endMarkerPrefab = endMarkerPrefab;
-
-        _routesChangedCallbacks = RouteChangedCallbacks;
+        _routesChangedCallbacks = routeChangedCallbacks;
     }
 
     /// <summary>
@@ -90,24 +81,11 @@ public class Route
     public GameObject[] Holds => _holds.Keys.ToArray();
 
     /// <summary>
-    /// Get the starting holds of the route.
-    /// </summary>
-    public GameObject[] StartingHolds => _starting.ToArray();
-
-    /// <summary>
-    /// Get the ending holds of the route.
-    /// </summary>
-    public GameObject[] EndingHolds => _ending.ToArray();
-
-    /// <summary>
     /// Add a hold to the route.
     /// </summary>
-    public void AddHold(GameObject hold, HoldBlueprint blueprint, bool isStarting = false, bool isEnding = false)
+    public void AddHold(GameObject hold, HoldBlueprint blueprint)
     {
         _holds[hold] = blueprint;
-
-        if (isStarting) _starting.Add(hold);
-        if (isEnding) _ending.Add(hold);
 
         RoutesChanged();
     }
@@ -118,21 +96,19 @@ public class Route
     public void RemoveHold(GameObject hold)
     {
         _holds.Remove(hold);
-        _starting.Remove(hold);
-        _ending.Remove(hold);
-
+        
         RoutesChanged();
     }
 
     /// <summary>
     /// Toggle a hold being in this route.
     /// </summary>
-    public void ToggleHold(GameObject hold, HoldBlueprint blueprint, bool isStarting = false, bool isEnding = false)
+    public void ToggleHold(GameObject hold, HoldBlueprint blueprint)
     {
         if (ContainsHold(hold))
             RemoveHold(hold);
         else
-            AddHold(hold, blueprint, isStarting, isEnding);
+            AddHold(hold, blueprint);
     }
 
     /// <summary>
@@ -141,34 +117,73 @@ public class Route
     public bool ContainsHold(GameObject hold) => _holds.ContainsKey(hold);
 
     /// <summary>
-    /// Toggle a starting hold of the route.
+    /// Return True if the given route is empty.
     /// </summary>
-    public void ToggleStarting(GameObject hold)
+    public bool IsEmpty() => Holds.Length == 0;
+}
+
+/// <summary>
+/// A class for managing all currently active routes.
+///
+/// The routes themselves can contain any number of holds.
+/// However, if a hold is right click selected, it will automatically create a route of one hold.
+/// This route will, however, not be a real route, even if it is implemented as one, since lone holds don't substitute routes.
+/// </summary>
+public class RouteManager : MonoBehaviour
+{
+    private readonly HashSet<Route> _routes = new();
+
+    public readonly HashSet<GameObject> StartingHolds = new();
+    public readonly HashSet<GameObject> EndingHolds = new();
+
+    private Route _selectedRoute;
+
+    public Route SelectedRoute
     {
-        Utilities.ToggleInCollection(hold, _starting);
+        get => _selectedRoute;
+        set
+        {
+            _selectedRoute = value;
 
-        if (_starting.Contains(hold))
-            AddMarker(hold, _startMarkerPrefab);
-        else
-            RemoveMarker(hold);
-
-        RoutesChanged();
+            foreach (var callback in _selectedRouteChangedCallbacks)
+                callback();
+        }
     }
+
+    public GameObject StartMarkerPrefab;
+    public GameObject EndMarkerPrefab;
+
+    private readonly List<Action> _routesChangedCallbacks = new();
 
     /// <summary>
-    /// Toggle a starting hold of the route.
+    /// Add a callback for when the routes change, either by one being added, removed, or edited.
     /// </summary>
-    public void ToggleEnding(GameObject hold)
-    {
-        Utilities.ToggleInCollection(hold, _ending);
+    public void AddRoutesChangedCallback(Action action) => _routesChangedCallbacks.Add(action);
 
-        if (_ending.Contains(hold))
-            AddMarker(hold, _endMarkerPrefab);
-        else
-            RemoveMarker(hold);
+    private readonly List<Action> _selectedRouteChangedCallbacks = new();
 
-        RoutesChanged();
-    }
+    /// <summary>
+    /// Add a callback for when the selected route is changed.
+    /// </summary>
+    public void AddSelectedRouteChangedCallback(Action action) => _selectedRouteChangedCallbacks.Add(action);
+
+    /// <summary>
+    /// Get all routes.
+    /// </summary>
+    public IEnumerable<Route> GetRoutes() => _routes;
+
+    /// <summary>
+    /// Get only routes that are "usable."
+    /// By this we mean routes that are interesting to the user.
+    /// 
+    /// They must either contain more than one hold, contain a top or bottom, or have some attribute be not null or empty.
+    /// </summary>
+    public IEnumerable<Route> GetUsableRoutes() => GetRoutes().Where(route =>
+        route.Holds.Length > 1 || GetRouteStartingHolds(route).Count() != 0 || GetRouteEndingHolds(route).Count() != 0
+        || !string.IsNullOrEmpty(route.Setter)
+        || !string.IsNullOrEmpty(route.Name)
+        || !string.IsNullOrEmpty(route.Zone)
+        || !string.IsNullOrEmpty(route.Grade));
 
     /// <summary>
     /// A component for updating the marker.
@@ -176,7 +191,7 @@ public class Route
     /// </summary>
     public class MarkerUpdate : MonoBehaviour
     {
-        public event System.Action OnUpdate;
+        public event Action OnUpdate;
 
         public Vector3 LastPosition;
         public Quaternion LastRotation;
@@ -187,7 +202,7 @@ public class Route
     /// <summary>
     /// Add the marker to the hold.
     /// </summary>
-    void AddMarker(GameObject hold, GameObject marker)
+    private void AddMarker(GameObject hold, GameObject marker)
     {
         GameObject markerInstance = Object.Instantiate(marker);
         markerInstance.SetActive(true);
@@ -228,82 +243,31 @@ public class Route
     /// <summary>
     /// Remove the hold's marker.
     /// </summary>
-    void RemoveMarker(GameObject hold)
-        => Object.DestroyImmediate(hold.transform.GetChild(hold.transform.childCount - 1).gameObject);
+    private void RemoveMarker(GameObject hold)
+        => DestroyImmediate(hold.transform.GetChild(hold.transform.childCount - 1).gameObject);
 
     /// <summary>
-    /// Return True if the given route is empty.
+    /// Return the starting holds of a route.
     /// </summary>
-    public bool IsEmpty() => Holds.Length == 0;
-}
+    public IEnumerable<GameObject> GetRouteStartingHolds(Route route) =>
+        route.Holds.Where(x => StartingHolds.Contains(x));
+    
+    /// <summary>
+    /// Return the ending holds of a route.
+    /// </summary>
+    public IEnumerable<GameObject> GetRouteEndingHolds(Route route) =>
+        route.Holds.Where(x => EndingHolds.Contains(x));
 
-/// <summary>
-/// A class for managing all currently active routes.
-///
-/// The routes themselves can contain any number of holds.
-/// However, if a hold is right click selected, it will automatically create a route of one hold.
-/// This route will, however, not be a real route, even if it is implemented as one, since lone holds don't substitute routes.
-/// </summary>
-public class RouteManager : MonoBehaviour
-{
-    private readonly HashSet<Route> _routes = new();
-
-    private Route _selectedRoute;
-
-    public Route SelectedRoute
+    /// <summary>
+    /// Select the given route, possibly triggering the callbacks that go along with it.
+    /// </summary>
+    public void SelectRoute(Route route, bool triggerCallbacks=true)
     {
-        get => _selectedRoute;
-        set
-        {
-            _selectedRoute = value;
-
-            foreach (var callback in _selectedRouteChangedCallbacks)
-                callback();
-        }
+        if (triggerCallbacks)
+            SelectedRoute = route;
+        else 
+            _selectedRoute = route;
     }
-
-    public GameObject StartMarkerPrefab;
-    public GameObject EndMarkerPrefab;
-
-    public readonly HashSet<GameObject> StartingHolds = new();
-    public readonly HashSet<GameObject> EndingHolds = new();
-
-    private readonly List<Action> _routesChangedCallbacks = new();
-
-    /// <summary>
-    /// Add a callback for when the routes change, either by one being added, removed, or edited.
-    /// </summary>
-    public void AddRoutesChangedCallback(Action action) => _routesChangedCallbacks.Add(action);
-
-    private readonly List<Action> _selectedRouteChangedCallbacks = new();
-
-    /// <summary>
-    /// Add a callback for when the selected route is changed.
-    /// </summary>
-    public void AddSelectedRouteChangedCallback(Action action) => _selectedRouteChangedCallbacks.Add(action);
-
-    /// <summary>
-    /// Get all routes.
-    /// </summary>
-    public Route[] GetRoutes() => _routes.ToArray();
-
-    /// <summary>
-    /// Get only routes that are "usable."
-    /// By this we mean routes that are interesting to the user.
-    /// 
-    /// They must either contain more than one hold, contain a top or bottom, or have some attribute be not null or empty.
-    /// </summary>
-    public Route[] GetUsableRoutes() => GetRoutes().Where(route =>
-        route.Holds.Length > 1 || route.StartingHolds.Length != 0 || route.EndingHolds.Length != 0
-        || !string.IsNullOrEmpty(route.Setter)
-        || !string.IsNullOrEmpty(route.Name)
-        || !string.IsNullOrEmpty(route.Zone)
-        || !string.IsNullOrEmpty(route.Grade)).ToArray();
-
-    /// <summary>
-    /// Select the given route.
-    /// </summary>
-    public void SelectRoute(Route route) => SelectedRoute = route;
 
     /// <summary>
     /// Deselect the currently selected route.
@@ -315,18 +279,22 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     public void ToggleStarting(GameObject hold, HoldBlueprint blueprint)
     {
-        Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
-
         // if it's already ending, make it not so
         if (EndingHolds.Contains(hold))
             ToggleEnding(hold, blueprint);
 
-        originalRoute.ToggleStarting(hold);
-
         if (StartingHolds.Contains(hold))
+        {
+            RemoveMarker(hold);
             StartingHolds.Remove(hold);
+        }
         else
+        {
+            AddMarker(hold, StartMarkerPrefab);
             StartingHolds.Add(hold);
+        }
+        
+        RoutesChanged();
     }
 
     /// <summary>
@@ -334,18 +302,22 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     public void ToggleEnding(GameObject hold, HoldBlueprint blueprint)
     {
-        Route originalRoute = GetOrCreateRouteWithHold(hold, blueprint);
-
         // if it's already starting, make it not so
         if (StartingHolds.Contains(hold))
             ToggleStarting(hold, blueprint);
 
-        originalRoute.ToggleEnding(hold);
-
         if (EndingHolds.Contains(hold))
+        {
+            RemoveMarker(hold);
             EndingHolds.Remove(hold);
+        }
         else
+        {
+            AddMarker(hold, EndMarkerPrefab);
             EndingHolds.Add(hold);
+        }
+        
+        RoutesChanged();
     }
 
     /// <summary>
@@ -356,12 +328,9 @@ public class RouteManager : MonoBehaviour
         // the route the hold was originally in
         Route originalRoute = GetRouteWithHold(hold);
 
-        bool isStarting = StartingHolds.Contains(hold);
-        bool isEnding = EndingHolds.Contains(hold);
-
         // if we're removing it from a route, simply toggle it
         if (route == originalRoute)
-            route.ToggleHold(hold, blueprint, isStarting, isEnding);
+            route.ToggleHold(hold, blueprint);
 
         // if we're adding it to a different one, remove it from the original (if it was in one) and add it to the new
         else
@@ -374,8 +343,10 @@ public class RouteManager : MonoBehaviour
                     RemoveRoute(originalRoute);
             }
 
-            route.AddHold(hold, blueprint, isStarting, isEnding);
+            route.AddHold(hold, blueprint);
         }
+        
+        RoutesChanged();
     }
 
     /// <summary>
@@ -399,7 +370,7 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     public Route CreateRoute()
     {
-        var newRoute = new Route(StartMarkerPrefab, EndMarkerPrefab, _routesChangedCallbacks);
+        var newRoute = new Route(_routesChangedCallbacks);
         _routes.Add(newRoute);
 
         RoutesChanged();
