@@ -12,6 +12,8 @@ public class PopupMenu : MonoBehaviour
 
     public PauseMenu pauseMenu;
 
+    public Button CurrentOkButton = null;
+
     public void Awake()
     {
         _document = GetComponent<UIDocument>();
@@ -36,10 +38,14 @@ public class PopupMenu : MonoBehaviour
         pauseMenu.PauseType(PauseType.Popup);
 
         root.Q<Label>("contents").text = contents;
-        root.Q<Button>("ok-button").clicked += Close;
         
+        var okButton = root.Q<Button>("ok-button");
+        
+        okButton.clicked += Close;
         if (okAction != null)
-            root.Q<Button>("ok-button").clicked += okAction;
+            okButton.clicked += okAction;
+
+        CurrentOkButton = okButton;
     }
 
     /// <summary>
@@ -61,5 +67,16 @@ public class PopupMenu : MonoBehaviour
         root.Q<Button>("operation-button").clicked += Close;
         root.Q<Button>("discard-button").clicked += Close;
         root.Q<Button>("cancel-button").clicked += Close;
+    }
+
+    /// <summary>
+    /// Accept whatever popup is currently opened.
+    /// </summary>
+    public void Accept()
+    {
+        if (CurrentOkButton != null)
+            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
+                CurrentOkButton.SendEvent(e);
+            
     }
 }

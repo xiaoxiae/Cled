@@ -52,7 +52,7 @@ public class RouteSettingsMenu : MonoBehaviour
     /// <summary>
     /// Apply the settings to the given route, hiding the settings.
     /// </summary>
-    private void Apply()
+    public void Apply()
     {
         foreach (var attribute in _attributeMapping.Keys)
         {

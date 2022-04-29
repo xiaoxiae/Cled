@@ -62,7 +62,7 @@ public class SettingsMenu : MonoBehaviour
     /// <summary>
     /// Apply the settings to the given route, hiding the settings.
     /// </summary>
-    private void Apply()
+    public void Apply()
     {
         float lightIntensity;
         try

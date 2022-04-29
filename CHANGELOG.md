@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve error messages.
 - Improve hold picking behavior with the currently held holds.
 - Allow setting top/bottom marks while holding.
+- Enter pressing accepts popups and settings.
 - Fix Ctrl+A shortcut not selecting all filtered holds.
 - Fix a bugged exported state when deleting holds with markers.
 

@@ -17,10 +17,25 @@ public class UIKeyboardController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            // TODO
+            // else close popups first
+            if (pauseMenu.IsTypePaused(PauseType.Popup)) {
+                popupMenu.Accept();
+                return;
+            }
+                
+            // then route settings
+            if (pauseMenu.IsTypePaused(PauseType.RouteSettings)) {
+                routeSettingsMenu.Apply();
+                return;
+            }
+            
+            // then general settings
+            if (pauseMenu.IsTypePaused(PauseType.Settings)) {
+                settingsMenu.Apply();
+                return;
+            }
         }
-        
-        if (Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Escape))
         {
             // if we're not paused at all, pause
             if (pauseMenu.IsAllUnpaused())
