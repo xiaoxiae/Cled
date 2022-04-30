@@ -4,6 +4,11 @@ Note that this script expects to be in Scripts/ folder of the Unity project.
 It also exports the holds to ../Models/Holds/.
 """
 
+# only done to crash, since it's required by the called script
+# not pretty but functional
+import bpy
+import PIL
+
 import os
 import argparse
 import shutil
