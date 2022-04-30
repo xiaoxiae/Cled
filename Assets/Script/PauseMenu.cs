@@ -39,10 +39,15 @@ public class PauseMenu : MonoBehaviour
         { global::PauseType.RouteSettings, 3 },
     };
 
-    public void Awake()
+    void Awake()
     {
         document = GetComponent<UIDocument>();
         Unpause();
+    }
+    
+    void Start() {
+        if (!Preferences.Initialized)
+            PauseType(global::PauseType.Normal);
     }
 
     /// <summary>
@@ -51,10 +56,16 @@ public class PauseMenu : MonoBehaviour
     public void UnpauseType(PauseType type)
     {
         _pauses.Remove(type);
+        UpdatePauseScreenPosition();
 
+        // don't actually unpause when we're not initialized
+        if (!Preferences.Initialized)
+            return;
+
+        // unpause normal if it would be the last pause type
         if (_pauses.Count == 1 && _pauses.Contains(global::PauseType.Normal))
             UnpauseType(global::PauseType.Normal);
-
+        
         if (_pauses.Count == 0)
             Unpause();
     }
@@ -62,11 +73,10 @@ public class PauseMenu : MonoBehaviour
     public void PauseType(PauseType type)
     {
         _pauses.Add(type);
+        UpdatePauseScreenPosition();
 
         if (_pauses.Count != 0)
             Pause();
-
-        UpdatePauseScreenPosition();
     }
 
     private void Pause()
@@ -78,8 +88,6 @@ public class PauseMenu : MonoBehaviour
 
         foreach (var hook in _pauseHooks)
             hook();
-
-        UpdatePauseScreenPosition();
     }
 
     /// <summary>
@@ -139,6 +147,7 @@ public class PauseMenu : MonoBehaviour
     public void UnpauseAll()
     {
         _pauses.Clear();
+        UpdatePauseScreenPosition();
         Unpause();
     }
 }
