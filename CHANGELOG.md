@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.TODO] - TODO
+## [1.1.1] - 2022-04-30
 
 ### Changed
 - Automatically pause uninitialized editor.
@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve hold picker look and behavior on smaller screens.
 - Improve Scripts/ClisImporter.py behavior.
 - Increase route highlight thickness.
-- Fix preferences being inaccessible behind the pause sceen.
+- Fix preferences being inaccessible behind the pause screen.
 - Fix raycasting being applied to starting hold markers.
 
 
