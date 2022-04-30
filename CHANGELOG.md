@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.TODO] - TODO
 
 ### Changed
-- Increase route highlight thickness.
 - Automatically pause uninitialized editor.
 - Remove "Deselect filtered" button.
 - Improve hold picker look and behavior on smaller screens.
+- Improve Scripts/ClisImporter.py behavior.
+- Increase route highlight thickness.
 - Fix preferences being inaccessible behind the pause sceen.
 - Fix raycasting being applied to starting hold markers.
 
