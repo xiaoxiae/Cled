@@ -128,12 +128,6 @@ public class HoldPickerMenu : MonoBehaviour
 
         _grid = _root.Q<VisualElement>("hold-grid");
 
-        _deselectFilteredButton = _root.Q<Button>("deselect-filtered-button");
-        _deselectFilteredButton.clicked += () =>
-        {
-            foreach (var bp in _filteredHoldIDs) Deselect(_holdToGridDictionary[bp]);
-        };
-
         _deselectAllButton = _root.Q<Button>("deselect-all-button");
         _deselectAllButton.clicked += () =>
         {

@@ -66,7 +66,7 @@ Label:disabled { color: var(--disabled-text-color); }
     white-space: normal;
     justify-content: center;
     padding: 8px;
-    width: 45px;
+    width: 40px;
 }
 
 .hold-picker-dropdown {
@@ -77,10 +77,13 @@ Label:disabled { color: var(--disabled-text-color); }
 }
 
 .hold-picker-button {
-    height: auto;
     padding: 7px;
     margin: 8px;
     flex-grow: 1;
+}
+
+.hold-picker-panel {
+    background-color: var(--panel-color);
 }
 
 /* --- TOOLBAR --- */ 
