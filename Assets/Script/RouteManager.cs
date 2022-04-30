@@ -204,7 +204,7 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     private void AddMarker(GameObject hold, GameObject marker)
     {
-        GameObject markerInstance = Object.Instantiate(marker);
+        GameObject markerInstance = Instantiate(marker);
         markerInstance.SetActive(true);
         markerInstance.transform.parent = hold.transform;
         markerInstance.transform.localPosition = Vector3.zero;

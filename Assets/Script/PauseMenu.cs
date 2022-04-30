@@ -25,7 +25,7 @@ public class PauseMenu : MonoBehaviour
 {
     private readonly HashSet<PauseType> _pauses = new();
 
-    private UIDocument document;
+    private UIDocument _document;
 
     private readonly List<Action> _pauseHooks = new();
     private readonly List<Action> _unpauseHooks = new();
@@ -35,13 +35,13 @@ public class PauseMenu : MonoBehaviour
         { global::PauseType.HoldPicker, 4 },
         { global::PauseType.Normal, 0 },
         { global::PauseType.Popup, 14 },
-        { global::PauseType.Settings, 3 },
-        { global::PauseType.RouteSettings, 3 },
+        { global::PauseType.Settings, 2 },
+        { global::PauseType.RouteSettings, 2 },
     };
 
     void Awake()
     {
-        document = GetComponent<UIDocument>();
+        _document = GetComponent<UIDocument>();
         Unpause();
     }
     
@@ -84,7 +84,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
 
-        document.enabled = true;
+        _document.enabled = true;
 
         foreach (var hook in _pauseHooks)
             hook();
@@ -98,7 +98,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1;
         Cursor.lockState = CursorLockMode.Locked;
 
-        document.enabled = false;
+        _document.enabled = false;
 
         foreach (var hook in _unpauseHooks)
             hook();
@@ -113,7 +113,7 @@ public class PauseMenu : MonoBehaviour
             where _pauses.Contains(type)
             select _pausePositions[type]).Prepend(int.MinValue).Max();
 
-        document.sortingOrder = max;
+        _document.sortingOrder = max;
     }
 
     /// <summary>

@@ -97,6 +97,7 @@ public class HighlightManager : MonoBehaviour
                 outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
                 outline.OutlineColor = Color.white;
+                outline.OutlineWidth = 3.5f;
                 outline.UpdateMaterialProperties();
                 SetHoldOpacity(obj, 1f);
                 break;
@@ -104,6 +105,7 @@ public class HighlightManager : MonoBehaviour
                 outline = obj.GetOrAddComponent<Outline>();
                 outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
                 outline.OutlineColor = Color.grey;
+                outline.OutlineWidth = 3.5f;
                 outline.UpdateMaterialProperties();
                 SetHoldOpacity(obj, 1f);
                 break;

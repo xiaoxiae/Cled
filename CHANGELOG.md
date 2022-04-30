@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.TODO] - TODO
 
 ### Changed
-- Automatically pause uninitialized editor
+- Increase route highlight thickness.
+- Automatically pause uninitialized editor.
+- Fix preferences being inaccessible behind the pause sceen.
+- Fix raycasting being applied to starting hold markers.
 
 
 ## [1.1.0] - 2022-04-29
@@ -28,4 +31,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2022-04-26
 
 ### Added
-- Initial editor functionality
+- Initial editor functionality.
