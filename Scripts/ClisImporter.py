@@ -38,6 +38,9 @@ arguments = parser.parse_args()
 
 if not os.path.exists(arguments.output):
     os.makedirs(arguments.output)
+else:
+    print("Destination folder exists, not copying.")
+    quit()
 
 shutil.copy(os.path.join(arguments.input, "holds.yaml"), os.path.join(arguments.output, "holds.yaml"))
 

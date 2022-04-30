@@ -22,9 +22,9 @@ parser.add_argument("output", help="The path of the resulting file (excluding ex
 parser.add_argument(
     "-c",
     "--color",
-    help="The background color. Defaults to '0.5 0.5 0.5 1'.",
+    help="The background color. Defaults to '0.6 0.6 0.6 1'.",
     type=lambda x: tuple(map(float, x.strip().split())),
-    default=(0.5, 0.5, 0.5, 1),
+    default=(0.6, 0.6, 0.6, 1),
 )
 parser.add_argument(
     "-q",
@@ -57,9 +57,9 @@ parser.add_argument(
 parser.add_argument(
     "-l",
     "--light",
-    help="The distance of the light to the object. Defaults to 30.",
+    help="The distance of the light to the object. Defaults to 7.",
     type=int,
-    default=8,
+    default=7,
 )
 
 arguments = parser.parse_args()
