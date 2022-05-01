@@ -87,7 +87,3 @@ for key in data:
 
             with open(dest_file, "w") as f:
                 f.write(contents)
-
-# TODO: warn about models that were not found
-# TODO: only copy files that were not in already
-# TODO: warn about models that were found but should not have been
