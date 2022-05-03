@@ -489,6 +489,9 @@ public class ImportExportManager : MonoBehaviour
         try
         {
             holdPickerMenu.Initialize();
+            
+            playerController.ResetPosition();
+            cameraController.ResetOrientation();
 
             Preferences.SetToDefault();
 
