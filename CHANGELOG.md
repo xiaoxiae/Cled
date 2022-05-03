@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [1.1.2] - TODO
 
 ### Changed
 - Reset player position when under a certain treshold.
 - Fix player position not being reset after loading.
 - Fix hold picker button growing.
+- Fix Ctrl+Shift+P calling regular capture.
 
 
 ## [1.1.1] - 2022-04-30

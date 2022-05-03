@@ -313,14 +313,14 @@ public class ToolbarMenu : MonoBehaviour
                 using (var e = new NavigationSubmitEvent { target = _openButton })
                     _openButton.SendEvent(e);
 
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
-                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
-                    _captureImageButton.SendEvent(e);
-
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
                      Input.GetKeyDown(KeyCode.P))
                 using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
                     _captureImageAsButton.SendEvent(e);
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
+                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
+                    _captureImageButton.SendEvent(e);
         }
     }
 
