@@ -370,9 +370,12 @@ public class HoldPickerMenu : MonoBehaviour
             _grid.Remove(_holdToGridDictionary[blueprint]);
     }
 
+    /// <summary>
+    /// Order the given blueprints the way they will be ordered in the grid.
+    /// This means first by color and then by volume.
+    /// </summary>
     private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(HoldBlueprint[] blueprints) =>
         blueprints.OrderBy(x => x.holdMetadata.colorHex)
-            .ThenBy(x => x.holdMetadata.type)
             .ThenBy(x => x.holdMetadata.volume);
 
     /// <summary>
@@ -424,7 +427,6 @@ public class HoldPickerMenu : MonoBehaviour
                 popupMenu.CreateInfoPopup("No holds loaded, nothing to filter.");
                 return;
             }
-
 
             if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
             {
