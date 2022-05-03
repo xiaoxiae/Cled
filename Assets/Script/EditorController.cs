@@ -172,8 +172,7 @@ public class EditorController : MonoBehaviour
                 if (holdPickerMenu.GetPickedHolds().Count != 1)
                 {
                     routeManager.RemoveHold(holdStateManager.HeldHold);
-                    holdStateManager.StopHolding();
-                    holdStateManager.InstantiateToHolding(holdPickerMenu.CurrentlySelectedHold);
+                    holdStateManager.InstantiateToHolding(holdPickerMenu.CurrentlySelectedHold, true);
                 }
             }
         }

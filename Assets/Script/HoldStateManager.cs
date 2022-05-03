@@ -66,7 +66,7 @@ public class HoldStateManager : MonoBehaviour
         _heldObject = model;
         _heldObjectBlueprint = holdBlueprint;
         _heldObjectState = holdState;
-        
+
         UpdateNormal(model, holdState.Normal, holdState.Rotation);
         UpdatePosition(model, holdState.Position);
 
