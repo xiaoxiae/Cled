@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private const float ForwardBackwardSpeed = 5;
     private const float SideSpeed = 4;
 
+    private const float FallThreshold = -10;
+
     // flying-related variables
     private bool _flying;
     private float _flyingSpeed; // normalized from 0 to 1
@@ -48,6 +50,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Reset the position of the player
+    /// </summary>
+    public void ResetPosition()
+    {
+        Position = Vector3.zero;
+        Flying = false;
+    }
+
     void Update()
     {
 	    if (!Preferences.Initialized)
@@ -56,6 +67,14 @@ public class PlayerController : MonoBehaviour
         // don't move when we're paused
         if (pauseMenu.IsAnyPaused())
             return;
+
+        // reset position when falling out of the map
+        if (transform.position.y < FallThreshold)
+        {
+            ResetPosition();
+            cameraController.ResetOrientation();
+            return;
+        }
 
         float x = Input.GetAxis("Horizontal") * SideSpeed;
         float z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;

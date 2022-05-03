@@ -60,4 +60,9 @@ public class CameraController : MonoBehaviour
 			transform.Rotate(Vector3.right * -angle, Space.Self);
 		}
     }
+
+    /// <summary>
+    /// Reset the camera orientation.
+    /// </summary>
+    public void ResetOrientation() => Orientation = Vector2.zero;
 }
