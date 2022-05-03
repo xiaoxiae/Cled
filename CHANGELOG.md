@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Reset player position when under a certain treshold.
+- Disable capturing images while not initialized.
 - Fix player position not being reset after loading.
 - Fix hold picker button growing.
 - Fix Ctrl+Shift+P calling regular capture.

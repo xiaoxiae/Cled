@@ -103,24 +103,38 @@ public class ToolbarMenu : MonoBehaviour
         _captureImageButton = _root.Q<Button>("capture-image-button");
         _captureImageButton.clicked += () =>
         {
-            // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
-            StartCoroutine(CaptureScreen(Path.Join(Preferences.CaptureImagePath,
-                $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
+            if (!Preferences.Initialized)
+            {
+                if (!pauseMenu.IsTypePaused(PauseType.Popup))
+                    popupMenu.CreateInfoPopup("Wall not loaded, can't take images!");
+            }
+            else
+                // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
+                StartCoroutine(CaptureScreen(Path.Join(Preferences.CaptureImagePath,
+                    $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
         };
 
         _captureImageAsButton = _root.Q<Button>("capture-image-as-button");
         _captureImageAsButton.clicked += () =>
         {
-            // TODO: this is copy-pasted from loading code
-            var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
-                new[] { new ExtensionFilter("PNG Images (.png)", "png") });
+            if (!Preferences.Initialized)
+            {
+                if (!pauseMenu.IsTypePaused(PauseType.Popup))
+                    popupMenu.CreateInfoPopup("Wall not loaded, can't take images!");
+            }
+            else
+            {
+                // TODO: this is copy-pasted from loading code
+                var path = StandaloneFileBrowser.SaveFilePanel("Save As", "", "",
+                    new[] { new ExtensionFilter("PNG Images (.png)", "png") });
 
-            if (string.IsNullOrWhiteSpace(path))
-                return;
+                if (string.IsNullOrWhiteSpace(path))
+                    return;
 
-            path = Utilities.EnsureExtension(path, "png");
+                path = Utilities.EnsureExtension(path, "png");
 
-            StartCoroutine(CaptureScreen(path));
+                StartCoroutine(CaptureScreen(path));
+            }
         };
 
         Foldout[] foldouts =
