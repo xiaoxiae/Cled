@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Don't sort hold picker holds by type.
+- Fix bug with holds not being properly selected with Ctrl+A.
 
 
 ## [1.1.2] - 2022-05-03
