@@ -197,7 +197,7 @@ public class ToolbarMenu : MonoBehaviour
         var visibleDocuments = new List<UIDocument>();
 
         foreach (var document in documents)
-            if (document.rootVisualElement.visible)
+            if (document.rootVisualElement is { visible: true })
             {
                 visibleDocuments.Add(document);
                 document.rootVisualElement.visible = false;
