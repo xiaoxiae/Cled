@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Don't sort hold picker holds by type.
+- Make Ctrl+any button work when toggling a hold in route mode.
 - Fix hold state not being perserved when swapping using mouse wheel.
 - Fix bug with holds not being properly selected with Ctrl+A.
 

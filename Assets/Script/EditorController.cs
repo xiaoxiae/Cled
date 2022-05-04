@@ -39,7 +39,8 @@ public class EditorController : MonoBehaviour
         {
             // however, if the would-be-held hold is not picked any more, don't switch to holding mode
             // and display a warning message instead (what would we even pick?)
-            if (editorModeManager.CurrentMode != EditorModeManager.Mode.Holding && holdPickerMenu.GetPickedHolds().Count == 0)
+            if (editorModeManager.CurrentMode != EditorModeManager.Mode.Holding &&
+                holdPickerMenu.GetPickedHolds().Count == 0)
                 popupMenu.CreateInfoPopup("No holds selected, can't start holding!");
             else
             {
@@ -126,8 +127,7 @@ public class EditorController : MonoBehaviour
                 NormalRouteHoldHitControls(hold);
 
                 // CTRL+LMB or SHIFT+LMB click toggles a hold to be in the route
-                if (Input.GetMouseButtonDown(0) &&
-                    (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)))
+                if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && Input.GetKey(KeyCode.LeftControl))
                 {
                     routeManager.ToggleHold(routeManager.SelectedRoute, hold, holdStateManager.GetHoldBlueprint(hold));
 
@@ -269,8 +269,9 @@ public class EditorController : MonoBehaviour
         if (routeManager.SelectedRoute != null && routeManager.SelectedRoute.IsEmpty())
             editorModeManager.CurrentMode = EditorModeManager.Mode.Normal;
 
-        // right click for route mode
-        if (Input.GetMouseButtonDown(1))
+        // right click for selecting a route (unless already in route mode, in which ctrl + click toggles a hold)
+        if (Input.GetMouseButtonDown(1) && !(editorModeManager.CurrentMode == EditorModeManager.Mode.Route &&
+                                             Input.GetKey(KeyCode.LeftControl)))
         {
             var clickedRoute = routeManager.GetOrCreateRouteWithHold(hold, holdStateManager.GetHoldBlueprint(hold));
 
