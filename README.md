@@ -8,6 +8,8 @@ The <strong>cli</strong>mber's <strong>ed</strong>itor – a 3D editor designed 
 
 This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](https://github.com/Climber-Apps/Cled/), released under the GPLv3 license.
 
+![Example routes captured using Cled.](captures.png)
+
 ## Running Cled
 First, download the lastest version from the [Releases page](https://github.com/Climber-Apps/Cled/releases).
 
