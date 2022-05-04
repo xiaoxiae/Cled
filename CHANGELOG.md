@@ -5,11 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [2.1.0] - TODO
+## [2.1.0] - 2022-05-05
 
 ### Changed
 - Make starting player position be (0, 0, 0) at the bottom of its model.
 - Deselect non-filtered holds after filtering changes.
+- Deselect all holds when Ctrl+A is pressed and all are selected.
 - Fix editor not being de-initialize when failing to initialize.
 - Fix holds not being removed from starting/ending when deleted.
 - Fix hold position not being properly set when moving the mouse wheel.

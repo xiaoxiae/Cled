@@ -268,6 +268,7 @@ public class HoldPickerMenu : MonoBehaviour
     {
         HoldBlueprint blueprint = _gridToHoldDictionary[item];
 
+        // do switch held if there currently are no selected holds
         if (switchHeld || CurrentlySelectedHold == null)
         {
             CurrentlySelectedHold = blueprint;
@@ -449,8 +450,19 @@ public class HoldPickerMenu : MonoBehaviour
         // CTRL+A selects all filtered holds (when the holdpicker is open)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
             pauseMenu.IsTypePaused(PauseType.HoldPicker))
-            foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                Select(_holdToGridDictionary[hold], false);
+        {
+            // if all of the holds are selected, deselect them instead
+            if (_filteredHoldIDs.Length == GetPickedHolds().Count)
+            {
+                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
+                    Deselect(_holdToGridDictionary[hold]);
+            }
+            else
+            {
+                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
+                    Select(_holdToGridDictionary[hold], false);
+            }
+        }
 
         // only open the hold menu if some holds were actually loaded in
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
