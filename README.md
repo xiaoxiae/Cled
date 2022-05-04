@@ -42,6 +42,7 @@ While most of the controls are accessible via the UI, here is a comprehensive li
 | right click                     | select the hovered route                        |
 | `Ctrl` + click (ROUTE)          | toggle hovered hold as being in the route       |
 | `E`                             | toggle between NORMAL and EDITING               |
+| `H`                             | horizontally flip hovered/held hold             |
 | `R` or `Delete`                 | delete hovered/held hold                        |
 | `Ctrl+R` or `Ctrl+Delete`       | delete hovered route/route containing held hold |
 | middle button (EDITING) + mouse | rotate held hold                                |

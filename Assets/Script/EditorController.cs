@@ -223,6 +223,10 @@ public class EditorController : MonoBehaviour
             holdStateManager.StopHolding();
             editorModeManager.CurrentMode = EditorModeManager.Mode.Normal;
         }
+        
+        // h - flip hold
+        else if (Input.GetKeyDown(KeyCode.H))
+            holdStateManager.FlipHold(holdStateManager.HeldHold);
     }
 
     /// <summary>
@@ -258,12 +262,17 @@ public class EditorController : MonoBehaviour
                 holdStateManager.Remove(routeHold, true);
             }
         }
+        
         // r/del - delete hold
         else if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
             routeManager.RemoveHold(hold);
             holdStateManager.Remove(hold, true);
         }
+        
+        // h - flip hold
+        else if (Input.GetKeyDown(KeyCode.H))
+            holdStateManager.FlipHold(hold);
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (routeManager.SelectedRoute != null && routeManager.SelectedRoute.IsEmpty())

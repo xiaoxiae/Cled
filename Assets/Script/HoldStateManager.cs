@@ -12,6 +12,7 @@ public class HoldState
     public SerializableVector3 Position;
     public SerializableVector3 Normal;
 
+    public bool Flipped;
     public float Rotation;
 }
 
@@ -140,13 +141,40 @@ public class HoldStateManager : MonoBehaviour
         _placedHolds.Add(model, (holdBlueprint, holdState));
 
         model.layer = LayerMask.NameToLayer("Default");
-
-        // update the hold normal and the hold position
-        UpdateNormal(model, holdState.Normal, holdState.Rotation);
-        UpdatePosition(model, holdState.Position);
+        
+        ApplyHoldState(model, holdState);
 
         model.SetActive(true);
     }
+
+    /// <summary>
+    /// Apply the hold state to the given hold.
+    /// </summary>
+    private void ApplyHoldState(GameObject hold, HoldState state)
+    {
+        // update the hold normal and the hold position
+        UpdateNormal(hold, state.Normal, state.Rotation);
+        UpdatePosition(hold, state.Position);
+
+        // update whether the hold is flipped
+        hold.transform.localScale = state.Flipped ? new Vector3(-1, 1, 1) : new Vector3(1, 1, 1);
+    }
+
+    /// <summary>
+    /// Update the gameObject to turn towards the given vector and rotate in the given float (in radians).
+    /// </summary>
+    private void UpdateNormal(GameObject gameObject, Vector3 normal, float rotation)
+    {
+        // rotate the world "up" around the hit normal by some degrees
+        var upVector = Quaternion.AngleAxis(Mathf.Rad2Deg * rotation, normal) * Vector3.up;
+        gameObject.transform.LookAt(normal + gameObject.transform.position, upVector);
+    }
+
+    /// <summary>
+    /// Update the gameObject's position to the given position.
+    /// </summary>
+    private void UpdatePosition(GameObject gameObject, Vector3 position) =>
+        gameObject.transform.position = position;
 
     /// <summary>
     /// Remove the hold from the state manager, no matter if it's being held or if it's placed down.
@@ -180,46 +208,26 @@ public class HoldStateManager : MonoBehaviour
     public bool IsPlaced(GameObject model) => _placedHolds.ContainsKey(model);
 
     /// <summary>
-    /// Move the currently held hold to the specified point.
-    /// </summary>
-    private void UpdateHeldPosition(Vector3 point)
-    {
-        UpdatePosition(_heldObject, point);
-        _heldObjectState.Position = point;
-    }
-
-    /// <summary>
-    /// Update the currently held hold normal to the specified vector and rotation about it.
-    /// </summary>
-    private void UpdateHeldNormal(Vector3 normal)
-    {
-        UpdateNormal(_heldObject, normal, _heldObjectState.Rotation);
-        _heldObjectState.Normal = normal;
-    }
-
-    /// <summary>
-    /// Update the gameobject's position to the given position.
-    /// </summary>
-    private void UpdatePosition(GameObject gameObject, Vector3 position) =>
-        gameObject.transform.position = position;
-
-    /// <summary>
-    /// Update the gameobject to turn towards the given vector and rotate in the given float (in radians).
-    /// </summary>
-    private void UpdateNormal(GameObject gameObject, Vector3 normal, float rotation)
-    {
-        // rotate the world "up" around the hit normal by some degrees
-        var upVector = Quaternion.AngleAxis(Mathf.Rad2Deg * rotation, normal) * Vector3.up;
-        gameObject.transform.LookAt(normal + gameObject.transform.position, upVector);
-    }
-
-    /// <summary>
     /// Move the currently held hold to the raycast hit.
     /// </summary>
     public void MoveHeldToHit(RaycastHit hit)
     {
-        UpdateHeldPosition(hit.point);
-        UpdateHeldNormal(hit.normal);
+        _heldObjectState.Position = hit.point;
+        _heldObjectState.Normal = hit.normal;
+        
+        ApplyHoldState(_heldObject, _heldObjectState);
+    }
+
+    /// <summary>
+    /// Horizontally flip the given hold.
+    /// </summary>
+    public void FlipHold(GameObject gameObject)
+    {
+        var state = GetHoldState(gameObject);
+        state.Flipped = !state.Flipped;
+        state.Rotation = (float)(2 * Math.PI - state.Rotation);
+        
+        ApplyHoldState(gameObject, state);
     }
 
     /// <summary>

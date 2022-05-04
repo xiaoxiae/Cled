@@ -5,9 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [1.2.0] - TODO
+## [2.0.0] - TODO
 
 ### Added
+- Add horizontal flipping using the H button.
 - Add toolbar View > Hold menu.
 
 ### Changed
