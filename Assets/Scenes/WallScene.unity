@@ -191,6 +191,7 @@ MonoBehaviour:
   settingsMenu: {fileID: 727763033}
   editorModeManager: {fileID: 2118895150}
   routeViewMenu: {fileID: 288166340}
+  holdPickerMenu: {fileID: 693249231}
 --- !u!1 &84805216
 GameObject:
   m_ObjectHideFlags: 0

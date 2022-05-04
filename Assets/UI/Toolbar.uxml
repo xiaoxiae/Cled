@@ -38,9 +38,14 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
-        <ui:Foldout text="View" value="false" name="view-foldout" style="flex-direction: column;">
+        <ui:Foldout text="View" name="view-foldout" value="false" style="flex-direction: column;">
             <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 172px;">
                 <ui:Toggle label="Routes" name="routes-toggle" />
+                <ui:Button display-tooltip-when-elided="true" name="hold-menu-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
+                    <ui:Label text="Holds menu" display-tooltip-when-elided="true" name="holds-label" />
+                    <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0;" />
+                    <ui:Label text="Q or Tab" display-tooltip-when-elided="true" class="toolbar-shortcut-label" />
+                </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
         <ui:Foldout text="Capture" value="false" name="capture-foldout" style="flex-direction: column;">

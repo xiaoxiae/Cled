@@ -406,6 +406,34 @@ public class HoldPickerMenu : MonoBehaviour
         return tex2D.LoadImage(fileData) ? tex2D : null;
     }
 
+    public void ToggleOpen()
+    {
+        // don't open it when popups or route settings are present
+        if (pauseMenu.IsTypePaused(PauseType.Popup) || pauseMenu.IsTypePaused(PauseType.RouteSettings))
+            return;
+
+        // if there are no holds, don't show it at all
+        if (holdLoader.HoldCount == 0)
+        {
+            popupMenu.CreateInfoPopup("No holds loaded, nothing to filter.");
+            return;
+        }
+
+        if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
+        {
+            Close();
+        }
+        else
+        {
+            _root.visible = true;
+            pauseMenu.PauseType(PauseType.HoldPicker);
+        }
+
+        // TODO: while this does fix it, it is pretty buggy
+        // Input.ResetInputAxes();
+    
+    }
+
     void Update()
     {
         // CTRL+A selects all filtered holds (when the holdpicker is open)
@@ -416,31 +444,7 @@ public class HoldPickerMenu : MonoBehaviour
 
         // only open the hold menu if some holds were actually loaded in
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
-        {
-            // don't open it when popups or route settings are present
-            if (pauseMenu.IsTypePaused(PauseType.Popup) || pauseMenu.IsTypePaused(PauseType.RouteSettings))
-                return;
-
-            // if there are no holds, don't show it at all
-            if (holdLoader.HoldCount == 0)
-            {
-                popupMenu.CreateInfoPopup("No holds loaded, nothing to filter.");
-                return;
-            }
-
-            if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
-            {
-                Close();
-            }
-            else
-            {
-                _root.visible = true;
-                pauseMenu.PauseType(PauseType.HoldPicker);
-            }
-
-            // TODO: while this does fix it, it is pretty buggy
-            // Input.ResetInputAxes();
-        }
+            ToggleOpen();
     }
 
     /// <summary>

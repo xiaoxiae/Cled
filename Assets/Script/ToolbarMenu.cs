@@ -15,6 +15,7 @@ public class ToolbarMenu : MonoBehaviour
     public SettingsMenu settingsMenu;
     public EditorModeManager editorModeManager;
     public RouteViewMenu routeViewMenu;
+    public HoldPickerMenu holdPickerMenu;
 
     private VisualElement _root;
 
@@ -33,6 +34,7 @@ public class ToolbarMenu : MonoBehaviour
     private Button _preferencesButton;
     private Button _captureImageButton;
     private Button _captureImageAsButton;
+    private Button _holdMenuButton;
 
     void Start()
     {
@@ -57,13 +59,17 @@ public class ToolbarMenu : MonoBehaviour
         var clearLightingButton = _root.Q<Button>("clear-lighting-button");
         clearLightingButton.clicked += lightManager.Clear;
 
-        // lighting
+        // route view 
         var routeViewToggle = _root.Q<Toggle>("routes-toggle");
         routeViewToggle.RegisterValueChangedCallback(evt =>
         {
             if (evt.newValue) routeViewMenu.Show();
             else routeViewMenu.Close();
         });
+        
+        // holds
+        _holdMenuButton = _root.Q<Button>("hold-menu-button");
+        _holdMenuButton.clicked += holdPickerMenu.ToggleOpen;
 
         // files
         _openButton = _root.Q<Button>("open-button");
