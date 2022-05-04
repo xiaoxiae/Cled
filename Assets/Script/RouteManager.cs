@@ -351,9 +351,14 @@ public class RouteManager : MonoBehaviour
 
     /// <summary>
     /// Remove the given hold from the route it is in (if it is in one).
+    /// Also remove it from starting and ending holds.
     /// </summary>
     public void RemoveHold(GameObject hold)
     {
+        // remove from starting and ending!
+        StartingHolds.Remove(hold);
+        EndingHolds.Remove(hold);
+
         Route route = GetRouteWithHold(hold);
 
         if (route == null)

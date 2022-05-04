@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Make starting player position be (0, 0, 0) at the bottom of its model.
 - Deselect non-filtered holds after filtering changes.
+- Fix editor not being de-initialize when failing to initialize.
+- Fix holds not being removed from starting/ending when deleted.
+- Fix hold position not being properly set when moving the mouse wheel.
 
 
 ## [2.0.0] - 2022-05-04

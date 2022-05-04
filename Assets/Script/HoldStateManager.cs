@@ -67,9 +67,8 @@ public class HoldStateManager : MonoBehaviour
         _heldObject = model;
         _heldObjectBlueprint = holdBlueprint;
         _heldObjectState = holdState;
-
-        UpdateNormal(model, holdState.Normal, holdState.Rotation);
-        UpdatePosition(model, holdState.Position);
+        
+        ApplyHoldState(model, holdState);
 
         // ignore this object until placed
         _heldObject.layer = LayerMask.NameToLayer("Ignore Raycast");

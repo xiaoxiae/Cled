@@ -214,15 +214,20 @@ public class ImportExportManager : MonoBehaviour
         catch (Exception e)
         {
             popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project: {e.Message}");
+            Preferences.Initialized = false;
             return false;
         }
 
         return true;
     }
 
+    /// <summary>
+    /// Close the loading screen with a given exception during an action.
+    /// </summary>
     private void CloseWithException(string action, string errorMessage)
     {
         Clear();
+        Preferences.Initialized = false;
         
         popupMenu.CreateInfoPopup(
             $"The following exception occurred while {action}: {errorMessage}",
@@ -243,7 +248,7 @@ public class ImportExportManager : MonoBehaviour
 
         Clear();
 
-        loadingScreenMenu.Show("Loading the wall.");
+        loadingScreenMenu.Show("Loading the wall...");
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
 
