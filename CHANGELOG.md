@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1.2] - 2022-05-03
 
 ### Changed
-- Reset player position when under a certain treshold.
+- Reset player position when under a certain threshold.
 - Disable capturing images while not initialized.
 - Fix capturing images being broken in build.
 - Fix player position not being reset after loading.
