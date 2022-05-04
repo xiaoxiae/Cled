@@ -4,9 +4,9 @@
         <ui:VisualElement class="popup-panel">
             <ui:Label text="Unsaved project changes!" display-tooltip-when-elided="true" name="contents" />
             <ui:VisualElement class="popup-button-row">
-                <ui:Button display-tooltip-when-elided="true" name="operation-button" text="Save" focusable="false" style="border-right-width: 0; border-left-width: 0;" />
-                <ui:Button text="Discard" display-tooltip-when-elided="true" name="discard-button" focusable="false" style="border-right-width: 0;" />
-                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="cancel-button" focusable="false" style="border-right-width: 0;" />
+                <ui:Button display-tooltip-when-elided="true" name="operation-button" text="Save" focusable="false" style="border-right-width: 1px; border-left-width: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; border-top-width: 1px; border-bottom-width: 1px;" />
+                <ui:Button text="Discard" display-tooltip-when-elided="true" name="discard-button" focusable="false" style="border-right-width: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; border-left-width: 1px; border-top-width: 1px; border-bottom-width: 1px;" />
+                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="cancel-button" focusable="false" style="border-right-width: 1px; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; border-left-width: 1px; border-top-width: 1px; border-bottom-width: 1px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

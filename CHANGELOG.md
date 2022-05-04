@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add toolbar View > Hold menu.
 
 ### Changed
+- Improve popup UI.
+- Include current version in help menu.
 - Don't sort hold picker holds by type.
 - Make Ctrl+any button work when toggling a hold in route mode.
 - Fix hold state not being perserved when swapping using mouse wheel.

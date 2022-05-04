@@ -1,10 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=e11f46a4365fa2bd09a3a61054c87ebf&amp;type=3#Styles" />
     <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center;">
-        <ui:VisualElement class="popup-panel" style="position: absolute;">
-            <ui:Label text="contents" display-tooltip-when-elided="true" name="contents" style="white-space: normal;" />
+        <ui:VisualElement class="popup-panel" style="position: absolute; max-width: 320px; top: 632px; left: 775px;">
+            <ui:VisualElement style="align-items: center;">
+                <ui:VisualElement name="logo" style="background-image: url(&apos;project://database/Assets/UI/Logo.png?fileID=2800000&amp;guid=b871ba5a9e75096f7a74a76f92f0a1d3&amp;type=3#Logo&apos;); -unity-background-scale-mode: stretch-to-fill; height: 70px; width: 180px; margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 0;" />
+            </ui:VisualElement>
+            <ui:Label text="contents" display-tooltip-when-elided="true" name="contents" style="white-space: normal; -unity-text-align: middle-left;" />
             <ui:VisualElement class="popup-button-row">
-                <ui:Button text="Ok" display-tooltip-when-elided="true" name="ok-button" focusable="false" />
+                <ui:Button text="Ok" display-tooltip-when-elided="true" name="ok-button" focusable="false" style="border-bottom-width: 1px; margin-bottom: 5px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

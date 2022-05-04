@@ -28,7 +28,7 @@ public class PopupMenu : MonoBehaviour
     /// <summary>
     /// Create an info popup with the given content.
     /// </summary>
-    public void CreateInfoPopup(string contents, Action okAction = null)
+    public void CreateInfoPopup(string contents, Action okAction = null, bool displayLogo = false)
     {
         _document.visualTreeAsset = InfoPopup;
 
@@ -38,6 +38,9 @@ public class PopupMenu : MonoBehaviour
         pauseMenu.PauseType(PauseType.Popup);
 
         root.Q<Label>("contents").text = contents;
+        
+        var logo = root.Q<VisualElement>("logo");
+        logo.style.display = !displayLogo ? DisplayStyle.None : DisplayStyle.Flex;
         
         var okButton = root.Q<Button>("ok-button");
         

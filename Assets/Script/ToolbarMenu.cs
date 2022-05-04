@@ -66,7 +66,7 @@ public class ToolbarMenu : MonoBehaviour
             if (evt.newValue) routeViewMenu.Show();
             else routeViewMenu.Close();
         });
-        
+
         // holds
         _holdMenuButton = _root.Q<Button>("hold-menu-button");
         _holdMenuButton.clicked += holdPickerMenu.ToggleOpen;
@@ -102,7 +102,9 @@ public class ToolbarMenu : MonoBehaviour
         aboutButton.clicked += () =>
         {
             popupMenu.CreateInfoPopup(
-                "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis. The project is open source under GLPv3.");
+                "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis." +
+                $"The project is open source under GLPv3.\n\nCurrent version: <b>{Application.version}</b>",
+                displayLogo: true);
         };
 
         // capturing
@@ -408,7 +410,7 @@ public class ToolbarMenu : MonoBehaviour
             Preferences.CurrentWallModelPath,
             Preferences.CurrentHoldModelsPath
         );
-        
+
         ForceSaveAs();
     }
 }
