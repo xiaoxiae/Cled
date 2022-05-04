@@ -81,10 +81,12 @@ public class HoldPickerMenu : MonoBehaviour
 
     /// <summary>
     /// Update the grid according to the dropdown button filters.
+    ///
+    /// Additionally, deselect all of the holds that are no longer filtered
     /// </summary>
     private void UpdateGrid()
     {
-        FillGrid(holdLoader.Filter(hold =>
+        var holds = holdLoader.Filter(hold =>
         {
             if (!string.IsNullOrWhiteSpace(_colorDropdown.value) &&
                 _colorDropdown.value != NoSelectionString && hold.colorName != _colorDropdown.value)
@@ -103,8 +105,13 @@ public class HoldPickerMenu : MonoBehaviour
                 return false;
 
             return true;
-        }));
+        });
+        
+        foreach (var hold in _allHolds)
+            if (!holds.Contains(hold))
+                Deselect(_holdToGridDictionary[hold]);
 
+        FillGrid(holds);
         UpdateSelectCounters();
     }
 
@@ -281,6 +288,9 @@ public class HoldPickerMenu : MonoBehaviour
         UpdateSelectCounters();
     }
 
+    /// <summary>
+    /// Update the borders of the items according to whether they're selected or not.
+    /// </summary>
     private void UpdateItemBorders()
     {
         var pickedHolds = GetPickedHolds();

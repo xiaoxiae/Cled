@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Make starting player position be (0, 0, 0) at the bottom of its model.
+- Deselect non-filtered holds after filtering changes.
 
 
 ## [2.0.0] - 2022-05-04
