@@ -55,7 +55,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void ResetPosition()
     {
-        Position = Vector3.zero;
+        // TODO: this is a bit ugly, but the player is 1.8m long and will likely never change...
+        Position = new Vector3(0, 0.9f, 0);
         Flying = false;
     }
 
