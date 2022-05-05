@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fix player position not being correctly reset when failing to load.
 - Fix toolbar popping up when failing to load.
 - Fix light intensity and shadow strength not being correctly updated when importing.
+- Fix wall metadata not being properly initialized when the metadata file is not present.
 - Don't deinitialize when failing to import on the preferences step.
 
 

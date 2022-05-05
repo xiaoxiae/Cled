@@ -8,11 +8,16 @@ using YamlDotNet.Serialization;
 /// </summary>
 public class WallMetadata
 {
-    public List<string> Grades { get; set; }
-    public List<string> Setters { get; set; }
-    public List<string> Zones { get; set; }
+    public WallMetadata()
+    {
+        Grades = new List<string>();
+        Setters = new List<string>();
+        Zones = new List<string>();
+    }
 
-    public List<SerializableVector3> Lights { get; set; }
+    public List<string> Grades { get; }
+    public List<string> Setters { get; }
+    public List<string> Zones { get; }
 }
 
 public class WallLoader : MonoBehaviour
@@ -42,6 +47,10 @@ public class WallLoader : MonoBehaviour
             string yml = File.ReadAllText(metadataPath);
             
             Metadata = new Deserializer().Deserialize<WallMetadata>(yml);
+        }
+        else
+        {
+            Metadata = new WallMetadata();
         }
         
         MeshFilter mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
