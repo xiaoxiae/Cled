@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fix toolbar popping up when failing to load.
 - Fix light intensity and shadow strength not being correctly updated when importing.
 - Fix wall metadata not being properly initialized when the metadata file is not present.
+- Fix hold starting/ending marker twitch when being added to a hold.
 - Don't deinitialize when failing to import on the preferences step.
 
 

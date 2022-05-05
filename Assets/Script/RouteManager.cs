@@ -203,18 +203,17 @@ public class RouteManager : MonoBehaviour
     /// </summary>
     private void AddMarker(GameObject hold, GameObject marker)
     {
-        GameObject markerInstance = Instantiate(marker);
+        var markerInstance = Instantiate(marker, hold.transform);
+        markerInstance.name = "Marker";
         markerInstance.SetActive(true);
-        markerInstance.transform.parent = hold.transform;
         markerInstance.transform.localPosition = Vector3.zero;
 
         var customUpdate = markerInstance.AddComponent<MarkerUpdate>();
-        customUpdate.OnUpdate += () =>
+
+        void CustomUpdateFuntion()
         {
             // only update when hold position or rotation changed
-            if (customUpdate.LastPosition == hold.transform.position &&
-                customUpdate.LastRotation == hold.transform.rotation)
-                return;
+            if (customUpdate.LastPosition == hold.transform.position && customUpdate.LastRotation == hold.transform.rotation) return;
 
             var holdPosition = hold.transform.position;
 
@@ -231,12 +230,13 @@ public class RouteManager : MonoBehaviour
             float stepsBack = 30;
 
             // a little dangerous but whatever
-            while (Physics.ComputePenetration(c1, c1.transform.position, c1.transform.rotation, c2,
-                       c2.transform.position, c2.transform.rotation, out _, out _))
-                markerInstance.transform.position -= markerInstance.transform.up * step;
+            while (Physics.ComputePenetration(c1, c1.transform.position, c1.transform.rotation, c2, c2.transform.position, c2.transform.rotation, out _, out _)) markerInstance.transform.position -= markerInstance.transform.up * step;
 
-            markerInstance.transform.position += markerInstance.transform.up * step * stepsBack;
-        };
+            markerInstance.transform.position += markerInstance.transform.up * (step * stepsBack);
+        }
+
+        customUpdate.OnUpdate += CustomUpdateFuntion;
+        CustomUpdateFuntion();
     }
 
     /// <summary>
