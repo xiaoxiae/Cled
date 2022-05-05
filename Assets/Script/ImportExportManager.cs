@@ -155,6 +155,9 @@ public class SerializablePlayer
     public bool Light;
 }
 
+/// <summary>
+/// The class that takes care of importing and exporting the editor state.
+/// </summary>
 public class ImportExportManager : MonoBehaviour
 {
     public HoldStateManager holdStateManager;
@@ -182,7 +185,7 @@ public class ImportExportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Clear appropriate manager states.
+    /// Clear the editor state.
     /// </summary>
     private void Clear()
     {
@@ -193,8 +196,8 @@ public class ImportExportManager : MonoBehaviour
         holdPickerMenu.Clear();
         lightManager.Clear();
 
-        playerController.Position = Vector3.zero;
-        cameraController.Orientation = Vector3.forward;
+        playerController.ResetPosition();
+        cameraController.ResetOrientation();
 
         pauseMenu.UnpauseAll();
     }
@@ -213,8 +216,7 @@ public class ImportExportManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            popupMenu.CreateInfoPopup($"The following exception occurred while exporting the project: {e.Message}");
-            Preferences.Initialized = false;
+            popupMenu.CreateInfoPopup($"The following exception occurred while importing the project: {e.Message}");
             return false;
         }
 
@@ -233,8 +235,6 @@ public class ImportExportManager : MonoBehaviour
             $"The following exception occurred while {action}: {errorMessage}",
             loadingScreenMenu.Close
         );
-        
-        loadingScreenMenu.ToBehindPopup();
     }
 
     /// <summary>
@@ -343,6 +343,9 @@ public class ImportExportManager : MonoBehaviour
             // import lights
             Preferences.LightIntensity = obj.Lights.Intensity;
             Preferences.ShadowStrength = obj.Lights.ShadowStrength;
+            
+            lightManager.UpdateLightIntensity();
+            lightManager.UpdateShadowStrength();
 
             foreach (Vector3 position in obj.Lights.Positions)
                 lightManager.AddLight(position);
@@ -449,6 +452,9 @@ public class ImportExportManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Asynchronously import the project from the given paths.
+    /// </summary>
     private IEnumerator ImportFromNewAsync(string currentWallModelPath, string currentHoldModelsPath)
     {
         loadingScreenMenu.Show("Clearing current state...");
@@ -516,8 +522,6 @@ public class ImportExportManager : MonoBehaviour
     ///
     /// Returns true if successful, else false.
     /// </summary>
-    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
-    {
+    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath) =>
         StartCoroutine(ImportFromNewAsync(currentWallModelPath, currentHoldModelsPath));
-    }
 }

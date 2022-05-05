@@ -144,3 +144,18 @@ public class Utilities
         }
     }
 }
+
+
+/// <summary>
+/// An interface for things that can be closed (like menus, popups, etc.).
+/// </summary>
+public interface IClosable {
+    public void Close();
+}
+
+/// <summary>
+/// An interface for things that can be accepted (like settings or popups).
+/// </summary>
+public interface IAcceptable {
+    public void Accept();
+}

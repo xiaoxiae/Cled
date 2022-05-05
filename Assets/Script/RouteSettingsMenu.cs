@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class RouteSettingsMenu : MonoBehaviour
+/// <summary>
+/// A menu for the settings of a route.
+/// </summary>
+public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
 {
     public RouteManager routeManager;
     public WallLoader wallLoader;
@@ -43,16 +46,13 @@ public class RouteSettingsMenu : MonoBehaviour
         }
 
         var applyButton = _root.Q<Button>("apply-button");
-        applyButton.clicked += Apply;
+        applyButton.clicked += Accept;
 
         var discardButton = _root.Q<Button>("discard-button");
         discardButton.clicked += Close;
     }
 
-    /// <summary>
-    /// Apply the settings to the given route, hiding the settings.
-    /// </summary>
-    public void Apply()
+    public void Accept()
     {
         foreach (var attribute in _attributeMapping.Keys)
         {
@@ -78,9 +78,6 @@ public class RouteSettingsMenu : MonoBehaviour
         Close();
     }
 
-    /// <summary>
-    /// Close the route settings.
-    /// </summary>
     public void Close()
     {
         _root.visible = false;

@@ -7,7 +7,10 @@ using UnityEngine.UIElements;
 using UnityEngine.Video;
 using Button = UnityEngine.UIElements.Button;
 
-public class HoldPickerMenu : MonoBehaviour
+/// <summary>
+/// The controller for the hold picker menu.
+/// </summary>
+public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
 {
     // manager-related things
     public PauseMenu pauseMenu;
@@ -21,18 +24,16 @@ public class HoldPickerMenu : MonoBehaviour
     private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
 
     // a dictionary for mapping hold blueprints to grid tiles
-    // the HoldToGrid one is public, because bottom bar uses it
+    // the HoldToGrid one is public, because Bottom bar uses it
     public readonly Dictionary<HoldBlueprint, VisualElement> HoldToGridDictionary = new();
     private readonly Dictionary<VisualElement, HoldBlueprint> _gridToHoldDictionary = new();
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
+    // is again public because Bottom bar uses it
     public readonly Dictionary<VisualElement, Texture2D> GridTextureDictionary = new();
 
-    // store all holds
-    private HoldBlueprint[] _allHolds = { };
-
-    // and the filtered ones
-    private HoldBlueprint[] _filteredHoldIDs = { };
+    // store filtered holds
+    private IEnumerable<HoldBlueprint> _filteredHoldIDs = new List<HoldBlueprint>();
 
     // UI elements
     private VisualElement _root;
@@ -105,7 +106,7 @@ public class HoldPickerMenu : MonoBehaviour
             return true;
         });
 
-        foreach (var hold in _allHolds)
+        foreach (var hold in holdLoader.Holds)
             if (!holds.Contains(hold))
                 Deselect(HoldToGridDictionary[hold]);
 
@@ -114,9 +115,6 @@ public class HoldPickerMenu : MonoBehaviour
         Changed();
     }
 
-    /// <summary>
-    /// Close the hold picker menu.
-    /// </summary>
     public void Close()
     {
         _root.visible = false;
@@ -160,16 +158,14 @@ public class HoldPickerMenu : MonoBehaviour
     /// </summary>
     public void Initialize()
     {
-        _allHolds = holdLoader.Filter(_ => true);
-
         // dropdowns
         var dropdowns = new[] { _colorDropdown, _typeDropdown, _labelsDropdown, _manufacturerDropdown };
-        var choiceFunctions = new Func<List<string>>[]
+        var choiceFunctions = new Func<IEnumerable<string>>[]
             { holdLoader.AllColors, holdLoader.AllTypes, holdLoader.AllLabels, holdLoader.AllManufacturers };
 
         for (int i = 0; i < dropdowns.Length; i++)
         {
-            var allValues = choiceFunctions[i]();
+            var allValues = choiceFunctions[i]().ToList();
             allValues.Insert(0, NoSelectionString);
 
             // only add the separator if there are some items
@@ -183,7 +179,7 @@ public class HoldPickerMenu : MonoBehaviour
         }
 
         // create a visual element for each hold
-        foreach (HoldBlueprint blueprint in _allHolds)
+        foreach (HoldBlueprint blueprint in holdLoader.Holds)
         {
             var item = new VisualElement();
 
@@ -226,10 +222,10 @@ public class HoldPickerMenu : MonoBehaviour
                 new StyleBackground(Background.FromTexture2D(GridTextureDictionary[item]));
         }
 
-        FillGrid(_allHolds);
+        FillGrid(holdLoader.Holds);
 
         // done like this to prevent issue where the border is not visible
-        foreach (HoldBlueprint blueprint in _allHolds)
+        foreach (HoldBlueprint blueprint in holdLoader.Holds)
         {
             Select(HoldToGridDictionary[blueprint]);
             Deselect(HoldToGridDictionary[blueprint]);
@@ -242,7 +238,7 @@ public class HoldPickerMenu : MonoBehaviour
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
     /// </summary>
-    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Length.ToString();
+    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Count().ToString();
 
     /// <summary>
     /// Update the counters that change when filtered holds are selected/deselected.
@@ -292,7 +288,7 @@ public class HoldPickerMenu : MonoBehaviour
     {
         var pickedHolds = GetPickedHolds();
 
-        foreach (var hold in _allHolds)
+        foreach (var hold in holdLoader.Holds)
         {
             var holdItem = HoldToGridDictionary[hold];
 
@@ -379,14 +375,14 @@ public class HoldPickerMenu : MonoBehaviour
     /// Order the given blueprints the way they will be ordered in the grid.
     /// This means first by color and then by volume.
     /// </summary>
-    private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(HoldBlueprint[] blueprints) =>
+    private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(IEnumerable<HoldBlueprint> blueprints) =>
         blueprints.OrderBy(x => x.holdMetadata.colorHex)
             .ThenBy(x => x.holdMetadata.volume);
 
     /// <summary>
     /// Fill the grid with a selection of the holds.
     /// </summary>
-    private void FillGrid(HoldBlueprint[] holdBlueprints)
+    private void FillGrid(IEnumerable<HoldBlueprint> holdBlueprints)
     {
         ClearGrid();
 
@@ -443,7 +439,7 @@ public class HoldPickerMenu : MonoBehaviour
             pauseMenu.IsTypePaused(PauseType.HoldPicker))
         {
             // if all of the holds are selected, deselect them instead
-            if (_filteredHoldIDs.Length == GetPickedHolds().Count)
+            if (_filteredHoldIDs.Count() == GetPickedHolds().Count)
             {
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
                     Deselect(HoldToGridDictionary[hold]);
@@ -467,9 +463,7 @@ public class HoldPickerMenu : MonoBehaviour
     {
         ClearGrid();
 
-        _allHolds = new HoldBlueprint[] { };
-
-        _filteredHoldIDs = new HoldBlueprint[] { };
+        _filteredHoldIDs = new List<HoldBlueprint>();
         _gridStateDictionary.Clear();
         HoldToGridDictionary.Clear();
         _gridToHoldDictionary.Clear();
@@ -543,4 +537,6 @@ public class HoldPickerMenu : MonoBehaviour
         CurrentlySelectedHold = GetFromCurrentByDelta(delta);
         Changed();
     }
+
+    public void Accept() => Close();
 }

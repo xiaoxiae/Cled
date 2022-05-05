@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -25,13 +26,13 @@ public class UIKeyboardController : MonoBehaviour
                 
             // then route settings
             if (pauseMenu.IsTypePaused(PauseType.RouteSettings)) {
-                routeSettingsMenu.Apply();
+                routeSettingsMenu.Accept();
                 return;
             }
             
             // then general settings
             if (pauseMenu.IsTypePaused(PauseType.Settings)) {
-                settingsMenu.Apply();
+                settingsMenu.Accept();
                 return;
             }
         }

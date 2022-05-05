@@ -3,7 +3,10 @@ using System.Web.UI.Design;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PopupMenu : MonoBehaviour
+/// <summary>
+/// A class for showing popups of any kind.
+/// </summary>
+public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
 {
     public VisualTreeAsset InfoPopup;
     public VisualTreeAsset SavePopup;
@@ -23,6 +26,14 @@ public class PopupMenu : MonoBehaviour
     {
         _document.visualTreeAsset = null;
         pauseMenu.UnpauseType(PauseType.Popup);
+    }
+
+    public void Accept()
+    {
+        if (CurrentOkButton != null)
+            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
+                CurrentOkButton.SendEvent(e);
+            
     }
 
     /// <summary>
@@ -70,16 +81,5 @@ public class PopupMenu : MonoBehaviour
         root.Q<Button>("operation-button").clicked += Close;
         root.Q<Button>("discard-button").clicked += Close;
         root.Q<Button>("cancel-button").clicked += Close;
-    }
-
-    /// <summary>
-    /// Accept whatever popup is currently opened.
-    /// </summary>
-    public void Accept()
-    {
-        if (CurrentOkButton != null)
-            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
-                CurrentOkButton.SendEvent(e);
-            
     }
 }

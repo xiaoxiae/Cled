@@ -6,7 +6,7 @@ using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SettingsMenu : MonoBehaviour
+public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
 {
     public PauseMenu pauseMenu;
     public PopupMenu popupMenu;
@@ -53,16 +53,13 @@ public class SettingsMenu : MonoBehaviour
         };
 
         var applyButton = _root.Q<Button>("apply-button");
-        applyButton.clicked += Apply;
+        applyButton.clicked += Accept;
 
         var discardButton = _root.Q<Button>("discard-button");
         discardButton.clicked += Close;
     }
 
-    /// <summary>
-    /// Apply the settings to the given route, hiding the settings.
-    /// </summary>
-    public void Apply()
+    public void Accept()
     {
         float lightIntensity;
         try

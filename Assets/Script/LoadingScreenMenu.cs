@@ -1,7 +1,10 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class LoadingScreenMenu : MonoBehaviour
+/// <summary>
+/// The class that controls the loadig screen - its text, whether it's shown or not and
+/// </summary>
+public class LoadingScreenMenu : MonoBehaviour, IClosable
 {
     private UIDocument _document;
     private VisualElement _root;
@@ -19,17 +22,10 @@ public class LoadingScreenMenu : MonoBehaviour
     public void Show(string text = "")
     {
         _root.visible = true;
-
-        _document.sortingOrder = 100;
         
         if (!string.IsNullOrWhiteSpace(text))
             _loadingLabel.text = text;
     }
 
     public void Close() => _root.visible = false;
-
-    /// <summary>
-    /// Move the loading screen behind the popup.
-    /// </summary>
-    public void ToBehindPopup() => _document.sortingOrder = 9;
 }

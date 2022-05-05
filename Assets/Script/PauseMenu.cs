@@ -27,14 +27,16 @@ public class PauseMenu : MonoBehaviour
 
     private UIDocument _document;
 
+    // hooks for pausing and unpausing
     private readonly List<Action> _pauseHooks = new();
     private readonly List<Action> _unpauseHooks = new();
 
-    private readonly Dictionary<PauseType, int> _pausePositions = new()
+    // the positions where the dark pause screen should appear
+    private readonly Dictionary<PauseType, float> _pausePositions = new()
     {
         { global::PauseType.HoldPicker, 4 },
         { global::PauseType.Normal, 0 },
-        { global::PauseType.Popup, 14 },
+        { global::PauseType.Popup, 14.99f },
         { global::PauseType.Settings, 2 },
         { global::PauseType.RouteSettings, 2 },
     };
@@ -70,6 +72,9 @@ public class PauseMenu : MonoBehaviour
             Unpause();
     }
 
+    /// <summary>
+    /// Pause the given type.
+    /// </summary>
     public void PauseType(PauseType type)
     {
         _pauses.Add(type);
@@ -79,6 +84,10 @@ public class PauseMenu : MonoBehaviour
             Pause();
     }
 
+    /// <summary>
+    /// An internal function that performs the pausing.
+    /// Stops time, unlocks cursor, calls hooks, shows screen.
+    /// </summary>
     private void Pause()
     {
         Time.timeScale = 0;
@@ -91,7 +100,8 @@ public class PauseMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Reset timescale, unlock cursor.
+    /// An internal function that performs the unpausing.
+    /// Starts time, locks cursor, calls hooks, hides screen.
     /// </summary>
     private void Unpause()
     {
@@ -105,7 +115,7 @@ public class PauseMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// The screen should be right behind the active widget.
+    /// Moves the pause screen to right behind the closest widget.
     /// </summary>
     private void UpdatePauseScreenPosition()
     {

@@ -47,8 +47,8 @@ public class HoldBlueprint
 }
 
 /// <summary>
-/// A class that handles various hold-related things, such as loading them, filtering them,
-/// managing the ones that are selected and creating hold objects out of them.
+/// A class that handles various hold-related things, such as loading them, filtering them
+/// and creating hold objects out of them.
 /// </summary>
 public class HoldLoader : MonoBehaviour
 {
@@ -62,13 +62,18 @@ public class HoldLoader : MonoBehaviour
     public int HoldCount => _holds.Keys.Count;
 
     /// <summary>
+    /// Return all of the loaded hold blueprints.
+    /// </summary>
+    public IEnumerable<HoldBlueprint> Holds => _holds.Values;
+
+    /// <summary>
     /// Aggregates an attribute from HoldMetadata (like all colors, types, etc.).
     /// </summary>
-    private List<string> AttributeAggregate(Func<HoldMetadata, List<string>> aggregateFunction)
+    private IEnumerable<string> AttributeAggregate(Func<HoldMetadata, IEnumerable<string>> aggregateFunction)
     {
         var set = new HashSet<string>();
 
-        foreach (var bp in _holds.Values)
+        foreach (var bp in Holds)
         {
             var info = bp.holdMetadata;
 
@@ -76,31 +81,31 @@ public class HoldLoader : MonoBehaviour
                 set.Add(str);
         }
 
-        return set.ToList();
+        return set;
     }
 
     /// <summary>
     /// Return all possible hold colors.
     /// </summary>
-    public List<string> AllColors() =>
+    public IEnumerable<string> AllColors() =>
         AttributeAggregate(info => new List<string> { info.colorName });
 
     /// <summary>
     /// Return all possible hold colors.
     /// </summary>
-    public List<string> AllTypes() =>
+    public IEnumerable<string> AllTypes() =>
         AttributeAggregate(info => new List<string> { info.type });
 
     /// <summary>
     /// Return all possible labels.
     /// </summary>
-    public List<string> AllLabels() =>
-        AttributeAggregate(info => info.labels == null ? new List<string>() : info.labels.ToList());
+    public IEnumerable<string> AllLabels() =>
+        AttributeAggregate(info => info.labels?.ToList() ?? new List<string>());
 
     /// <summary>
     /// Return all possible hold manufacturers.
     /// </summary>
-    public List<string> AllManufacturers() =>
+    public IEnumerable<string> AllManufacturers() =>
         AttributeAggregate(info => new List<string> { info.manufacturer });
 
     /// <summary>

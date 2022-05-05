@@ -1,6 +1,9 @@
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
+/// <summary>
+/// A class that controls the player's movement.
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     public CharacterController controller;
@@ -109,7 +112,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
             _flyingSpeed = 0;
 
-        // don't move when middle button is pressed in edit mode (holds turn) and when ctrl is pressed (ctrl + s)
+        // don't move when middle button is pressed in edit mode (holds turn)
         if (Input.GetMouseButton(2) && editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
         {
             controller.velocity.Set(0, 0, 0);

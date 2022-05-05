@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// A class for controlling the bottom bar.
+/// Gets rebuilt each time the hold picker changes its selection.
+/// </summary>
 public class BottomBar : MonoBehaviour
 {
     public HoldPickerMenu holdPickerMenu;

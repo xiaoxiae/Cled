@@ -100,9 +100,6 @@ public class LightManager : MonoBehaviour
 
     void Update()
     {
-        // move to player
-        playerLight.transform.position = transform.position;
-
         // don't move the camera when time doesn't run
         if (Time.timeScale == 0)
             return;

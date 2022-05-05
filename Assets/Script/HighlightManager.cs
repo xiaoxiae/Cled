@@ -25,7 +25,7 @@ public enum HighlightType
 }
 
 /// <summary>
-/// A script for working with managing highlighted things.
+/// A script for managing highlighted objects.
 /// </summary>
 public class HighlightManager : MonoBehaviour
 {

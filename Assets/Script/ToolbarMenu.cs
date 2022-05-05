@@ -19,12 +19,6 @@ public class ToolbarMenu : MonoBehaviour
 
     private VisualElement _root;
 
-    /// <summary>
-    /// Forces a save as when either main menu or quit is called.
-    /// Should be called if the wall is not saved at all after loading the editor scene.
-    /// </summary>
-    public void ForceSaveAs() => _forceSaveAs = true;
-
     private bool _forceSaveAs;
 
     private Button _saveButton;
@@ -411,6 +405,6 @@ public class ToolbarMenu : MonoBehaviour
             Preferences.CurrentHoldModelsPath
         );
 
-        ForceSaveAs();
+        _forceSaveAs = true;
     }
 }

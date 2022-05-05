@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class RouteViewMenu : MonoBehaviour
+public class RouteViewMenu : MonoBehaviour, IClosable
 {
     public RouteManager routeManager;
     public RouteSettingsMenu routeSettingsMenu;

@@ -9,10 +9,24 @@ using UnityEngine;
 /// </summary>
 public class HoldState
 {
+    /// <summary>
+    /// The hold's position.
+    /// </summary>
     public SerializableVector3 Position;
+    
+    /// <summary>
+    /// The hold's normal.
+    /// </summary>
     public SerializableVector3 Normal;
 
+    /// <summary>
+    /// Whether the hold is horizontally flipped.
+    /// </summary>
     public bool Flipped;
+    
+    /// <summary>
+    /// The hold's rotation relative to its normal on the wall.
+    /// </summary>
     public float Rotation;
 }
 
@@ -31,7 +45,7 @@ public class HoldStateManager : MonoBehaviour
     /// <summary>
     /// The currently placed holds.
     /// </summary>
-    public GameObject[] PlacedHolds => _placedHolds.Keys.ToArray();
+    public IEnumerable<GameObject> PlacedHolds => _placedHolds.Keys;
 
     /// <summary>
     /// The currently held hold.
@@ -224,6 +238,8 @@ public class HoldStateManager : MonoBehaviour
     {
         var state = GetHoldState(gameObject);
         state.Flipped = !state.Flipped;
+        
+        // we have to flip the rotation too to actually make it horizontally flipped
         state.Rotation = (float)(2 * Math.PI - state.Rotation);
         
         ApplyHoldState(gameObject, state);

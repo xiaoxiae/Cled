@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// A class for managing both session-based and persistent preferences.
+/// </summary>
 public static class Preferences
 {
     private const float DefaultShadowStrength = 0.2f;
@@ -73,7 +76,7 @@ public static class Preferences
     public static bool Initialized { get; set; }
 
     /// <summary>
-    /// Reset settings to default.
+    /// Reset preferences to default.
     /// </summary>
     public static void SetToDefault()
     {

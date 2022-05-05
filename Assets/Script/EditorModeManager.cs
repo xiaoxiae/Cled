@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A class for managing the current mode the editor is in.
+/// </summary>
 public class EditorModeManager : MonoBehaviour
 {
     /// <summary>

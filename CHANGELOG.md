@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.2.1] - TODO
+
+### Changed
+- Improve code quality and documentation.
+- Improve application speed (lots of arrays/lists to IEnumerables).
+- Fix player position not being correctly reset when failing to load.
+- Fix toolbar popping up when failing to load.
+- Fix light intensity and shadow strength not being correctly updated when importing.
+- Don't deinitialize when failing to import on the preferences step.
+
+
 ## [2.2.0] - 2022-05-05
 
 ### Added

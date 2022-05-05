@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 /// <summary>
 /// A class for a collection of holds that form it.
@@ -136,6 +135,9 @@ public class RouteManager : MonoBehaviour
     public readonly HashSet<GameObject> StartingHolds = new();
     public readonly HashSet<GameObject> EndingHolds = new();
 
+    public GameObject StartMarkerPrefab;
+    public GameObject EndMarkerPrefab;
+
     private Route _selectedRoute;
 
     public Route SelectedRoute
@@ -149,9 +151,6 @@ public class RouteManager : MonoBehaviour
                 callback();
         }
     }
-
-    public GameObject StartMarkerPrefab;
-    public GameObject EndMarkerPrefab;
 
     private readonly List<Action> _routesChangedCallbacks = new();
 
