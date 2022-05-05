@@ -159,6 +159,9 @@ public class EditorController : MonoBehaviour
             if (Input.GetMouseButton(2))
                 holdStateManager.RotateHeld(Input.GetAxis("Mouse X") * HoldRotationSensitivity * Time.deltaTime);
 
+        }
+
+        if (editorModeManager.CurrentMode is EditorModeManager.Mode.Holding or EditorModeManager.Mode.Normal) {
             var mouseDelta = Input.mouseScrollDelta.y;
 
             if (mouseDelta != 0)
