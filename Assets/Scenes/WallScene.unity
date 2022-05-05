@@ -1468,6 +1468,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549f6eddfb36599d0b401de67fa1e022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  holdPickerMenu: {fileID: 693249231}
+  globalStyleSheets: {fileID: 7433441132597879392, guid: e11f46a4365fa2bd09a3a61054c87ebf, type: 3}
 --- !u!114 &1516719032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1483,7 +1485,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 02b6094d7fdb63d779092e46f982ca1a, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: fdb19173954c8503cae6ec5e6a0bd93f, type: 3}
-  m_SortingOrder: 10
+  m_SortingOrder: 1
 --- !u!4 &1516719033
 Transform:
   m_ObjectHideFlags: 0

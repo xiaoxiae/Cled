@@ -57,6 +57,10 @@ Label:disabled { color: var(--disabled-text-color); }
 .medium-vspace { height: var(--medium-space); }
 .large-vspace { height: var(--large-space); }
 
+/* --- BOTTOM BAR HOLD --- */
+.bottom-bar-primary-hold { width: 100px; height: 100px; margin: 10px; border-width: 5px; border-color: var(--button-color); }
+.bottom-bar-secondary-hold { width: 75px; height: 75px; margin: 10px; border-width: 5px; border-color: var(--button-color); }
+
 /* --- HOLD PICKER --- */
 .hold-picker-hold { width: 150px; height: 150px; margin: 10px; border-width: 5px; }
 .hold-picker-label { -unity-text-align: middle-center; white-space: normal; justify-content: center; padding: 8px; }

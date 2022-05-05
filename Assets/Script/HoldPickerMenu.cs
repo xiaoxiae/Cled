@@ -21,11 +21,12 @@ public class HoldPickerMenu : MonoBehaviour
     private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
 
     // a dictionary for mapping hold blueprints to grid tiles
-    private readonly Dictionary<HoldBlueprint, VisualElement> _holdToGridDictionary = new();
+    // the HoldToGrid one is public, because bottom bar uses it
+    public readonly Dictionary<HoldBlueprint, VisualElement> HoldToGridDictionary = new();
     private readonly Dictionary<VisualElement, HoldBlueprint> _gridToHoldDictionary = new();
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
-    private readonly Dictionary<VisualElement, Texture2D> _gridTextureDictionary = new();
+    public readonly Dictionary<VisualElement, Texture2D> GridTextureDictionary = new();
 
     // store all holds
     private HoldBlueprint[] _allHolds = { };
@@ -73,7 +74,7 @@ public class HoldPickerMenu : MonoBehaviour
     /// Return the currently picked holds, in the order they're displayed in the menu.
     /// </summary>
     public List<HoldBlueprint> GetPickedHolds() =>
-        OrderBlueprintsToGrid(_holdToGridDictionary.Keys.Where(x => _gridStateDictionary[_holdToGridDictionary[x]])
+        OrderBlueprintsToGrid(HoldToGridDictionary.Keys.Where(x => _gridStateDictionary[HoldToGridDictionary[x]])
             .ToArray()).ToList();
 
     /// <summary>
@@ -106,7 +107,7 @@ public class HoldPickerMenu : MonoBehaviour
 
         foreach (var hold in _allHolds)
             if (!holds.Contains(hold))
-                Deselect(_holdToGridDictionary[hold]);
+                Deselect(HoldToGridDictionary[hold]);
 
         FillGrid(holds);
         
@@ -186,7 +187,7 @@ public class HoldPickerMenu : MonoBehaviour
         {
             var item = new VisualElement();
 
-            _holdToGridDictionary[blueprint] = item;
+            HoldToGridDictionary[blueprint] = item;
             _gridToHoldDictionary[item] = blueprint;
 
             _gridStateDictionary[item] = false;
@@ -199,14 +200,14 @@ public class HoldPickerMenu : MonoBehaviour
                 videoPlayer.url = blueprint.PreviewVideoPath;
 
                 renderTexture.DiscardContents();
-                Graphics.Blit(_gridTextureDictionary[item], renderTexture);
+                Graphics.Blit(GridTextureDictionary[item], renderTexture);
 
                 item.style.backgroundImage = _videoBackground;
             });
 
             item.RegisterCallback<MouseLeaveEvent>(evt =>
             {
-                item.style.backgroundImage = _gridTextureDictionary[item];
+                item.style.backgroundImage = GridTextureDictionary[item];
             });
 
             item.RegisterCallback<ClickEvent>(evt =>
@@ -219,10 +220,10 @@ public class HoldPickerMenu : MonoBehaviour
                 _doubleTriggerTimestamp = evt.timestamp;
             });
 
-            _gridTextureDictionary[item] = LoadTexture(blueprint.PreviewImagePath);
+            GridTextureDictionary[item] = LoadTexture(blueprint.PreviewImagePath);
 
             item.style.backgroundImage =
-                new StyleBackground(Background.FromTexture2D(_gridTextureDictionary[item]));
+                new StyleBackground(Background.FromTexture2D(GridTextureDictionary[item]));
         }
 
         FillGrid(_allHolds);
@@ -230,8 +231,8 @@ public class HoldPickerMenu : MonoBehaviour
         // done like this to prevent issue where the border is not visible
         foreach (HoldBlueprint blueprint in _allHolds)
         {
-            Select(_holdToGridDictionary[blueprint]);
-            Deselect(_holdToGridDictionary[blueprint]);
+            Select(HoldToGridDictionary[blueprint]);
+            Deselect(HoldToGridDictionary[blueprint]);
         }
     
         var totalHoldCounter = _root.Q<Label>("total-hold-counter");
@@ -256,7 +257,7 @@ public class HoldPickerMenu : MonoBehaviour
     /// Select the hold.
     /// </summary>
     public void Select(HoldBlueprint blueprint, bool switchHeld = true) =>
-        Select(_holdToGridDictionary[blueprint], switchHeld);
+        Select(HoldToGridDictionary[blueprint], switchHeld);
 
     /// <summary>
     /// Select a grid element.
@@ -293,7 +294,7 @@ public class HoldPickerMenu : MonoBehaviour
 
         foreach (var hold in _allHolds)
         {
-            var holdItem = _holdToGridDictionary[hold];
+            var holdItem = HoldToGridDictionary[hold];
 
             if (hold == CurrentlySelectedHold)
             {
@@ -371,7 +372,7 @@ public class HoldPickerMenu : MonoBehaviour
     private void ClearGrid()
     {
         foreach (var blueprint in _filteredHoldIDs)
-            _grid.Remove(_holdToGridDictionary[blueprint]);
+            _grid.Remove(HoldToGridDictionary[blueprint]);
     }
 
     /// <summary>
@@ -390,7 +391,7 @@ public class HoldPickerMenu : MonoBehaviour
         ClearGrid();
 
         foreach (var blueprint in OrderBlueprintsToGrid(holdBlueprints))
-            _grid.Add(_holdToGridDictionary[blueprint]);
+            _grid.Add(HoldToGridDictionary[blueprint]);
 
         _filteredHoldIDs = holdBlueprints;
     }
@@ -445,12 +446,12 @@ public class HoldPickerMenu : MonoBehaviour
             if (_filteredHoldIDs.Length == GetPickedHolds().Count)
             {
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Deselect(_holdToGridDictionary[hold]);
+                    Deselect(HoldToGridDictionary[hold]);
             }
             else
             {
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Select(_holdToGridDictionary[hold], false);
+                    Select(HoldToGridDictionary[hold], false);
             }
         }
 
@@ -470,13 +471,13 @@ public class HoldPickerMenu : MonoBehaviour
 
         _filteredHoldIDs = new HoldBlueprint[] { };
         _gridStateDictionary.Clear();
-        _holdToGridDictionary.Clear();
+        HoldToGridDictionary.Clear();
         _gridToHoldDictionary.Clear();
 
-        foreach (var texture in _gridTextureDictionary.Values)
+        foreach (var texture in GridTextureDictionary.Values)
             Destroy(texture);
 
-        _gridTextureDictionary.Clear();
+        GridTextureDictionary.Clear();
 
         Close();
     }
@@ -506,7 +507,7 @@ public class HoldPickerMenu : MonoBehaviour
     /// <summary>
     /// Return the hold after the current one.
     /// </summary>
-    public HoldBlueprint GetNextHold() => GetFromCurrentByDelta(-1);
+    public HoldBlueprint GetNextHold() => GetFromCurrentByDelta(1);
 
     /// <summary>
     /// Move to the previous filtered hold.
@@ -525,6 +526,9 @@ public class HoldPickerMenu : MonoBehaviour
     {
         var pickedHolds = GetPickedHolds();
 
+        if (pickedHolds.Count == 0)
+            return null;
+        
         int selectedIndex = pickedHolds.IndexOf(CurrentlySelectedHold);
         int newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
 
