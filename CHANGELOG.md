@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.2.0] - TODO
+
+### Changed
+- Improve hold picker UI.
+- Fix total hold counter being always set to 0.
+- Fix general popup position being incorrect.
+- Rename Total selected holds label to just Selected holds.
+
+### Removed
+- Remove filtered selected label.
+
+
 ## [2.1.0] - 2022-05-05
 
 ### Changed

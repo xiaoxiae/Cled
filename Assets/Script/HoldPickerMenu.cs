@@ -40,11 +40,8 @@ public class HoldPickerMenu : MonoBehaviour
     private Button _deselectAllButton;
     private Button _deselectFilteredButton;
 
-    private Label _totalHoldCounter;
     private Label _filteredHoldCounter;
-
     private Label _totalSelectedHoldCounter;
-    private Label _filteredSelectedHoldCounter;
 
     private DropdownField _colorDropdown;
     private DropdownField _typeDropdown;
@@ -106,13 +103,14 @@ public class HoldPickerMenu : MonoBehaviour
 
             return true;
         });
-        
+
         foreach (var hold in _allHolds)
             if (!holds.Contains(hold))
                 Deselect(_holdToGridDictionary[hold]);
 
         FillGrid(holds);
-        UpdateSelectCounters();
+        
+        Changed();
     }
 
     /// <summary>
@@ -142,8 +140,6 @@ public class HoldPickerMenu : MonoBehaviour
                 Deselect(bp);
         };
 
-        _totalHoldCounter = _root.Q<Label>("total-hold-counter");
-
         _filteredHoldCounter = _root.Q<Label>("filtered-hold-counter");
 
         _colorDropdown = _root.Q<DropdownField>("color-dropdown");
@@ -152,9 +148,10 @@ public class HoldPickerMenu : MonoBehaviour
         _typeDropdown = _root.Q<DropdownField>("type-dropdown");
 
         _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
-        _filteredSelectedHoldCounter = _root.Q<Label>("filtered-selected-hold-counter");
-
-        _totalHoldCounter.text = holdLoader.HoldCount.ToString();
+        
+        AddChangedCallback(UpdateItemBorders);
+        AddChangedCallback(UpdateSelectCounters);
+        AddChangedCallback(UpdateFilterCounters);
     }
 
     /// <summary>
@@ -236,6 +233,9 @@ public class HoldPickerMenu : MonoBehaviour
             Select(_holdToGridDictionary[blueprint]);
             Deselect(_holdToGridDictionary[blueprint]);
         }
+    
+        var totalHoldCounter = _root.Q<Label>("total-hold-counter");
+        totalHoldCounter.text = holdLoader.HoldCount.ToString();
     }
 
     /// <summary>
@@ -250,9 +250,6 @@ public class HoldPickerMenu : MonoBehaviour
     {
         _totalSelectedHoldCounter.text =
             _gridStateDictionary.Values.Count(value => value).ToString();
-
-        _filteredSelectedHoldCounter.text =
-            _filteredHoldIDs.Count(value => _gridStateDictionary[_holdToGridDictionary[value]]).ToString();
     }
 
     /// <summary>
@@ -284,9 +281,7 @@ public class HoldPickerMenu : MonoBehaviour
 
         _gridStateDictionary[item] = true;
 
-        UpdateItemBorders();
-
-        UpdateSelectCounters();
+        Changed();
     }
 
     /// <summary>
@@ -335,7 +330,7 @@ public class HoldPickerMenu : MonoBehaviour
         {
             // switch to another hold if there are still some leftover
             if (GetPickedHolds().Count != 1)
-                MoveByDelta(-1);
+                MoveCurrentByDelta(-1);
             else
                 CurrentlySelectedHold = null;
 
@@ -353,9 +348,7 @@ public class HoldPickerMenu : MonoBehaviour
 
         _gridStateDictionary[item] = false;
 
-        UpdateItemBorders();
-
-        UpdateSelectCounters();
+        Changed();
     }
 
     /// <summary>
@@ -400,8 +393,6 @@ public class HoldPickerMenu : MonoBehaviour
             _grid.Add(_holdToGridDictionary[blueprint]);
 
         _filteredHoldIDs = holdBlueprints;
-
-        UpdateFilterCounters();
     }
 
     /// <summary>
@@ -442,7 +433,6 @@ public class HoldPickerMenu : MonoBehaviour
 
         // TODO: while this does fix it, it is pretty buggy
         // Input.ResetInputAxes();
-    
     }
 
     void Update()
@@ -491,25 +481,62 @@ public class HoldPickerMenu : MonoBehaviour
         Close();
     }
 
+    private readonly List<Action> _addedChangedCallbacks = new();
+
+    /// <summary>
+    /// Add a callback for when the filtered/selected holds were changed.
+    /// </summary>
+    public void AddChangedCallback(Action callback) => _addedChangedCallbacks.Add(callback);
+
+    /// <summary>
+    /// Called when the filtered/selected holds change to invoke their callbacks.
+    /// </summary>
+    private void Changed()
+    {
+        foreach (var callback in _addedChangedCallbacks)
+            callback();
+    }
+    
+
+    /// <summary>
+    /// Return the hold before the current one.
+    /// </summary>
+    public HoldBlueprint GetPreviousHold() => GetFromCurrentByDelta(-1);
+    
+    /// <summary>
+    /// Return the hold after the current one.
+    /// </summary>
+    public HoldBlueprint GetNextHold() => GetFromCurrentByDelta(-1);
+
     /// <summary>
     /// Move to the previous filtered hold.
     /// </summary>
-    public void MoveToPreviousHold() => MoveByDelta(-1);
+    public void MoveToPreviousHold() => MoveCurrentByDelta(-1);
 
     /// <summary>
     /// Move to the next filtered hold.
     /// </summary>
-    public void MoveToNextHold() => MoveByDelta(1);
+    public void MoveToNextHold() => MoveCurrentByDelta(1);
 
-    private void MoveByDelta(int delta)
+    /// <summary>
+    /// Get the hold off by delta to the current one.
+    /// </summary>
+    private HoldBlueprint GetFromCurrentByDelta(int delta)
     {
         var pickedHolds = GetPickedHolds();
 
         int selectedIndex = pickedHolds.IndexOf(CurrentlySelectedHold);
         int newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
 
-        CurrentlySelectedHold = pickedHolds[newIndex];
+        return pickedHolds[newIndex];
+    }
 
-        UpdateItemBorders();
+    /// <summary>
+    /// Move the current hold by delta units.
+    /// </summary>
+    private void MoveCurrentByDelta(int delta)
+    {
+        CurrentlySelectedHold = GetFromCurrentByDelta(delta);
+        Changed();
     }
 }
