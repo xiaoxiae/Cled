@@ -46,8 +46,9 @@ public class PauseMenu : MonoBehaviour
         _document = GetComponent<UIDocument>();
         Unpause();
     }
-    
-    void Start() {
+
+    void Start()
+    {
         if (!Preferences.Initialized)
             PauseType(global::PauseType.Normal);
     }
@@ -67,7 +68,7 @@ public class PauseMenu : MonoBehaviour
         // unpause normal if it would be the last pause type
         if (_pauses.Count == 1 && _pauses.Contains(global::PauseType.Normal))
             UnpauseType(global::PauseType.Normal);
-        
+
         if (_pauses.Count == 0)
             Unpause();
     }

@@ -33,7 +33,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
     public readonly Dictionary<VisualElement, Texture2D> GridTextureDictionary = new();
 
     // store filtered holds
-    private IEnumerable<HoldBlueprint> _filteredHoldIDs = new List<HoldBlueprint>();
+    private List<HoldBlueprint> _filteredHoldIDs = new();
 
     // UI elements
     private VisualElement _root;
@@ -222,6 +222,8 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
                 new StyleBackground(Background.FromTexture2D(GridTextureDictionary[item]));
         }
 
+        Debug.Log(holdLoader.Holds.Count());
+        
         FillGrid(holdLoader.Holds);
 
         // done like this to prevent issue where the border is not visible
@@ -238,7 +240,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
     /// <summary>
     /// Update the counters that change when filtered holds are changed.
     /// </summary>
-    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Count().ToString();
+    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Count.ToString();
 
     /// <summary>
     /// Update the counters that change when filtered holds are selected/deselected.
@@ -389,7 +391,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
         foreach (var blueprint in OrderBlueprintsToGrid(holdBlueprints))
             _grid.Add(HoldToGridDictionary[blueprint]);
 
-        _filteredHoldIDs = holdBlueprints;
+        _filteredHoldIDs = holdBlueprints.ToList();
     }
 
     /// <summary>
@@ -439,7 +441,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
             pauseMenu.IsTypePaused(PauseType.HoldPicker))
         {
             // if all of the holds are selected, deselect them instead
-            if (_filteredHoldIDs.Count() == GetPickedHolds().Count)
+            if (_filteredHoldIDs.Count == GetPickedHolds().Count)
             {
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
                     Deselect(HoldToGridDictionary[hold]);
@@ -462,15 +464,14 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
     public void Clear()
     {
         ClearGrid();
-
-        _filteredHoldIDs = new List<HoldBlueprint>();
+        
+        _filteredHoldIDs.Clear();
         _gridStateDictionary.Clear();
         HoldToGridDictionary.Clear();
         _gridToHoldDictionary.Clear();
 
         foreach (var texture in GridTextureDictionary.Values)
             Destroy(texture);
-
         GridTextureDictionary.Clear();
 
         Close();

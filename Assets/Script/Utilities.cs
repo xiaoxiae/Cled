@@ -159,3 +159,153 @@ public interface IClosable {
 public interface IAcceptable {
     public void Accept();
 }
+
+/// <summary>
+/// By default, serialization emits all public fields, which includes things like magnitude and normalized form.
+/// This class ensures that only x, y and z coordinates of the Vector3 are stored and the serialization looks nice.
+/// There is probably a different way to do this, but this works well enough.
+/// </summary>
+public struct SerializableVector3
+{
+    public float x;
+    public float y;
+    public float z;
+
+    public SerializableVector3(float rX, float rY, float rZ)
+    {
+        x = rX;
+        y = rY;
+        z = rZ;
+    }
+
+    /// <summary>
+    /// Automatic conversion from SerializableVector3 to Vector3.
+    /// </summary>
+    public static implicit operator Vector3(SerializableVector3 rValue) => new(rValue.x, rValue.y, rValue.z);
+
+    /// <summary>
+    /// Automatic conversion from Vector3 to SerializableVector3.
+    /// </summary>
+    public static implicit operator SerializableVector3(Vector3 rValue) => new(rValue.x, rValue.y, rValue.z);
+}
+
+/// <summary>
+/// Same as SerializableVector2.
+/// </summary>
+public struct SerializableVector2
+{
+    public float x;
+    public float y;
+
+    public SerializableVector2(float rX, float rY)
+    {
+        x = rX;
+        y = rY;
+    }
+
+    /// <summary>
+    /// Automatic conversion from SerializableVector3 to Vector3.
+    /// </summary>
+    public static implicit operator Vector2(SerializableVector2 rValue) => new(rValue.x, rValue.y);
+
+    /// <summary>
+    /// Automatic conversion from Vector3 to SerializableVector3.
+    /// </summary>
+    public static implicit operator SerializableVector2(Vector2 rValue) => new(rValue.x, rValue.y);
+}
+
+
+/// <summary>
+/// The object that gets serialized when exporting.
+/// </summary>
+public class SerializableState
+{
+    public string Version;
+
+    // player
+    public SerializablePlayer Player;
+
+    // paths to wall and models
+    public string WallModelPath;
+    public string HoldModelsPath;
+
+    // given a hold instance, store its id and state
+    public Dictionary<string, SerializableHold> Holds;
+
+    // all routes
+    public List<SerializableRoute> Routes;
+
+    // starting/ending holds
+    public List<string> StartingHoldIDs;
+    public List<string> EndingHoldIDs;
+
+    // selected holds
+    public List<string> SelectedHoldBlueprintIDs;
+
+    // lights
+    public SerializableLights Lights;
+
+    // capture
+    public SerializableCaptureSettings CaptureSettings;
+}
+
+/// <summary>
+/// Image capture settings.
+/// </summary>
+public class SerializableCaptureSettings
+{
+    public string ImagePath;
+    public int ImageSupersize;
+}
+
+/// <summary>
+/// A route that can be serialized.
+/// </summary>
+public class SerializableRoute
+{
+    public List<string> HoldIDs;
+
+    public string Name;
+    public string Grade;
+    public string Zone;
+    public string Setter;
+}
+
+/// <summary>
+/// A hold that can be serialized.
+/// </summary>
+public class SerializableHold
+{
+    public string BlueprintId;
+    public HoldState State;
+}
+
+/// <summary>
+/// Lights.
+/// </summary>
+public class SerializableLights
+{
+    // positions of the lights
+    public List<SerializableVector3> Positions;
+
+    // light parameters
+    public float Intensity;
+    public float ShadowStrength;
+}
+
+/// <summary>
+/// Player.
+/// </summary>
+public class SerializablePlayer
+{
+    // the player position and orientation
+    public SerializableVector3 Position { get; set; }
+    public SerializableVector2 Orientation { get; set; }
+
+    // whether the player is flying
+    public bool Flying { get; set; }
+
+    // whether the player's flashlight is on
+    public bool Light;
+}
+

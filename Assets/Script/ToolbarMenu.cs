@@ -8,7 +8,9 @@ using UnityEngine.UIElements;
 
 public class ToolbarMenu : MonoBehaviour
 {
-    public ImportExportManager importExportManager;
+    public Importer importer;
+    public Exporter exporter;
+    
     public PopupMenu popupMenu;
     public PauseMenu pauseMenu;
     public LightManager lightManager;
@@ -182,7 +184,7 @@ public class ToolbarMenu : MonoBehaviour
         if (String.IsNullOrWhiteSpace(Preferences.LastOpenWallPath))
             return false;
 
-        if (!importExportManager.Export(Preferences.LastOpenWallPath))
+        if (!exporter.Export(Preferences.LastOpenWallPath))
             return false;
 
         return true;
@@ -253,7 +255,7 @@ public class ToolbarMenu : MonoBehaviour
 
         path = Utilities.EnsureExtension(path, "yaml");
 
-        if (!importExportManager.Export(path))
+        if (!exporter.Export(path))
             return false;
 
         Preferences.LastOpenWallPath = path;
@@ -357,12 +359,12 @@ public class ToolbarMenu : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        if (!importExportManager.ImportPreferences(paths[0]))
+        if (!importer.ImportPreferences(paths[0]))
             return;
 
         Preferences.LastOpenWallPath = paths[0];
 
-        importExportManager.ImportState(Preferences.LastOpenWallPath);
+        importer.ImportState(Preferences.LastOpenWallPath);
     }
 
     /// <summary>
@@ -400,7 +402,7 @@ public class ToolbarMenu : MonoBehaviour
 
         Preferences.LastOpenWallPath = null;
 
-        importExportManager.ImportFromNew(
+        importer.ImportFromNew(
             Preferences.CurrentWallModelPath,
             Preferences.CurrentHoldModelsPath
         );

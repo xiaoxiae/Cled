@@ -4,7 +4,7 @@ using Vector3 = UnityEngine.Vector3;
 /// <summary>
 /// A class that controls the player's movement.
 /// </summary>
-public class PlayerController : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
     public CharacterController controller;
     
