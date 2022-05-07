@@ -4,7 +4,7 @@ using Vector3 = UnityEngine.Vector3;
 /// <summary>
 /// A class that controls the player's movement.
 /// </summary>
-public class MovementController : MonoBehaviour
+public class MovementController : MonoBehaviour, IResetable
 {
     public CharacterController controller;
     
@@ -54,7 +54,7 @@ public class MovementController : MonoBehaviour
     /// <summary>
     /// Reset the position of the player
     /// </summary>
-    public void ResetPosition()
+    public void Reset()
     {
         // TODO: this is a bit ugly, but the player is 1.8m long and will likely never change...
         Position = new Vector3(0, 0.9f, 0);
@@ -73,8 +73,8 @@ public class MovementController : MonoBehaviour
         // reset position when falling out of the map
         if (transform.position.y < FallThreshold)
         {
-            ResetPosition();
-            cameraController.ResetOrientation();
+            Reset();
+            cameraController.Reset();
             return;
         }
 

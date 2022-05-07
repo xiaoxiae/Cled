@@ -10,7 +10,7 @@ using Button = UnityEngine.UIElements.Button;
 /// <summary>
 /// The controller for the hold picker menu.
 /// </summary>
-public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
+public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 {
     // manager-related things
     public PauseMenu pauseMenu;
@@ -461,7 +461,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable
     /// <summary>
     /// Clear the hold picker menu, destroying the hold textures in the process.
     /// </summary>
-    public void Clear()
+    public void Reset()
     {
         ClearGrid();
         

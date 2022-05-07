@@ -299,10 +299,10 @@ public class EditorController : MonoBehaviour
             }
         }
 
-        // secondary highlight the hold we're looking at
+        // highlight the route we're looking at
         highlightManager.HighlightRoute(route);
 
-        // highlight the hold we're looking at
+        // main highlight the hold we're looking at
         highlightManager.Highlight(hold, HighlightType.Main);
     }
 

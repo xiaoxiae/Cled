@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// A class for controlling the movement of the camera.
 /// </summary>
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, IResetable
 {
 	public EditorModeManager editorModeManager;
 	public PauseMenu pauseMenu;
@@ -64,5 +64,5 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Reset the camera orientation.
     /// </summary>
-    public void ResetOrientation() => Orientation = Vector2.zero;
+    public void Reset() => Orientation = Vector2.zero;
 }

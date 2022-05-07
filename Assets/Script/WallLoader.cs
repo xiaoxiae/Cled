@@ -20,7 +20,7 @@ public class WallMetadata
     public List<string> Zones { get; }
 }
 
-public class WallLoader : MonoBehaviour
+public class WallLoader : MonoBehaviour, IResetable
 {
     public GameObject Wall;
     public WallMetadata Metadata;
@@ -58,7 +58,7 @@ public class WallLoader : MonoBehaviour
         collider.sharedMesh = mf.mesh;
     }
 
-    public void Clear()
+    public void Reset()
     {
         if (Wall)
             Destroy(Wall);

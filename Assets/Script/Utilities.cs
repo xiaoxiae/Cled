@@ -160,6 +160,14 @@ public interface IAcceptable {
     public void Accept();
 }
 
+
+/// <summary>
+/// An interface for things that can be reset to their initial state.
+/// </summary>
+public interface IResetable {
+    public void Reset();
+}
+
 /// <summary>
 /// By default, serialization emits all public fields, which includes things like magnitude and normalized form.
 /// This class ensures that only x, y and z coordinates of the Vector3 are stored and the serialization looks nice.

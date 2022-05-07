@@ -21,7 +21,7 @@ public enum PauseType
 /// <summary>
 /// A manager that handles pausing due to various reasons.
 /// </summary>
-public class PauseMenu : MonoBehaviour
+public class PauseMenu : MonoBehaviour, IResetable
 {
     private readonly HashSet<PauseType> _pauses = new();
 
@@ -161,4 +161,6 @@ public class PauseMenu : MonoBehaviour
         UpdatePauseScreenPosition();
         Unpause();
     }
+
+    public void Reset() => UnpauseAll();
 }

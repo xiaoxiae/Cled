@@ -9,7 +9,7 @@ using YamlDotNet.Serialization;
 /// <summary>
 /// The class that takes care of importing and exporting the editor state.
 /// </summary>
-public class Importer : MonoBehaviour
+public class Importer : MonoBehaviour, IResetable
 {
     public HoldStateManager holdStateManager;
     public HoldPickerMenu holdPickerMenu;
@@ -19,6 +19,7 @@ public class Importer : MonoBehaviour
     public LightManager lightManager;
     public PauseMenu pauseMenu;
     public PopupMenu popupMenu;
+    public BottomBar bottomBar;
     public LoadingScreenMenu loadingScreenMenu;
 
     public MovementController movementController;
@@ -36,21 +37,20 @@ public class Importer : MonoBehaviour
     }
 
     /// <summary>
-    /// Clear the editor state.
+    /// Reset the editor state.
     /// </summary>
-    private void Clear()
+    public void Reset()
     {
-        holdStateManager.Clear();
-        holdLoader.Clear();
-        routeManager.Clear();
-        wallLoader.Clear();
-        holdPickerMenu.Clear();
-        lightManager.Clear();
-
-        movementController.ResetPosition();
-        cameraController.ResetOrientation();
-
-        pauseMenu.UnpauseAll();
+        holdStateManager.Reset();
+        holdLoader.Reset();
+        routeManager.Reset();
+        wallLoader.Reset();
+        holdPickerMenu.Reset();
+        lightManager.Reset();
+        pauseMenu.Reset();
+        movementController.Reset();
+        cameraController.Reset();
+        bottomBar.Reset();
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class Importer : MonoBehaviour
     /// </summary>
     private void CloseWithException(string action, string errorMessage)
     {
-        Clear();
+        Reset();
         Preferences.Initialized = false;
         
         popupMenu.CreateInfoPopup(
@@ -97,7 +97,7 @@ public class Importer : MonoBehaviour
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
 
-        Clear();
+        Reset();
 
         loadingScreenMenu.Show("Loading the wall...");
         yield return new WaitForEndOfFrame();
@@ -236,7 +236,7 @@ public class Importer : MonoBehaviour
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
 
-        Clear();
+        Reset();
 
         loadingScreenMenu.Show("Loading the wall...");
         yield return new WaitForEndOfFrame();
@@ -276,8 +276,8 @@ public class Importer : MonoBehaviour
         {
             holdPickerMenu.Initialize();
             
-            movementController.ResetPosition();
-            cameraController.ResetOrientation();
+            movementController.Reset();
+            cameraController.Reset();
 
             Preferences.SetToDefault();
 

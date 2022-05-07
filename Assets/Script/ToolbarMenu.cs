@@ -53,7 +53,7 @@ public class ToolbarMenu : MonoBehaviour
         addLightingButton.clicked += lightManager.AddLightAtPlayer;
 
         var clearLightingButton = _root.Q<Button>("clear-lighting-button");
-        clearLightingButton.clicked += lightManager.Clear;
+        clearLightingButton.clicked += lightManager.Reset;
 
         // route view 
         var routeViewToggle = _root.Q<Toggle>("routes-toggle");

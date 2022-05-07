@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Manages the player light and the lights placed around the room.
 /// </summary>
-public class LightManager : MonoBehaviour
+public class LightManager : MonoBehaviour, IResetable
 {
     public GameObject playerLight;
 
@@ -40,7 +40,7 @@ public class LightManager : MonoBehaviour
     /// <summary>
     /// Clear all of the lights and reset the player light.
     /// </summary>
-    public void Clear()
+    public void Reset()
     {
         foreach (GameObject light in _lights)
             DestroyImmediate(light);

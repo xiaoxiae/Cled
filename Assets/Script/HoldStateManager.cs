@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -33,7 +32,7 @@ public class HoldState
 /// <summary>
 /// Manages the state of the holds on the wall (even the one held).
 /// </summary>
-public class HoldStateManager : MonoBehaviour
+public class HoldStateManager : MonoBehaviour, IResetable
 {
     private readonly Dictionary<GameObject, (HoldBlueprint holdBlueprint, HoldState holdState)> _placedHolds = new();
 
@@ -248,7 +247,7 @@ public class HoldStateManager : MonoBehaviour
     /// <summary>
     /// Clear all of the instances of the holds, destroying them in the process.
     /// </summary>
-    public void Clear()
+    public void Reset()
     {
         foreach (var (placedHold, _) in _placedHolds)
             DestroyImmediate(placedHold);

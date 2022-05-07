@@ -50,7 +50,7 @@ public class HoldBlueprint
 /// A class that handles various hold-related things, such as loading them, filtering them
 /// and creating hold objects out of them.
 /// </summary>
-public class HoldLoader : MonoBehaviour
+public class HoldLoader : MonoBehaviour, IResetable
 {
     private readonly IDictionary<string, HoldBlueprint> _holds = new Dictionary<string, HoldBlueprint>();
 
@@ -174,7 +174,7 @@ public class HoldLoader : MonoBehaviour
     /// <summary>
     /// Remove all holds, destroying them in the process.
     /// </summary>
-    public void Clear()
+    public void Reset()
     {
         foreach (var (key, value) in _holds)
             DestroyImmediate(value.Model);

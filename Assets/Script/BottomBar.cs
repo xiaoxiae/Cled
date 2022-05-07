@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 /// A class for controlling the bottom bar.
 /// Gets rebuilt each time the hold picker changes its selection.
 /// </summary>
-public class BottomBar : MonoBehaviour
+public class BottomBar : MonoBehaviour, IResetable
 {
     public HoldPickerMenu holdPickerMenu;
 
@@ -29,12 +29,14 @@ public class BottomBar : MonoBehaviour
         UpdateBar();
     }
 
+    public void Reset() => _bottomBar.Clear();
+
     /// <summary>
     /// Update the bottom bar according to the currently selected holds.
     /// </summary>
     void UpdateBar()
     {
-        _bottomBar.Clear();
+        Reset();
 
         var previous = holdPickerMenu.GetPreviousHold();
         var current = holdPickerMenu.CurrentlySelectedHold;

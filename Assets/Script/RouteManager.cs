@@ -128,7 +128,7 @@ public class Route
 /// However, if a hold is right click selected, it will automatically create a route of one hold.
 /// This route will, however, not be a real route, even if it is implemented as one, since lone holds don't substitute routes.
 /// </summary>
-public class RouteManager : MonoBehaviour
+public class RouteManager : MonoBehaviour, IResetable
 {
     private readonly HashSet<Route> _routes = new();
 
@@ -425,7 +425,7 @@ public class RouteManager : MonoBehaviour
         RoutesChanged();
     }
 
-    public void Clear()
+    public void Reset()
     {
         _routes.Clear();
 
