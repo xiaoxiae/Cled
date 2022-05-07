@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Controls UI components with some common key bindings (like Escape or Enter).
+///     Controls UI components with some common key bindings (like Escape or Enter).
 /// </summary>
 public class UIKeyboardController : MonoBehaviour
 {
@@ -10,31 +9,29 @@ public class UIKeyboardController : MonoBehaviour
     public RouteSettingsMenu routeSettingsMenu;
     public SettingsMenu settingsMenu;
     public PopupMenu popupMenu;
-    
+
     public PauseMenu pauseMenu;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
             // else close popups first
-            if (pauseMenu.IsTypePaused(PauseType.Popup)) {
+            if (pauseMenu.IsTypePaused(PauseType.Popup))
+            {
                 popupMenu.Accept();
                 return;
             }
-                
+
             // then route settings
-            if (pauseMenu.IsTypePaused(PauseType.RouteSettings)) {
+            if (pauseMenu.IsTypePaused(PauseType.RouteSettings))
+            {
                 routeSettingsMenu.Accept();
                 return;
             }
-            
+
             // then general settings
-            if (pauseMenu.IsTypePaused(PauseType.Settings)) {
-                settingsMenu.Accept();
-                return;
-            }
+            if (pauseMenu.IsTypePaused(PauseType.Settings)) settingsMenu.Accept();
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -44,36 +41,37 @@ public class UIKeyboardController : MonoBehaviour
                 pauseMenu.PauseType(PauseType.Normal);
                 return;
             }
-            
+
             // else close popups first
-            if (pauseMenu.IsTypePaused(PauseType.Popup)) {
+            if (pauseMenu.IsTypePaused(PauseType.Popup))
+            {
                 popupMenu.Close();
                 return;
             }
-            
+
             // then hold picker
-            if (pauseMenu.IsTypePaused(PauseType.HoldPicker)) {
+            if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
+            {
                 holdPickerMenu.Close();
                 return;
             }
-                
+
             // then route settings
-            if (pauseMenu.IsTypePaused(PauseType.RouteSettings)) {
+            if (pauseMenu.IsTypePaused(PauseType.RouteSettings))
+            {
                 routeSettingsMenu.Close();
                 return;
             }
-            
+
             // then general settings
-            if (pauseMenu.IsTypePaused(PauseType.Settings)) {
+            if (pauseMenu.IsTypePaused(PauseType.Settings))
+            {
                 settingsMenu.Close();
                 return;
             }
-            
+
             // then normal pause
-            if (pauseMenu.IsTypePaused(PauseType.Normal)) {
-                pauseMenu.UnpauseType(PauseType.Normal);
-                return;
-            }
+            if (pauseMenu.IsTypePaused(PauseType.Normal)) pauseMenu.UnpauseType(PauseType.Normal);
         }
     }
 }

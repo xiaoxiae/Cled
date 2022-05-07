@@ -4,28 +4,28 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
-/// The type of the highlight.
+///     The type of the highlight.
 /// </summary>
 public enum HighlightType
 {
     /// <summary>
-    /// A main highlighted object.
+    ///     A main highlighted object.
     /// </summary>
     Main,
-    
+
     /// <summary>
-    /// A secondarily highlighted object.
+    ///     A secondarily highlighted object.
     /// </summary>
     Secondary,
-    
+
     /// <summary>
-    /// A transparent object.
+    ///     A transparent object.
     /// </summary>
-    Transparent,
+    Transparent
 }
 
 /// <summary>
-/// A script for managing highlighted objects.
+///     A script for managing highlighted objects.
 /// </summary>
 public class HighlightManager : MonoBehaviour
 {
@@ -34,12 +34,15 @@ public class HighlightManager : MonoBehaviour
     private readonly Dictionary<GameObject, HighlightType> _currentlyHighlighted = new();
 
     /// <summary>
-    /// Return true if the given object is highlighted.
+    ///     Return true if the given object is highlighted.
     /// </summary>
-    public bool IsHighlighted(GameObject obj) => _currentlyHighlighted.ContainsKey(obj);
+    public bool IsHighlighted(GameObject obj)
+    {
+        return _currentlyHighlighted.ContainsKey(obj);
+    }
 
     /// <summary>
-    /// Highlight an entire route, possibly de-highlighting holds outside it.
+    ///     Highlight an entire route, possibly de-highlighting holds outside it.
     /// </summary>
     public void HighlightRoute(Route route, bool fadeOtherHolds = false)
     {
@@ -54,14 +57,14 @@ public class HighlightManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the opacity of a hold to the given value.
+    ///     Set the opacity of a hold to the given value.
     /// </summary>
     private static void SetHoldOpacity(GameObject hold, float opacity)
     {
         var renderer = hold.transform.GetChild(0).GetComponent<Renderer>();
-        
+
         Utilities.SetRendererOpacity(renderer, opacity);
-        
+
         // TODO: this is super dirty (2nd children of holds are only markers in this version)
         // set opacity of marker too
         if (hold.transform.childCount == 2)
@@ -72,8 +75,8 @@ public class HighlightManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Highlight the given object.
-    /// If it is already, only change the highlighting to main from others.
+    ///     Highlight the given object.
+    ///     If it is already, only change the highlighting to main from others.
     /// </summary>
     public void Highlight(GameObject obj, HighlightType highlightType)
     {
@@ -84,7 +87,7 @@ public class HighlightManager : MonoBehaviour
 
             // highlight only if we're going up in highlights
             if (!(_currentlyHighlighted[obj] == HighlightType.Transparent && highlightType == HighlightType.Main ||
-                _currentlyHighlighted[obj] == HighlightType.Secondary && highlightType == HighlightType.Main))
+                  _currentlyHighlighted[obj] == HighlightType.Secondary && highlightType == HighlightType.Main))
                 return;
         }
 
@@ -116,7 +119,7 @@ public class HighlightManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Unhighlight the given object (if it's not already).
+    ///     Unhighlight the given object (if it's not already).
     /// </summary>
     public void Unhighlight(GameObject obj)
     {
@@ -129,13 +132,13 @@ public class HighlightManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Unhighlight all currently highlighted holds.
-    /// Optionally only unhighlight those with a specific mode.
+    ///     Unhighlight all currently highlighted holds.
+    ///     Optionally only unhighlight those with a specific mode.
     /// </summary>
     public void UnhighlightAll(HighlightType? highlightType = null)
     {
         // .ToList() is used since we're modifying the collection
-        foreach (GameObject obj in _currentlyHighlighted.Keys.ToList())
+        foreach (var obj in _currentlyHighlighted.Keys.ToList())
             if (highlightType == null || highlightType.Value == _currentlyHighlighted[obj])
                 if (obj)
                     Unhighlight(obj);

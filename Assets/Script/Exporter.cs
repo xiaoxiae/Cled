@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,21 +17,20 @@ public class Exporter : MonoBehaviour
     public CameraController cameraController;
 
     /// <summary>
-    /// Export the state to the given path.
-    /// 
-    /// Return true if successful, else false.
+    ///     Export the state to the given path.
+    ///     Return true if successful, else false.
     /// </summary>
     public bool Export(string path)
     {
         try
         {
-            using StreamWriter writer = new StreamWriter(path);
+            using var writer = new StreamWriter(path);
 
             var serializer = new SerializerBuilder().DisableAliases().Build();
 
             // save holds
             var holds = new Dictionary<string, SerializableHold>();
-            foreach (GameObject hold in holdStateManager.PlacedHolds)
+            foreach (var hold in holdStateManager.PlacedHolds)
             {
                 var holdBlueprint = holdStateManager.GetHoldBlueprint(hold);
                 var holdState = holdStateManager.GetHoldState(hold);
@@ -43,14 +41,14 @@ public class Exporter : MonoBehaviour
 
             // save only routes that either contain one or more holds, or contain a starting/ending hold
             var routes = new List<SerializableRoute>();
-            foreach (Route route in routeManager.GetUsableRoutes())
+            foreach (var route in routeManager.GetUsableRoutes())
                 routes.Add(new SerializableRoute
                 {
                     HoldIDs = route.Holds.Select(Utilities.GetObjectId).ToList(),
                     Name = route.Name,
                     Setter = route.Setter,
                     Zone = route.Zone,
-                    Grade = route.Grade,
+                    Grade = route.Grade
                 });
 
             serializer.Serialize(writer,
@@ -75,12 +73,12 @@ public class Exporter : MonoBehaviour
                     {
                         Positions = lightManager.GetPositions().Select<Vector3, SerializableVector3>(x => x).ToList(),
                         Intensity = Preferences.LightIntensity,
-                        ShadowStrength = Preferences.LightIntensity,
+                        ShadowStrength = Preferences.LightIntensity
                     },
                     CaptureSettings = new SerializableCaptureSettings
                     {
                         ImagePath = Preferences.CaptureImagePath,
-                        ImageSupersize = Preferences.ImageSupersize,
+                        ImageSupersize = Preferences.ImageSupersize
                     }
                 });
 

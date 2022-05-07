@@ -3,57 +3,71 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Information about the given hold's state when it's placed on the wall.
-/// Used to smoothly continue editing it and for import/export.
+///     Information about the given hold's state when it's placed on the wall.
+///     Used to smoothly continue editing it and for import/export.
 /// </summary>
 public class HoldState
 {
     /// <summary>
-    /// The hold's position.
+    ///     Whether the hold is horizontally flipped.
     /// </summary>
-    public SerializableVector3 Position;
-    
+    public bool Flipped;
+
     /// <summary>
-    /// The hold's normal.
+    ///     The hold's normal.
     /// </summary>
     public SerializableVector3 Normal;
 
     /// <summary>
-    /// Whether the hold is horizontally flipped.
+    ///     The hold's position.
     /// </summary>
-    public bool Flipped;
-    
+    public SerializableVector3 Position;
+
     /// <summary>
-    /// The hold's rotation relative to its normal on the wall.
+    ///     The hold's rotation relative to its normal on the wall.
     /// </summary>
     public float Rotation;
 }
 
 /// <summary>
-/// Manages the state of the holds on the wall (even the one held).
+///     Manages the state of the holds on the wall (even the one held).
 /// </summary>
 public class HoldStateManager : MonoBehaviour, IResetable
 {
     private readonly Dictionary<GameObject, (HoldBlueprint holdBlueprint, HoldState holdState)> _placedHolds = new();
 
     // the held object (state)
-    private GameObject _heldObject;
     private HoldBlueprint _heldObjectBlueprint;
     private HoldState _heldObjectState;
 
     /// <summary>
-    /// The currently placed holds.
+    ///     The currently placed holds.
     /// </summary>
     public IEnumerable<GameObject> PlacedHolds => _placedHolds.Keys;
 
     /// <summary>
-    /// The currently held hold.
+    ///     The currently held hold.
     /// </summary>
-    public GameObject HeldHold => _heldObject;
+    public GameObject HeldHold { get; private set; }
 
     /// <summary>
-    /// Start holding a hold from a hold object.
-    /// If replace is specified, we're replacing the currently held one with another one, saving the state.
+    ///     Clear all of the instances of the holds, destroying them in the process.
+    /// </summary>
+    public void Reset()
+    {
+        foreach (var (placedHold, _) in _placedHolds)
+            DestroyImmediate(placedHold);
+
+        _placedHolds.Clear();
+
+        HeldHold = null;
+        _heldObjectBlueprint = null;
+        _heldObjectState = null;
+    }
+
+    /// <summary>
+    ///     Start holding a hold from a hold object.
+    ///     If replace is specified, we're replacing the currently held one with another one, saving the state.
     /// </summary>
     public void InstantiateToHolding(HoldBlueprint holdBlueprint, bool replace = false)
     {
@@ -64,71 +78,86 @@ public class HoldStateManager : MonoBehaviour, IResetable
             StartHolding(Instantiate(holdBlueprint.Model), holdBlueprint, state);
         }
         else
+        {
             StartHolding(Instantiate(holdBlueprint.Model), holdBlueprint, new HoldState());
-        
+        }
     }
 
     /// <summary>
-    /// Start holding a GameObject hold.
-    /// If it was placed and we're starting to hold it, remove it from placed.
+    ///     Start holding a GameObject hold.
+    ///     If it was placed and we're starting to hold it, remove it from placed.
     /// </summary>
     private void StartHolding(GameObject model, HoldBlueprint holdBlueprint, HoldState holdState)
     {
         if (IsPlaced(model))
             _placedHolds.Remove(model);
 
-        _heldObject = model;
+        HeldHold = model;
         _heldObjectBlueprint = holdBlueprint;
         _heldObjectState = holdState;
-        
+
         ApplyHoldState(model, holdState);
 
         // ignore this object until placed
-        _heldObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        HeldHold.layer = LayerMask.NameToLayer("Ignore Raycast");
 
         EnableHeld();
     }
 
     /// <summary>
-    /// Rotate the currently held hold by a certain amount in radians.
+    ///     Rotate the currently held hold by a certain amount in radians.
     /// </summary>
     public void RotateHeld(float delta)
-        => _heldObjectState.Rotation = (_heldObjectState.Rotation + delta) % (2 * (float)Math.PI);
+    {
+        _heldObjectState.Rotation = (_heldObjectState.Rotation + delta) % (2 * (float)Math.PI);
+    }
 
     /// <summary>
-    /// Stop holding the currently held hold, destroying it in the process.
+    ///     Stop holding the currently held hold, destroying it in the process.
     /// </summary>
     public void StopHolding()
     {
-        DestroyImmediate(_heldObject);
+        DestroyImmediate(HeldHold);
 
-        _heldObject = null;
+        HeldHold = null;
         _heldObjectBlueprint = null;
         _heldObjectState = null;
     }
 
     /// <summary>
-    /// Disable the currently held item.
+    ///     Disable the currently held item.
     /// </summary>
-    public void DisableHeld() => _heldObject.SetActive(false);
+    public void DisableHeld()
+    {
+        HeldHold.SetActive(false);
+    }
 
     /// <summary>
-    /// Enable the currently held item.
+    ///     Enable the currently held item.
     /// </summary>
-    public void EnableHeld() => _heldObject.SetActive(true);
+    public void EnableHeld()
+    {
+        HeldHold.SetActive(true);
+    }
 
     /// <summary>
-    /// Place the currently held hold.
+    ///     Place the currently held hold.
     /// </summary>
-    public void PutDown() => Place(_heldObject, _heldObjectBlueprint, _heldObjectState);
+    public void PutDown()
+    {
+        Place(HeldHold, _heldObjectBlueprint, _heldObjectState);
+    }
 
     /// <summary>
-    /// Pick up a currently placed hold.
+    ///     Pick up a currently placed hold.
     /// </summary>
-    public void PickUp(GameObject model) => StartHolding(model, GetHoldBlueprint(model), GetHoldState(model));
+    public void PickUp(GameObject model)
+    {
+        StartHolding(model, GetHoldBlueprint(model), GetHoldState(model));
+    }
 
     /// <summary>
-    /// Place a new hold from the hold blueprint.
+    ///     Place a new hold from the hold blueprint.
     /// </summary>
     public GameObject InstantiatePlace(HoldBlueprint holdBlueprint, HoldState holdState)
     {
@@ -138,14 +167,14 @@ public class HoldStateManager : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Place the given hold.
+    ///     Place the given hold.
     /// </summary>
     public void Place(GameObject model, HoldBlueprint holdBlueprint, HoldState holdState)
     {
         // if we're placing the held object, stop holding it
-        if (model == _heldObject)
+        if (model == HeldHold)
         {
-            _heldObject = null;
+            HeldHold = null;
             _heldObjectBlueprint = null;
             _heldObjectState = null;
         }
@@ -153,14 +182,14 @@ public class HoldStateManager : MonoBehaviour, IResetable
         _placedHolds.Add(model, (holdBlueprint, holdState));
 
         model.layer = LayerMask.NameToLayer("Default");
-        
+
         ApplyHoldState(model, holdState);
 
         model.SetActive(true);
     }
 
     /// <summary>
-    /// Apply the hold state to the given hold.
+    ///     Apply the hold state to the given hold.
     /// </summary>
     private void ApplyHoldState(GameObject hold, HoldState state)
     {
@@ -173,7 +202,7 @@ public class HoldStateManager : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Update the gameObject to turn towards the given vector and rotate in the given float (in radians).
+    ///     Update the gameObject to turn towards the given vector and rotate in the given float (in radians).
     /// </summary>
     private void UpdateNormal(GameObject gameObject, Vector3 normal, float rotation)
     {
@@ -183,18 +212,20 @@ public class HoldStateManager : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Update the gameObject's position to the given position.
+    ///     Update the gameObject's position to the given position.
     /// </summary>
-    private void UpdatePosition(GameObject gameObject, Vector3 position) =>
+    private void UpdatePosition(GameObject gameObject, Vector3 position)
+    {
         gameObject.transform.position = position;
+    }
 
     /// <summary>
-    /// Remove the hold from the state manager, no matter if it's being held or if it's placed down.
+    ///     Remove the hold from the state manager, no matter if it's being held or if it's placed down.
     /// </summary>
     public void Remove(GameObject model, bool destroy = false)
     {
-        if (_heldObject == model)
-            _heldObject = null;
+        if (HeldHold == model)
+            HeldHold = null;
         else
             _placedHolds.Remove(model);
 
@@ -203,59 +234,51 @@ public class HoldStateManager : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Get the state of the given model object.
+    ///     Get the state of the given model object.
     /// </summary>
     public HoldState GetHoldState(GameObject model)
-        => model == _heldObject ? _heldObjectState : _placedHolds[model].holdState;
+    {
+        return model == HeldHold ? _heldObjectState : _placedHolds[model].holdState;
+    }
 
     /// <summary>
-    /// Get the holdBlueprint of the given model object.
+    ///     Get the holdBlueprint of the given model object.
     /// </summary>
     public HoldBlueprint GetHoldBlueprint(GameObject model)
-        => model == _heldObject ? _heldObjectBlueprint : _placedHolds[model].holdBlueprint;
+    {
+        return model == HeldHold ? _heldObjectBlueprint : _placedHolds[model].holdBlueprint;
+    }
 
     /// <summary>
-    /// Return True if this game object is placed.
+    ///     Return True if this game object is placed.
     /// </summary>
-    public bool IsPlaced(GameObject model) => _placedHolds.ContainsKey(model);
+    public bool IsPlaced(GameObject model)
+    {
+        return _placedHolds.ContainsKey(model);
+    }
 
     /// <summary>
-    /// Move the currently held hold to the raycast hit.
+    ///     Move the currently held hold to the raycast hit.
     /// </summary>
     public void MoveHeldToHit(RaycastHit hit)
     {
         _heldObjectState.Position = hit.point;
         _heldObjectState.Normal = hit.normal;
-        
-        ApplyHoldState(_heldObject, _heldObjectState);
+
+        ApplyHoldState(HeldHold, _heldObjectState);
     }
 
     /// <summary>
-    /// Horizontally flip the given hold.
+    ///     Horizontally flip the given hold.
     /// </summary>
     public void FlipHold(GameObject gameObject)
     {
         var state = GetHoldState(gameObject);
         state.Flipped = !state.Flipped;
-        
+
         // we have to flip the rotation too to actually make it horizontally flipped
         state.Rotation = (float)(2 * Math.PI - state.Rotation);
-        
+
         ApplyHoldState(gameObject, state);
-    }
-
-    /// <summary>
-    /// Clear all of the instances of the holds, destroying them in the process.
-    /// </summary>
-    public void Reset()
-    {
-        foreach (var (placedHold, _) in _placedHolds)
-            DestroyImmediate(placedHold);
-
-        _placedHolds.Clear();
-
-        _heldObject = null;
-        _heldObjectBlueprint = null;
-        _heldObjectState = null;
     }
 }

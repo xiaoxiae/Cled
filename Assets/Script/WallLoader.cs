@@ -4,7 +4,7 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 
 /// <summary>
-/// A class for storing wall metadata, such as routesetters, valid grades, zones where the boulders are, etc.
+///     A class for storing wall metadata, such as routesetters, valid grades, zones where the boulders are, etc.
 /// </summary>
 public class WallMetadata
 {
@@ -25,8 +25,16 @@ public class WallLoader : MonoBehaviour, IResetable
     public GameObject Wall;
     public WallMetadata Metadata;
 
+    public void Reset()
+    {
+        if (Wall)
+            Destroy(Wall);
+
+        Metadata = null;
+    }
+
     /// <summary>
-    /// Generate the wall object from the given path, discarding the old one in the process.
+    ///     Generate the wall object from the given path, discarding the old one in the process.
     /// </summary>
     public void Initialize(string path)
     {
@@ -44,25 +52,17 @@ public class WallLoader : MonoBehaviour, IResetable
         var metadataPath = Path.Combine(wallFolder, wallObjectName + ".yaml");
         if (File.Exists(metadataPath))
         {
-            string yml = File.ReadAllText(metadataPath);
-            
+            var yml = File.ReadAllText(metadataPath);
+
             Metadata = new Deserializer().Deserialize<WallMetadata>(yml);
         }
         else
         {
             Metadata = new WallMetadata();
         }
-        
-        MeshFilter mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
-        MeshCollider collider = Wall.AddComponent<MeshCollider>();
+
+        var mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
+        var collider = Wall.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
-    }
-
-    public void Reset()
-    {
-        if (Wall)
-            Destroy(Wall);
-
-        Metadata = null;
     }
 }

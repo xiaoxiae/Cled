@@ -1,11 +1,11 @@
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 /// <summary>
-/// The general controller of picking up and placing down holds, cycling through them, etc.
+///     The general controller of picking up and placing down holds, cycling through them, etc.
 /// </summary>
 public class EditorController : MonoBehaviour
 {
+    private const float HoldRotationSensitivity = 5f;
     public HoldStateManager holdStateManager;
     public CameraController cameraController;
     public HighlightManager highlightManager;
@@ -16,9 +16,7 @@ public class EditorController : MonoBehaviour
     public EditorModeManager editorModeManager;
     public RouteViewMenu routeViewMenu;
 
-    private const float HoldRotationSensitivity = 5f;
-
-    void Awake()
+    private void Awake()
     {
         // deselect routes when mode changes from route
         editorModeManager.AddModeChangeCallback(mode =>
@@ -28,8 +26,36 @@ public class EditorController : MonoBehaviour
         });
     }
 
+    private void Update()
+    {
+        // when time stops, don't do anything in the editor
+        // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
+        if (Time.timeScale == 0)
+            return;
+
+        CombinedBehaviorBefore();
+
+        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+        if (Physics.Raycast(ray, out var hit))
+        {
+            var hitObject = hit.collider.gameObject;
+
+            if (holdStateManager.IsPlaced(hitObject))
+                HoldHitBehavior(hit, hitObject);
+            else
+                WallHitBehavior(hit);
+        }
+        else
+        {
+            NoHitBehavior();
+        }
+
+        CombinedBehaviorAfter();
+    }
+
     /// <summary>
-    /// Called each update at the very beginning.
+    ///     Called each update at the very beginning.
     /// </summary>
     private void CombinedBehaviorBefore()
     {
@@ -41,7 +67,9 @@ public class EditorController : MonoBehaviour
             // and display a warning message instead (what would we even pick?)
             if (editorModeManager.CurrentMode != EditorModeManager.Mode.Holding &&
                 holdPickerMenu.GetPickedHolds().Count == 0)
+            {
                 popupMenu.CreateInfoPopup("No holds selected, can't start holding!");
+            }
             else
             {
                 editorModeManager.CurrentMode = editorModeManager.CurrentMode == EditorModeManager.Mode.Holding
@@ -62,9 +90,9 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called each update when nothing was hit.
+    ///     Called each update when nothing was hit.
     /// </summary>
-    void NoHitBehavior()
+    private void NoHitBehavior()
     {
         switch (editorModeManager.CurrentMode)
         {
@@ -82,9 +110,9 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called each update when the wall was hit.
+    ///     Called each update when the wall was hit.
     /// </summary>
-    void WallHitBehavior(RaycastHit hit)
+    private void WallHitBehavior(RaycastHit hit)
     {
         switch (editorModeManager.CurrentMode)
         {
@@ -102,9 +130,9 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called each update when a hold was hit
+    ///     Called each update when a hold was hit
     /// </summary>
-    void HoldHitBehavior(RaycastHit hit, GameObject hold)
+    private void HoldHitBehavior(RaycastHit hit, GameObject hold)
     {
         switch (editorModeManager.CurrentMode)
         {
@@ -141,9 +169,9 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called each update at the very end.
+    ///     Called each update at the very end.
     /// </summary>
-    void CombinedBehaviorAfter()
+    private void CombinedBehaviorAfter()
     {
         if (editorModeManager.CurrentMode == EditorModeManager.Mode.Holding)
         {
@@ -158,10 +186,10 @@ public class EditorController : MonoBehaviour
             // rotate hold on middle mouse button
             if (Input.GetMouseButton(2))
                 holdStateManager.RotateHeld(Input.GetAxis("Mouse X") * HoldRotationSensitivity * Time.deltaTime);
-
         }
 
-        if (editorModeManager.CurrentMode is EditorModeManager.Mode.Holding or EditorModeManager.Mode.Normal) {
+        if (editorModeManager.CurrentMode is EditorModeManager.Mode.Holding or EditorModeManager.Mode.Normal)
+        {
             var mouseDelta = Input.mouseScrollDelta.y;
 
             if (mouseDelta != 0)
@@ -186,9 +214,9 @@ public class EditorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Controls for holding mode when a hold/wall is hit.
+    ///     Controls for holding mode when a hold/wall is hit.
     /// </summary>
-    void HoldingHitControls(RaycastHit hit)
+    private void HoldingHitControls(RaycastHit hit)
     {
         // make sure that the hold is enabled when holding
         holdStateManager.EnableHeld();
@@ -208,7 +236,7 @@ public class EditorController : MonoBehaviour
         {
             var hold = holdStateManager.HeldHold;
 
-            Route route = routeManager.GetRouteWithHold(hold);
+            var route = routeManager.GetRouteWithHold(hold);
 
             foreach (var routeHold in route.Holds)
             {
@@ -226,16 +254,18 @@ public class EditorController : MonoBehaviour
             holdStateManager.StopHolding();
             editorModeManager.CurrentMode = EditorModeManager.Mode.Normal;
         }
-        
+
         // h - flip hold
         else if (Input.GetKeyDown(KeyCode.H))
+        {
             holdStateManager.FlipHold(holdStateManager.HeldHold);
+        }
     }
 
     /// <summary>
-    /// Called when normal and route hit a hold.
+    ///     Called when normal and route hit a hold.
     /// </summary>
-    void NormalRouteHoldHitControls(GameObject hold)
+    private void NormalRouteHoldHitControls(GameObject hold)
     {
         // when left clicking, snap back to holding mode and pick it up
         // CTRL+LMB and SHIFT+LMB click behaves differently in route mode, so it's forbidden altogether
@@ -254,7 +284,7 @@ public class EditorController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
             routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
 
-        Route route = routeManager.GetOrCreateRouteWithHold(hold, holdStateManager.GetHoldBlueprint(hold));
+        var route = routeManager.GetOrCreateRouteWithHold(hold, holdStateManager.GetHoldBlueprint(hold));
 
         // ctrl + r/del - delete the entire route
         if (Input.GetKey(KeyCode.LeftControl) && (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete)))
@@ -265,17 +295,19 @@ public class EditorController : MonoBehaviour
                 holdStateManager.Remove(routeHold, true);
             }
         }
-        
+
         // r/del - delete hold
         else if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Delete))
         {
             routeManager.RemoveHold(hold);
             holdStateManager.Remove(hold, true);
         }
-        
+
         // h - flip hold
         else if (Input.GetKeyDown(KeyCode.H))
+        {
             holdStateManager.FlipHold(hold);
+        }
 
         // if we delete the current hold and the route has no more holds, switch to normal mode
         if (routeManager.SelectedRoute != null && routeManager.SelectedRoute.IsEmpty())
@@ -304,31 +336,5 @@ public class EditorController : MonoBehaviour
 
         // main highlight the hold we're looking at
         highlightManager.Highlight(hold, HighlightType.Main);
-    }
-
-    void Update()
-    {
-        // when time stops, don't do anything in the editor
-        // on the other hand, this can't be a FixedUpdate method because then Inputs don't work well
-        if (Time.timeScale == 0)
-            return;
-
-        CombinedBehaviorBefore();
-
-        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-
-        if (Physics.Raycast(ray, out var hit))
-        {
-            var hitObject = hit.collider.gameObject;
-
-            if (holdStateManager.IsPlaced(hitObject))
-                HoldHitBehavior(hit, hitObject);
-            else
-                WallHitBehavior(hit);
-        }
-        else
-            NoHitBehavior();
-
-        CombinedBehaviorAfter();
     }
 }

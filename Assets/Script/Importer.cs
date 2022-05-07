@@ -7,7 +7,7 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 
 /// <summary>
-/// The class that takes care of importing and exporting the editor state.
+///     The class that takes care of importing and exporting the editor state.
 /// </summary>
 public class Importer : MonoBehaviour, IResetable
 {
@@ -26,18 +26,7 @@ public class Importer : MonoBehaviour, IResetable
     public CameraController cameraController;
 
     /// <summary>
-    /// Return the deserialized state object, given its path.
-    /// </summary>
-    private static SerializableState Deserialize(string path)
-    {
-        var deserializer = new Deserializer();
-
-        using var reader = new StreamReader(path);
-        return deserializer.Deserialize<SerializableState>(reader);
-    }
-
-    /// <summary>
-    /// Reset the editor state.
+    ///     Reset the editor state.
     /// </summary>
     public void Reset()
     {
@@ -54,7 +43,18 @@ public class Importer : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Import the preferences (path to holds and to wall), returning true if successful.
+    ///     Return the deserialized state object, given its path.
+    /// </summary>
+    private static SerializableState Deserialize(string path)
+    {
+        var deserializer = new Deserializer();
+
+        using var reader = new StreamReader(path);
+        return deserializer.Deserialize<SerializableState>(reader);
+    }
+
+    /// <summary>
+    ///     Import the preferences (path to holds and to wall), returning true if successful.
     /// </summary>
     public bool ImportPreferences(string path)
     {
@@ -75,13 +75,13 @@ public class Importer : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Close the loading screen with a given exception during an action.
+    ///     Close the loading screen with a given exception during an action.
     /// </summary>
     private void CloseWithException(string action, string errorMessage)
     {
         Reset();
         Preferences.Initialized = false;
-        
+
         popupMenu.CreateInfoPopup(
             $"The following exception occurred while {action}: {errorMessage}",
             loadingScreenMenu.Close
@@ -89,7 +89,7 @@ public class Importer : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Asynchronously import state while showing the loading screen.
+    ///     Asynchronously import state while showing the loading screen.
     /// </summary>
     private IEnumerator ImportStateAsync(string path)
     {
@@ -153,7 +153,7 @@ public class Importer : MonoBehaviour, IResetable
             {
                 var route = routeManager.CreateRoute();
 
-                foreach (GameObject hold in serializableRoute.HoldIDs.Select(x => holds[x]))
+                foreach (var hold in serializableRoute.HoldIDs.Select(x => holds[x]))
                     routeManager.ToggleHold(route, hold, holdStateManager.GetHoldBlueprint(hold));
 
                 route.Name = serializableRoute.Name;
@@ -163,11 +163,11 @@ public class Importer : MonoBehaviour, IResetable
             }
 
             // import starting hold 
-            foreach (GameObject hold in obj.StartingHoldIDs.Select(x => holds[x]))
+            foreach (var hold in obj.StartingHoldIDs.Select(x => holds[x]))
                 routeManager.ToggleStarting(hold, holdStateManager.GetHoldBlueprint(hold));
 
             // import ending holds
-            foreach (GameObject hold in obj.EndingHoldIDs.Select(x => holds[x]))
+            foreach (var hold in obj.EndingHoldIDs.Select(x => holds[x]))
                 routeManager.ToggleEnding(hold, holdStateManager.GetHoldBlueprint(hold));
         }
         catch (Exception e)
@@ -194,7 +194,7 @@ public class Importer : MonoBehaviour, IResetable
             // import lights
             Preferences.LightIntensity = obj.Lights.Intensity;
             Preferences.ShadowStrength = obj.Lights.ShadowStrength;
-            
+
             lightManager.UpdateLightIntensity();
             lightManager.UpdateShadowStrength();
 
@@ -205,7 +205,7 @@ public class Importer : MonoBehaviour, IResetable
 
             holdPickerMenu.Initialize();
 
-            foreach (string blueprintId in obj.SelectedHoldBlueprintIDs)
+            foreach (var blueprintId in obj.SelectedHoldBlueprintIDs)
                 holdPickerMenu.Select(holdLoader.GetHoldBlueprint(blueprintId));
 
             Preferences.Initialized = true;
@@ -220,15 +220,17 @@ public class Importer : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Import the state from the given path.
-    /// Must be called after ImportPreferences and after the Awake functions of managers were called.
-    /// 
-    /// Return true if successful, else false.
+    ///     Import the state from the given path.
+    ///     Must be called after ImportPreferences and after the Awake functions of managers were called.
+    ///     Return true if successful, else false.
     /// </summary>
-    public void ImportState(string path) => StartCoroutine(ImportStateAsync(path));
+    public void ImportState(string path)
+    {
+        StartCoroutine(ImportStateAsync(path));
+    }
 
     /// <summary>
-    /// Asynchronously import the project from the given paths.
+    ///     Asynchronously import the project from the given paths.
     /// </summary>
     private IEnumerator ImportFromNewAsync(string currentWallModelPath, string currentHoldModelsPath)
     {
@@ -275,7 +277,7 @@ public class Importer : MonoBehaviour, IResetable
         try
         {
             holdPickerMenu.Initialize();
-            
+
             movementController.Reset();
             cameraController.Reset();
 
@@ -293,10 +295,11 @@ public class Importer : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Initialize a new state from a wall model and holds folder.
-    ///
-    /// Returns true if successful, else false.
+    ///     Initialize a new state from a wall model and holds folder.
+    ///     Returns true if successful, else false.
     /// </summary>
-    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath) =>
+    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
+    {
         StartCoroutine(ImportFromNewAsync(currentWallModelPath, currentHoldModelsPath));
+    }
 }

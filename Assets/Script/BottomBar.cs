@@ -1,40 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// A class for controlling the bottom bar.
-/// Gets rebuilt each time the hold picker changes its selection.
+///     A class for controlling the bottom bar.
+///     Gets rebuilt each time the hold picker changes its selection.
 /// </summary>
 public class BottomBar : MonoBehaviour, IResetable
 {
     public HoldPickerMenu holdPickerMenu;
 
     public StyleSheet globalStyleSheets;
-
-    private VisualElement _root;
+    
     private VisualElement _bottomBar;
+    private VisualElement _root;
 
-    void Awake()
+    private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         _bottomBar = _root.Q<VisualElement>("bottom-bar");
     }
 
-    void Start()
+    private void Start()
     {
         holdPickerMenu.AddChangedCallback(UpdateBar);
 
         UpdateBar();
     }
 
-    public void Reset() => _bottomBar.Clear();
+    public void Reset()
+    {
+        _bottomBar.Clear();
+    }
 
     /// <summary>
-    /// Update the bottom bar according to the currently selected holds.
+    ///     Update the bottom bar according to the currently selected holds.
     /// </summary>
-    void UpdateBar()
+    private void UpdateBar()
     {
         Reset();
 
@@ -43,12 +44,12 @@ public class BottomBar : MonoBehaviour, IResetable
         var next = holdPickerMenu.GetNextHold();
 
         var holds = previous == current ? new[] { current } : new[] { previous, current, next };
-        
+
         foreach (var hold in holds)
         {
             if (hold == null)
                 continue;
-            
+
             var item = new VisualElement();
 
             item.styleSheets.Add(globalStyleSheets);

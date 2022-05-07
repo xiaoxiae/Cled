@@ -1,25 +1,33 @@
 using System;
-using System.Web.UI.Design;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// A class for showing popups of any kind.
+///     A class for showing popups of any kind.
 /// </summary>
 public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
 {
     public VisualTreeAsset InfoPopup;
     public VisualTreeAsset SavePopup;
 
-    private UIDocument _document;
-
     public PauseMenu pauseMenu;
 
-    public Button CurrentOkButton = null;
+    private UIDocument _document;
+
+    public Button CurrentOkButton;
 
     public void Awake()
     {
         _document = GetComponent<UIDocument>();
+    }
+
+    public void Accept()
+    {
+        if (CurrentOkButton != null)
+            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
+            {
+                CurrentOkButton.SendEvent(e);
+            }
     }
 
     public void Close()
@@ -28,16 +36,8 @@ public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
         pauseMenu.UnpauseType(PauseType.Popup);
     }
 
-    public void Accept()
-    {
-        if (CurrentOkButton != null)
-            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
-                CurrentOkButton.SendEvent(e);
-            
-    }
-
     /// <summary>
-    /// Create an info popup with the given content.
+    ///     Create an info popup with the given content.
     /// </summary>
     public void CreateInfoPopup(string contents, Action okAction = null, bool displayLogo = false)
     {
@@ -49,12 +49,12 @@ public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
         pauseMenu.PauseType(PauseType.Popup);
 
         root.Q<Label>("contents").text = contents;
-        
+
         var logo = root.Q<VisualElement>("logo");
         logo.style.display = !displayLogo ? DisplayStyle.None : DisplayStyle.Flex;
-        
+
         var okButton = root.Q<Button>("ok-button");
-        
+
         okButton.clicked += Close;
         if (okAction != null)
             okButton.clicked += okAction;
@@ -63,7 +63,7 @@ public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
     }
 
     /// <summary>
-    /// Create a save/save as popup with the operation button name.
+    ///     Create a save/save as popup with the operation button name.
     /// </summary>
     public void CreateSavePopup(string operationName, Action operationAction, Action discardAction, Action cancelButton)
     {

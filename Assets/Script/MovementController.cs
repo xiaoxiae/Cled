@@ -1,34 +1,32 @@
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 /// <summary>
-/// A class that controls the player's movement.
+///     A class that controls the player's movement.
 /// </summary>
 public class MovementController : MonoBehaviour, IResetable
 {
-    public CharacterController controller;
-    
-    public CameraController cameraController;
-    public EditorModeManager editorModeManager;
-    public PauseMenu pauseMenu;
-
     private const float ForwardBackwardSpeed = 5;
     private const float SideSpeed = 4;
 
     private const float FallThreshold = -10;
-
-    // flying-related variables
-    private bool _flying;
-    private float _flyingSpeed; // normalized from 0 to 1
     private const float FlyingSmoothness = 0.15f;
     private const float FlyingMultiplier = 0.1f;
 
     // gravity-related things
     private const float GravityMultiplier = 0.25f;
+    public CharacterController controller;
+
+    public CameraController cameraController;
+    public EditorModeManager editorModeManager;
+    public PauseMenu pauseMenu;
+
+    // flying-related variables
+    private bool _flying;
+    private float _flyingSpeed; // normalized from 0 to 1
     private float _gravity;
 
     /// <summary>
-    /// The position of the player.
+    ///     The position of the player.
     /// </summary>
     public Vector3 Position
     {
@@ -37,7 +35,7 @@ public class MovementController : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Whether the player is flying or not.
+    ///     Whether the player is flying or not.
     /// </summary>
     public bool Flying
     {
@@ -51,21 +49,11 @@ public class MovementController : MonoBehaviour, IResetable
         }
     }
 
-    /// <summary>
-    /// Reset the position of the player
-    /// </summary>
-    public void Reset()
+    private void Update()
     {
-        // TODO: this is a bit ugly, but the player is 1.8m long and will likely never change...
-        Position = new Vector3(0, 0.9f, 0);
-        Flying = false;
-    }
+        if (!Preferences.Initialized)
+            return;
 
-    void Update()
-    {
-	    if (!Preferences.Initialized)
-		    return;
-        
         // don't move when we're paused
         if (pauseMenu.IsAnyPaused())
             return;
@@ -78,8 +66,8 @@ public class MovementController : MonoBehaviour, IResetable
             return;
         }
 
-        float x = Input.GetAxis("Horizontal") * SideSpeed;
-        float z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;
+        var x = Input.GetAxis("Horizontal") * SideSpeed;
+        var z = Input.GetAxis("Vertical") * ForwardBackwardSpeed;
 
         // flying-related stuff
         if (Input.GetKey(KeyCode.Space) && Input.GetKey(KeyCode.LeftShift))
@@ -108,7 +96,7 @@ public class MovementController : MonoBehaviour, IResetable
             _flying = false;
             _gravity = 0;
         }
-        
+
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
             _flyingSpeed = 0;
 
@@ -120,7 +108,7 @@ public class MovementController : MonoBehaviour, IResetable
             return;
         }
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        var move = transform.right * x + transform.forward * z;
 
         // ensure that we're pointing towards where the camera
         // not elegant but functional
@@ -135,6 +123,18 @@ public class MovementController : MonoBehaviour, IResetable
             controller.Move(move * Time.deltaTime + Vector3.down * (_gravity * GravityMultiplier));
         }
         else
+        {
             controller.Move(move * Time.deltaTime + Vector3.up * _flyingSpeed * FlyingMultiplier);
+        }
+    }
+
+    /// <summary>
+    ///     Reset the position of the player
+    /// </summary>
+    public void Reset()
+    {
+        // TODO: this is a bit ugly, but the player is 1.8m long and will likely never change...
+        Position = new Vector3(0, 0.9f, 0);
+        Flying = false;
     }
 }

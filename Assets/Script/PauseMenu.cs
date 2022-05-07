@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
 /// <summary>
-/// The types of pauses there can be.
-/// Some (like popup pauses) behave differently, since it has to be dealt with first.
+///     The types of pauses there can be.
+///     Some (like popup pauses) behave differently, since it has to be dealt with first.
 /// </summary>
 public enum PauseType
 {
@@ -15,21 +15,16 @@ public enum PauseType
     Popup,
     HoldPicker,
     RouteSettings,
-    Settings,
+    Settings
 }
 
 /// <summary>
-/// A manager that handles pausing due to various reasons.
+///     A manager that handles pausing due to various reasons.
 /// </summary>
 public class PauseMenu : MonoBehaviour, IResetable
 {
-    private readonly HashSet<PauseType> _pauses = new();
-
-    private UIDocument _document;
-
     // hooks for pausing and unpausing
     private readonly List<Action> _pauseHooks = new();
-    private readonly List<Action> _unpauseHooks = new();
 
     // the positions where the dark pause screen should appear
     private readonly Dictionary<PauseType, float> _pausePositions = new()
@@ -38,23 +33,33 @@ public class PauseMenu : MonoBehaviour, IResetable
         { global::PauseType.Normal, 0 },
         { global::PauseType.Popup, 14.99f },
         { global::PauseType.Settings, 2 },
-        { global::PauseType.RouteSettings, 2 },
+        { global::PauseType.RouteSettings, 2 }
     };
 
-    void Awake()
+    private readonly HashSet<PauseType> _pauses = new();
+    private readonly List<Action> _unpauseHooks = new();
+
+    private UIDocument _document;
+
+    private void Awake()
     {
         _document = GetComponent<UIDocument>();
         Unpause();
     }
 
-    void Start()
+    private void Start()
     {
         if (!Preferences.Initialized)
             PauseType(global::PauseType.Normal);
     }
 
+    public void Reset()
+    {
+        UnpauseAll();
+    }
+
     /// <summary>
-    /// Unpause the given type.
+    ///     Unpause the given type.
     /// </summary>
     public void UnpauseType(PauseType type)
     {
@@ -74,7 +79,7 @@ public class PauseMenu : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Pause the given type.
+    ///     Pause the given type.
     /// </summary>
     public void PauseType(PauseType type)
     {
@@ -86,8 +91,8 @@ public class PauseMenu : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// An internal function that performs the pausing.
-    /// Stops time, unlocks cursor, calls hooks, shows screen.
+    ///     An internal function that performs the pausing.
+    ///     Stops time, unlocks cursor, calls hooks, shows screen.
     /// </summary>
     private void Pause()
     {
@@ -101,8 +106,8 @@ public class PauseMenu : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// An internal function that performs the unpausing.
-    /// Starts time, locks cursor, calls hooks, hides screen.
+    ///     An internal function that performs the unpausing.
+    ///     Starts time, locks cursor, calls hooks, hides screen.
     /// </summary>
     private void Unpause()
     {
@@ -116,7 +121,7 @@ public class PauseMenu : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Moves the pause screen to right behind the closest widget.
+    ///     Moves the pause screen to right behind the closest widget.
     /// </summary>
     private void UpdatePauseScreenPosition()
     {
@@ -128,32 +133,47 @@ public class PauseMenu : MonoBehaviour, IResetable
     }
 
     /// <summary>
-    /// Return true if the editor is currently unpaused.
+    ///     Return true if the editor is currently unpaused.
     /// </summary>
-    public bool IsAllUnpaused() => _pauses.Count == 0;
+    public bool IsAllUnpaused()
+    {
+        return _pauses.Count == 0;
+    }
 
     /// <summary>
-    /// Return true if the editor is currently paused.
+    ///     Return true if the editor is currently paused.
     /// </summary>
-    public bool IsAnyPaused() => !IsAllUnpaused();
+    public bool IsAnyPaused()
+    {
+        return !IsAllUnpaused();
+    }
 
     /// <summary>
-    /// Return true if the editor is currently unpaused via this pause type.
+    ///     Return true if the editor is currently unpaused via this pause type.
     /// </summary>
-    public bool IsTypePaused(PauseType type) => _pauses.Contains(type);
+    public bool IsTypePaused(PauseType type)
+    {
+        return _pauses.Contains(type);
+    }
 
     /// <summary>
-    /// Add a hook function that gets called every time the editor is paused.
+    ///     Add a hook function that gets called every time the editor is paused.
     /// </summary>
-    public void AddPausedHook(Action hook) => _pauseHooks.Add(hook);
+    public void AddPausedHook(Action hook)
+    {
+        _pauseHooks.Add(hook);
+    }
 
     /// <summary>
-    /// Add a hook function that gets called every time the editor is unpaused.
+    ///     Add a hook function that gets called every time the editor is unpaused.
     /// </summary>
-    public void AddUnpausedHook(Action hook) => _unpauseHooks.Add(hook);
+    public void AddUnpausedHook(Action hook)
+    {
+        _unpauseHooks.Add(hook);
+    }
 
     /// <summary>
-    /// Unpause everything.
+    ///     Unpause everything.
     /// </summary>
     public void UnpauseAll()
     {
@@ -161,6 +181,4 @@ public class PauseMenu : MonoBehaviour, IResetable
         UpdatePauseScreenPosition();
         Unpause();
     }
-
-    public void Reset() => UnpauseAll();
 }

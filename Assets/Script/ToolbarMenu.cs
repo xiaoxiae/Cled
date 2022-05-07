@@ -10,7 +10,7 @@ public class ToolbarMenu : MonoBehaviour
 {
     public Importer importer;
     public Exporter exporter;
-    
+
     public PopupMenu popupMenu;
     public PauseMenu pauseMenu;
     public LightManager lightManager;
@@ -18,28 +18,21 @@ public class ToolbarMenu : MonoBehaviour
     public EditorModeManager editorModeManager;
     public RouteViewMenu routeViewMenu;
     public HoldPickerMenu holdPickerMenu;
-
-    private VisualElement _root;
+    private Button _captureImageAsButton;
+    private Button _captureImageButton;
 
     private bool _forceSaveAs;
-
-    private Button _saveButton;
-    private Button _saveAsButton;
+    private Button _holdMenuButton;
     private Button _newButton;
     private Button _openButton;
     private Button _preferencesButton;
-    private Button _captureImageButton;
-    private Button _captureImageAsButton;
-    private Button _holdMenuButton;
 
-    void Start()
-    {
-        var playerLightToggle = _root.Q<Toggle>("player-light-toggle");
-        playerLightToggle.RegisterValueChangedCallback(evt => lightManager.PlayerLightEnabled = evt.newValue);
-        lightManager.AddPlayerLightCallback(value => { playerLightToggle.SetValueWithoutNotify(value); });
-    }
+    private VisualElement _root;
+    private Button _saveAsButton;
 
-    void Awake()
+    private Button _saveButton;
+
+    private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
         Utilities.DisableElementFocusable(_root);
@@ -114,8 +107,10 @@ public class ToolbarMenu : MonoBehaviour
             }
             else
                 // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?redirectedfrom=MSDN#month-m-format-specifier
+            {
                 StartCoroutine(CaptureScreen(Path.Join(Preferences.CaptureImagePath,
                     $"cled_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png")));
+            }
         };
 
         _captureImageAsButton = _root.Q<Button>("capture-image-as-button");
@@ -147,20 +142,18 @@ public class ToolbarMenu : MonoBehaviour
             _root.Q<Foldout>("view-foldout"),
             _root.Q<Foldout>("capture-foldout"),
             _root.Q<Foldout>("lighting-foldout"),
-            _root.Q<Foldout>("help-foldout"),
+            _root.Q<Foldout>("help-foldout")
         };
 
-        foreach (Foldout foldout in foldouts)
+        foreach (var foldout in foldouts)
         {
-            foldout.RegisterValueChangedCallback((evt) =>
+            foldout.RegisterValueChangedCallback(evt =>
             {
                 if (evt.newValue)
-                {
                     // close other foldouts
-                    foreach (Foldout f in foldouts)
+                    foreach (var f in foldouts)
                         if (f != foldout)
                             f.value = false;
-                }
             });
 
             pauseMenu.AddPausedHook(() => { foldout.value = false; });
@@ -168,8 +161,60 @@ public class ToolbarMenu : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        var playerLightToggle = _root.Q<Toggle>("player-light-toggle");
+        playerLightToggle.RegisterValueChangedCallback(evt => lightManager.PlayerLightEnabled = evt.newValue);
+        lightManager.AddPlayerLightCallback(value => { playerLightToggle.SetValueWithoutNotify(value); });
+    }
+
+    private void Update()
+    {
+        // only work if a popup isn't already present
+        // TODO: a bit of messy code
+        if (!pauseMenu.IsTypePaused(PauseType.Popup))
+        {
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
+                using (var e = new NavigationSubmitEvent { target = _saveAsButton })
+                {
+                    _saveAsButton.SendEvent(e);
+                }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
+                using (var e = new NavigationSubmitEvent { target = _saveButton })
+                {
+                    _saveButton.SendEvent(e);
+                }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
+                using (var e = new NavigationSubmitEvent { target = _newButton })
+                {
+                    _newButton.SendEvent(e);
+                }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
+                using (var e = new NavigationSubmitEvent { target = _openButton })
+                {
+                    _openButton.SendEvent(e);
+                }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
+                     Input.GetKeyDown(KeyCode.P))
+                using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
+                {
+                    _captureImageAsButton.SendEvent(e);
+                }
+
+            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
+                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
+                {
+                    _captureImageButton.SendEvent(e);
+                }
+        }
+    }
+
     /// <summary>
-    /// Attempt to save, possibly failing if the save path doesn't exist yet.
+    ///     Attempt to save, possibly failing if the save path doesn't exist yet.
     /// </summary>
     private bool Save(bool popup = true)
     {
@@ -181,7 +226,7 @@ public class ToolbarMenu : MonoBehaviour
             return false;
         }
 
-        if (String.IsNullOrWhiteSpace(Preferences.LastOpenWallPath))
+        if (string.IsNullOrWhiteSpace(Preferences.LastOpenWallPath))
             return false;
 
         if (!exporter.Export(Preferences.LastOpenWallPath))
@@ -191,7 +236,7 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Capture the screen as a coroutine, hiding all of the UI in the process.
+    ///     Capture the screen as a coroutine, hiding all of the UI in the process.
     /// </summary>
     public IEnumerator CaptureScreen(string path)
     {
@@ -222,7 +267,7 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to save as.
+    ///     Attempt to save as.
     /// </summary>
     private bool SaveAs(bool popup = true)
     {
@@ -265,12 +310,15 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to quit.
+    ///     Attempt to quit.
     /// </summary>
-    private void Quit() => _ensureSavedAction(Application.Quit);
+    private void Quit()
+    {
+        _ensureSavedAction(Application.Quit);
+    }
 
     /// <summary>
-    /// Perform the action, making sure that everything is saved in the process.
+    ///     Perform the action, making sure that everything is saved in the process.
     /// </summary>
     private void _ensureSavedAction(Action action)
     {
@@ -284,7 +332,6 @@ public class ToolbarMenu : MonoBehaviour
         }
 
         if (_forceSaveAs)
-        {
             popupMenu.CreateSavePopup("Save As",
                 () =>
                 {
@@ -294,9 +341,7 @@ public class ToolbarMenu : MonoBehaviour
                 action,
                 () => { }
             );
-        }
         else
-        {
             popupMenu.CreateSavePopup("Save",
                 () =>
                 {
@@ -306,53 +351,19 @@ public class ToolbarMenu : MonoBehaviour
                 action,
                 () => { }
             );
-        }
-    }
-
-    void Update()
-    {
-        // only work if a popup isn't already present
-        // TODO: a bit of messy code
-        if (!pauseMenu.IsTypePaused(PauseType.Popup))
-        {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
-                using (var e = new NavigationSubmitEvent { target = _saveAsButton })
-                    _saveAsButton.SendEvent(e);
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
-                using (var e = new NavigationSubmitEvent { target = _saveButton })
-                    _saveButton.SendEvent(e);
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
-                using (var e = new NavigationSubmitEvent { target = _newButton })
-                    _newButton.SendEvent(e);
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
-                using (var e = new NavigationSubmitEvent { target = _openButton })
-                    _openButton.SendEvent(e);
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
-                     Input.GetKeyDown(KeyCode.P))
-                using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
-                    _captureImageAsButton.SendEvent(e);
-
-            else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
-                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
-                    _captureImageButton.SendEvent(e);
-        }
     }
 
     /// <summary>
-    /// Prompt opening an existing project.
+    ///     Prompt opening an existing project.
     /// </summary>
-    void Open()
+    private void Open()
     {
         StandaloneFileBrowser.OpenFilePanelAsync("Open existing project", "",
             new[] { new ExtensionFilter("Cled Project Files (.yaml)", "yaml") }, false, OnOpenWall);
     }
 
     /// <summary>
-    /// Called when opening an existing wall.
+    ///     Called when opening an existing wall.
     /// </summary>
     private void OnOpenWall(string[] paths)
     {
@@ -368,7 +379,7 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Prompt opening a new wall and holds.
+    ///     Prompt opening a new wall and holds.
     /// </summary>
     public void New()
     {
@@ -377,8 +388,8 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when opening a new wall.
-    /// Prompts opening holds if successful.
+    ///     Called when opening a new wall.
+    ///     Prompts opening holds if successful.
     /// </summary>
     private void OnOpenNewWall(string[] paths)
     {
@@ -391,7 +402,7 @@ public class ToolbarMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when opening a new wall.
+    ///     Called when opening a new wall.
     /// </summary>
     private void OnOpenNewHolds(string[] paths)
     {

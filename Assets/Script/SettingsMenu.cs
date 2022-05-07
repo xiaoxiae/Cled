@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using SFB;
 using UnityEngine;
@@ -14,26 +12,26 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
 
     private VisualElement _root;
 
-    private TextField lightIntensityTextfield;
-    private TextField shadowStrengthTextfield;
-    private TextField imageSupersize;
-
     private Button imagePathButton;
     private string imagePathButtonValue;
+    private TextField imageSupersize;
+
+    private TextField lightIntensityTextfield;
+    private TextField shadowStrengthTextfield;
 
 
-    void Awake()
+    private void Awake()
     {
         var document = GetComponent<UIDocument>();
 
         _root = document.rootVisualElement;
         _root.visible = false;
 
-        lightIntensityTextfield = _root.Q<TextField>($"light-intensity-textfield");
-        shadowStrengthTextfield = _root.Q<TextField>($"shadow-strength-textfield");
-        imageSupersize = _root.Q<TextField>($"image-superscale-textfield");
+        lightIntensityTextfield = _root.Q<TextField>("light-intensity-textfield");
+        shadowStrengthTextfield = _root.Q<TextField>("shadow-strength-textfield");
+        imageSupersize = _root.Q<TextField>("image-superscale-textfield");
 
-        imagePathButton = _root.Q<Button>($"image-path-button");
+        imagePathButton = _root.Q<Button>("image-path-button");
         imagePathButton.clicked += () =>
         {
             var paths = StandaloneFileBrowser.OpenFolderPanel("Image Path", "", false);
@@ -66,7 +64,8 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
         {
             lightIntensity = float.Parse(lightIntensityTextfield.value, CultureInfo.InvariantCulture);
 
-            if (lightIntensity < 0) {
+            if (lightIntensity < 0)
+            {
                 popupMenu.CreateInfoPopup("The light intensity value must be non-negative.");
                 return;
             }
@@ -82,7 +81,8 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
         {
             shadowStrength = float.Parse(shadowStrengthTextfield.value, CultureInfo.InvariantCulture);
 
-            if (shadowStrength is < 0 or > 1) {
+            if (shadowStrength is < 0 or > 1)
+            {
                 popupMenu.CreateInfoPopup("The shadow strength value must be between 0 and 1.");
                 return;
             }
@@ -113,7 +113,7 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
         Preferences.ShadowStrength = shadowStrength;
         Preferences.ImageSupersize = imageSupersize;
         Preferences.LightIntensity = lightIntensity;
-        
+
         lightManager.UpdateLightIntensity();
         lightManager.UpdateShadowStrength();
 
@@ -123,7 +123,7 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
     }
 
     /// <summary>
-    /// Close the settings, clearing them.
+    ///     Close the settings, clearing them.
     /// </summary>
     public void Close()
     {
@@ -134,7 +134,7 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
     }
 
     /// <summary>
-    /// Clear the settings.
+    ///     Clear the settings.
     /// </summary>
     private void SetToDefault()
     {
@@ -147,15 +147,15 @@ public class SettingsMenu : MonoBehaviour, IClosable, IAcceptable
         if (imagePathButton.text.Length > 20)
             imagePathButton.text = imagePathButton.text[..10] + "..." + imagePathButton.text[^10..];
     }
-    
+
     /// <summary>
-    /// Show the settings.
+    ///     Show the settings.
     /// </summary>
     public void Show()
     {
         _root.visible = true;
         SetToDefault();
-        
+
         pauseMenu.PauseType(PauseType.Settings);
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Manages the player light and the lights placed around the room.
+///     Manages the player light and the lights placed around the room.
 /// </summary>
 public class LightManager : MonoBehaviour, IResetable
 {
@@ -16,7 +16,7 @@ public class LightManager : MonoBehaviour, IResetable
     private bool _playerLightEnabled;
 
     /// <summary>
-    /// Whether the player light is enabled.
+    ///     Whether the player light is enabled.
     /// </summary>
     public bool PlayerLightEnabled
     {
@@ -32,73 +32,7 @@ public class LightManager : MonoBehaviour, IResetable
         }
     }
 
-    /// <summary>
-    /// Add a callback function that gets called every time the player light changes.
-    /// </summary>
-    public void AddPlayerLightCallback(Action<bool> action) => _playerLightCallbacks.Add(action);
-
-    /// <summary>
-    /// Clear all of the lights and reset the player light.
-    /// </summary>
-    public void Reset()
-    {
-        foreach (GameObject light in _lights)
-            DestroyImmediate(light);
-
-        _lights.Clear();
-        PlayerLightEnabled = true;
-        
-        UpdateLightIntensity();
-        UpdateShadowStrength();
-    }
-
-    /// <summary>
-    /// Get the position of all of the lights.
-    /// </summary>
-    public List<Vector3> GetPositions() => _lights.Select(x => x.transform.position).ToList();
-
-    /// <summary>
-    /// Update shadow strength according to the preferences manager.
-    /// </summary>
-    public void UpdateShadowStrength() =>
-        _applyActionToLights(light => { light.shadowStrength = Preferences.ShadowStrength; });
-
-    /// <summary>
-    /// Update light intensity according to the preferences manager.
-    /// </summary>
-    public void UpdateLightIntensity() =>
-        _applyActionToLights(light => { light.intensity = Preferences.LightIntensity; });
-
-    /// <summary>
-    /// Apply a given action to all of the lights.
-    /// </summary>
-    private void _applyActionToLights(Action<Light> lightFunction)
-    {
-        lightFunction(playerLight.GetComponent<Light>());
-
-        foreach (var light in _lights)
-            lightFunction(light.GetComponent<Light>());
-    }
-
-    /// <summary>
-    /// Add a new light at the player's location.
-    /// </summary>
-    public void AddLightAtPlayer() => AddLight(transform.position);
-
-    /// <summary>
-    /// Add a new light at the given location.
-    /// </summary>
-    public void AddLight(Vector3 position)
-    {
-        // copy the player light
-        GameObject lightGameObject = Instantiate(playerLight);
-        lightGameObject.GetComponent<Light>().enabled = true;
-        lightGameObject.transform.position = position;
-
-        _lights.Add(lightGameObject);
-    }
-
-    void Update()
+    private void Update()
     {
         // don't move the camera when time doesn't run
         if (Time.timeScale == 0)
@@ -111,5 +45,84 @@ public class LightManager : MonoBehaviour, IResetable
         // toggle player light
         else if (Input.GetKeyDown(KeyCode.F))
             PlayerLightEnabled = !PlayerLightEnabled;
+    }
+
+    /// <summary>
+    ///     Clear all of the lights and reset the player light.
+    /// </summary>
+    public void Reset()
+    {
+        foreach (var light in _lights)
+            DestroyImmediate(light);
+
+        _lights.Clear();
+        PlayerLightEnabled = true;
+
+        UpdateLightIntensity();
+        UpdateShadowStrength();
+    }
+
+    /// <summary>
+    ///     Add a callback function that gets called every time the player light changes.
+    /// </summary>
+    public void AddPlayerLightCallback(Action<bool> action)
+    {
+        _playerLightCallbacks.Add(action);
+    }
+
+    /// <summary>
+    ///     Get the position of all of the lights.
+    /// </summary>
+    public List<Vector3> GetPositions()
+    {
+        return _lights.Select(x => x.transform.position).ToList();
+    }
+
+    /// <summary>
+    ///     Update shadow strength according to the preferences manager.
+    /// </summary>
+    public void UpdateShadowStrength()
+    {
+        _applyActionToLights(light => { light.shadowStrength = Preferences.ShadowStrength; });
+    }
+
+    /// <summary>
+    ///     Update light intensity according to the preferences manager.
+    /// </summary>
+    public void UpdateLightIntensity()
+    {
+        _applyActionToLights(light => { light.intensity = Preferences.LightIntensity; });
+    }
+
+    /// <summary>
+    ///     Apply a given action to all of the lights.
+    /// </summary>
+    private void _applyActionToLights(Action<Light> lightFunction)
+    {
+        lightFunction(playerLight.GetComponent<Light>());
+
+        foreach (var light in _lights)
+            lightFunction(light.GetComponent<Light>());
+    }
+
+    /// <summary>
+    ///     Add a new light at the player's location.
+    /// </summary>
+    public void AddLightAtPlayer()
+    {
+        AddLight(transform.position);
+    }
+
+    /// <summary>
+    ///     Add a new light at the given location.
+    /// </summary>
+    public void AddLight(Vector3 position)
+    {
+        // copy the player light
+        var lightGameObject = Instantiate(playerLight);
+        lightGameObject.GetComponent<Light>().enabled = true;
+        lightGameObject.transform.position = position;
+
+        _lights.Add(lightGameObject);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// A menu for the settings of a route.
+///     A menu for the settings of a route.
 /// </summary>
 public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
 {
@@ -12,21 +12,21 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
     public WallLoader wallLoader;
     public PauseMenu pauseMenu;
 
-    private VisualElement _root;
-    private Dictionary<string, TextField> _textfields;
-    private Dictionary<string, DropdownField> _dropdowns;
-
     private Dictionary<string, Func<List<string>>> _attributeMapping;
+    private Dictionary<string, DropdownField> _dropdowns;
 
     private bool _initialized;
 
-    void Awake()
+    private VisualElement _root;
+    private Dictionary<string, TextField> _textfields;
+
+    private void Awake()
     {
         var document = GetComponent<UIDocument>();
-        
+
         _root = document.rootVisualElement;
         _root.visible = false;
-        
+
         // they're functions because the values haven't been initialized by this point
         _attributeMapping = new Dictionary<string, Func<List<string>>>
         {
@@ -74,7 +74,7 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
                     break;
             }
         }
-        
+
         Close();
     }
 
@@ -108,7 +108,7 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
                         if (val.newValue != attribute[..1].ToUpper() + attribute[1..])
                             textfield.SetValueWithoutNotify(val.newValue);
                     });
-                    
+
                     dropdown.index = 0;
 
                     textfield.RegisterValueChangedCallback(val => { dropdown.index = 0; });
@@ -119,12 +119,12 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
                 }
             }
         }
-        
+
         _initialized = true;
     }
 
     /// <summary>
-    /// Set menu values from route.
+    ///     Set menu values from route.
     /// </summary>
     private void _setFromRoute(Route route)
     {
@@ -152,7 +152,7 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
     }
 
     /// <summary>
-    /// Show the route settings for this route.
+    ///     Show the route settings for this route.
     /// </summary>
     public void Show()
     {
@@ -160,7 +160,7 @@ public class RouteSettingsMenu : MonoBehaviour, IClosable, IAcceptable
 
         if (!_initialized)
             _initialize();
-        
+
         _setFromRoute(routeManager.SelectedRoute);
 
         pauseMenu.PauseType(PauseType.RouteSettings);

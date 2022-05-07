@@ -5,13 +5,17 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
-using Button = UnityEngine.UIElements.Button;
 
 /// <summary>
-/// The controller for the hold picker menu.
+///     The controller for the hold picker menu.
 /// </summary>
 public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 {
+    // hacks
+    private const long UIBugWorkaroundDurations = 100;
+
+    private const string NoSelectionString = "-";
+
     // manager-related things
     public PauseMenu pauseMenu;
     public PopupMenu popupMenu;
@@ -20,68 +24,148 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     public EditorModeManager editorModeManager;
     public HoldStateManager holdStateManager;
 
+    public StyleSheet globalStyleSheets;
+
+    public RenderTexture renderTexture;
+    public VideoPlayer videoPlayer;
+
+    private readonly List<Action> _addedChangedCallbacks = new();
+    private readonly StyleColor _deselectedBorderColor = new(new Color(0.25f, 0.25f, 0.25f));
+
     // a dictionary for storing each visual element's state
     private readonly Dictionary<VisualElement, bool> _gridStateDictionary = new();
-
-    // a dictionary for mapping hold blueprints to grid tiles
-    // the HoldToGrid one is public, because Bottom bar uses it
-    public readonly Dictionary<HoldBlueprint, VisualElement> HoldToGridDictionary = new();
     private readonly Dictionary<VisualElement, HoldBlueprint> _gridToHoldDictionary = new();
+    private readonly StyleColor _pickedBorderColor = new(new Color(0f, 0.5f, 0.4f));
+
+    // styling
+    // TODO: this should be moved to the USS file
+    private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
 
     // a dictionary for storing the previous hold textures so we don't keep loading more
     // is again public because Bottom bar uses it
     public readonly Dictionary<VisualElement, Texture2D> GridTextureDictionary = new();
 
-    // store filtered holds
-    private List<HoldBlueprint> _filteredHoldIDs = new();
+    // a dictionary for mapping hold blueprints to grid tiles
+    // the HoldToGrid one is public, because Bottom bar uses it
+    public readonly Dictionary<HoldBlueprint, VisualElement> HoldToGridDictionary = new();
 
-    // UI elements
-    private VisualElement _root;
-    private VisualElement _grid;
+    private DropdownField _colorDropdown;
 
     private Button _deselectAllButton;
     private Button _deselectFilteredButton;
+    private long _doubleTriggerTimestamp;
 
     private Label _filteredHoldCounter;
-    private Label _totalSelectedHoldCounter;
 
-    private DropdownField _colorDropdown;
-    private DropdownField _typeDropdown;
+    // store filtered holds
+    private List<HoldBlueprint> _filteredHoldIDs = new();
+    private VisualElement _grid;
     private DropdownField _labelsDropdown;
     private DropdownField _manufacturerDropdown;
 
-    public StyleSheet globalStyleSheets;
+    // UI elements
+    private VisualElement _root;
+    private Label _totalSelectedHoldCounter;
+    private DropdownField _typeDropdown;
 
     private StyleBackground _videoBackground;
 
-    // hacks
-    private const long UIBugWorkaroundDurations = 100;
-    private long _doubleTriggerTimestamp;
-
-    // styling
-    // TODO: this should be moved to the USS file
-    private readonly StyleColor _selectedBorderColor = new(new Color(1f, 1f, 1f));
-    private readonly StyleColor _pickedBorderColor = new(new Color(0f, 0.5f, 0.4f));
-    private readonly StyleColor _deselectedBorderColor = new(new Color(0.25f, 0.25f, 0.25f));
-
-    public RenderTexture renderTexture;
-    public VideoPlayer videoPlayer;
-
-    private const string NoSelectionString = "-";
-
     public HoldBlueprint CurrentlySelectedHold { get; private set; }
 
-    /// <summary>
-    /// Return the currently picked holds, in the order they're displayed in the menu.
-    /// </summary>
-    public List<HoldBlueprint> GetPickedHolds() =>
-        OrderBlueprintsToGrid(HoldToGridDictionary.Keys.Where(x => _gridStateDictionary[HoldToGridDictionary[x]])
-            .ToArray()).ToList();
+    private void Awake()
+    {
+        _root = GetComponent<UIDocument>().rootVisualElement;
+        _root.visible = false;
+
+        Utilities.DisableElementFocusable(_root);
+
+        _videoBackground = new StyleBackground(Background.FromRenderTexture(renderTexture));
+
+        _grid = _root.Q<VisualElement>("hold-grid");
+
+        _deselectAllButton = _root.Q<Button>("deselect-all-button");
+        _deselectAllButton.clicked += () =>
+        {
+            foreach (var bp in _gridStateDictionary.Keys.ToList())
+                Deselect(bp);
+        };
+
+        _filteredHoldCounter = _root.Q<Label>("filtered-hold-counter");
+
+        _colorDropdown = _root.Q<DropdownField>("color-dropdown");
+        _labelsDropdown = _root.Q<DropdownField>("labels-dropdown");
+        _manufacturerDropdown = _root.Q<DropdownField>("manufacturer-dropdown");
+        _typeDropdown = _root.Q<DropdownField>("type-dropdown");
+
+        _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
+
+        AddChangedCallback(UpdateItemBorders);
+        AddChangedCallback(UpdateSelectCounters);
+        AddChangedCallback(UpdateFilterCounters);
+    }
+
+    private void Update()
+    {
+        // CTRL+A selects all filtered holds (when the holdpicker is open)
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
+            pauseMenu.IsTypePaused(PauseType.HoldPicker))
+        {
+            // if all of the holds are selected, deselect them instead
+            if (_filteredHoldIDs.Count == GetPickedHolds().Count)
+                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
+                    Deselect(HoldToGridDictionary[hold]);
+            else
+                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
+                    Select(HoldToGridDictionary[hold], false);
+        }
+
+        // only open the hold menu if some holds were actually loaded in
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
+            ToggleOpen();
+    }
+
+    public void Accept()
+    {
+        Close();
+    }
+
+    public void Close()
+    {
+        _root.visible = false;
+        pauseMenu.UnpauseType(PauseType.HoldPicker);
+    }
 
     /// <summary>
-    /// Update the grid according to the dropdown button filters.
-    ///
-    /// Additionally, deselect all of the holds that are no longer filtered
+    ///     Clear the hold picker menu, destroying the hold textures in the process.
+    /// </summary>
+    public void Reset()
+    {
+        ClearGrid();
+
+        _filteredHoldIDs.Clear();
+        _gridStateDictionary.Clear();
+        HoldToGridDictionary.Clear();
+        _gridToHoldDictionary.Clear();
+
+        foreach (var texture in GridTextureDictionary.Values)
+            Destroy(texture);
+        GridTextureDictionary.Clear();
+
+        Close();
+    }
+
+    /// <summary>
+    ///     Return the currently picked holds, in the order they're displayed in the menu.
+    /// </summary>
+    public List<HoldBlueprint> GetPickedHolds()
+    {
+        return OrderBlueprintsToGrid(HoldToGridDictionary.Keys.Where(x => _gridStateDictionary[HoldToGridDictionary[x]])
+            .ToArray()).ToList();
+    }
+
+    /// <summary>
+    ///     Update the grid according to the dropdown button filters.
+    ///     Additionally, deselect all of the holds that are no longer filtered
     /// </summary>
     private void UpdateGrid()
     {
@@ -111,50 +195,12 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
                 Deselect(HoldToGridDictionary[hold]);
 
         FillGrid(holds);
-        
+
         Changed();
     }
 
-    public void Close()
-    {
-        _root.visible = false;
-        pauseMenu.UnpauseType(PauseType.HoldPicker);
-    }
-
-    void Awake()
-    {
-        _root = GetComponent<UIDocument>().rootVisualElement;
-        _root.visible = false;
-
-        Utilities.DisableElementFocusable(_root);
-
-        _videoBackground = new StyleBackground(Background.FromRenderTexture(renderTexture));
-
-        _grid = _root.Q<VisualElement>("hold-grid");
-
-        _deselectAllButton = _root.Q<Button>("deselect-all-button");
-        _deselectAllButton.clicked += () =>
-        {
-            foreach (var bp in _gridStateDictionary.Keys.ToList())
-                Deselect(bp);
-        };
-
-        _filteredHoldCounter = _root.Q<Label>("filtered-hold-counter");
-
-        _colorDropdown = _root.Q<DropdownField>("color-dropdown");
-        _labelsDropdown = _root.Q<DropdownField>("labels-dropdown");
-        _manufacturerDropdown = _root.Q<DropdownField>("manufacturer-dropdown");
-        _typeDropdown = _root.Q<DropdownField>("type-dropdown");
-
-        _totalSelectedHoldCounter = _root.Q<Label>("total-selected-hold-counter");
-        
-        AddChangedCallback(UpdateItemBorders);
-        AddChangedCallback(UpdateSelectCounters);
-        AddChangedCallback(UpdateFilterCounters);
-    }
-
     /// <summary>
-    /// Initialize the hold picker menu using the hold loader data.
+    ///     Initialize the hold picker menu using the hold loader data.
     /// </summary>
     public void Initialize()
     {
@@ -163,7 +209,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
         var choiceFunctions = new Func<IEnumerable<string>>[]
             { holdLoader.AllColors, holdLoader.AllTypes, holdLoader.AllLabels, holdLoader.AllManufacturers };
 
-        for (int i = 0; i < dropdowns.Length; i++)
+        for (var i = 0; i < dropdowns.Length; i++)
         {
             var allValues = choiceFunctions[i]().ToList();
             allValues.Insert(0, NoSelectionString);
@@ -179,7 +225,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
         }
 
         // create a visual element for each hold
-        foreach (HoldBlueprint blueprint in holdLoader.Holds)
+        foreach (var blueprint in holdLoader.Holds)
         {
             var item = new VisualElement();
 
@@ -223,27 +269,30 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
         }
 
         Debug.Log(holdLoader.Holds.Count());
-        
+
         FillGrid(holdLoader.Holds);
 
         // done like this to prevent issue where the border is not visible
-        foreach (HoldBlueprint blueprint in holdLoader.Holds)
+        foreach (var blueprint in holdLoader.Holds)
         {
             Select(HoldToGridDictionary[blueprint]);
             Deselect(HoldToGridDictionary[blueprint]);
         }
-    
+
         var totalHoldCounter = _root.Q<Label>("total-hold-counter");
         totalHoldCounter.text = holdLoader.HoldCount.ToString();
     }
 
     /// <summary>
-    /// Update the counters that change when filtered holds are changed.
+    ///     Update the counters that change when filtered holds are changed.
     /// </summary>
-    private void UpdateFilterCounters() => _filteredHoldCounter.text = _filteredHoldIDs.Count.ToString();
+    private void UpdateFilterCounters()
+    {
+        _filteredHoldCounter.text = _filteredHoldIDs.Count.ToString();
+    }
 
     /// <summary>
-    /// Update the counters that change when filtered holds are selected/deselected.
+    ///     Update the counters that change when filtered holds are selected/deselected.
     /// </summary>
     private void UpdateSelectCounters()
     {
@@ -252,17 +301,19 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Select the hold.
+    ///     Select the hold.
     /// </summary>
-    public void Select(HoldBlueprint blueprint, bool switchHeld = true) =>
+    public void Select(HoldBlueprint blueprint, bool switchHeld = true)
+    {
         Select(HoldToGridDictionary[blueprint], switchHeld);
+    }
 
     /// <summary>
-    /// Select a grid element.
+    ///     Select a grid element.
     /// </summary>
     private void Select(VisualElement item, bool switchHeld = true)
     {
-        HoldBlueprint blueprint = _gridToHoldDictionary[item];
+        var blueprint = _gridToHoldDictionary[item];
 
         // do switch held if there currently are no selected holds
         if (switchHeld || CurrentlySelectedHold == null)
@@ -284,7 +335,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Update the borders of the items according to whether they're selected or not.
+    ///     Update the borders of the items according to whether they're selected or not.
     /// </summary>
     private void UpdateItemBorders()
     {
@@ -319,11 +370,11 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Deselect a grid element.
+    ///     Deselect a grid element.
     /// </summary>
     private void Deselect(VisualElement item)
     {
-        HoldBlueprint blueprint = _gridToHoldDictionary[item];
+        var blueprint = _gridToHoldDictionary[item];
 
         if (blueprint == CurrentlySelectedHold)
         {
@@ -351,10 +402,9 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Toggle the selection of the grid element.
-    ///
-    /// Additionally, make sure that when a new item is selected, make it the currently picked hold
-    /// and when an item is deselected, if it was the currently picked hold, remove it.
+    ///     Toggle the selection of the grid element.
+    ///     Additionally, make sure that when a new item is selected, make it the currently picked hold
+    ///     and when an item is deselected, if it was the currently picked hold, remove it.
     /// </summary>
     private void ToggleSelect(VisualElement item)
     {
@@ -365,7 +415,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Clear the hold grid.
+    ///     Clear the hold grid.
     /// </summary>
     private void ClearGrid()
     {
@@ -374,15 +424,17 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Order the given blueprints the way they will be ordered in the grid.
-    /// This means first by color and then by volume.
+    ///     Order the given blueprints the way they will be ordered in the grid.
+    ///     This means first by color and then by volume.
     /// </summary>
-    private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(IEnumerable<HoldBlueprint> blueprints) =>
-        blueprints.OrderBy(x => x.holdMetadata.colorHex)
+    private IOrderedEnumerable<HoldBlueprint> OrderBlueprintsToGrid(IEnumerable<HoldBlueprint> blueprints)
+    {
+        return blueprints.OrderBy(x => x.holdMetadata.colorHex)
             .ThenBy(x => x.holdMetadata.volume);
+    }
 
     /// <summary>
-    /// Fill the grid with a selection of the holds.
+    ///     Fill the grid with a selection of the holds.
     /// </summary>
     private void FillGrid(IEnumerable<HoldBlueprint> holdBlueprints)
     {
@@ -395,7 +447,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     }
 
     /// <summary>
-    /// Load a texture from the disk.
+    ///     Load a texture from the disk.
     /// </summary>
     private static Texture2D LoadTexture(string filePath)
     {
@@ -434,88 +486,58 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
         // Input.ResetInputAxes();
     }
 
-    void Update()
+    /// <summary>
+    ///     Add a callback for when the filtered/selected holds were changed.
+    /// </summary>
+    public void AddChangedCallback(Action callback)
     {
-        // CTRL+A selects all filtered holds (when the holdpicker is open)
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A) &&
-            pauseMenu.IsTypePaused(PauseType.HoldPicker))
-        {
-            // if all of the holds are selected, deselect them instead
-            if (_filteredHoldIDs.Count == GetPickedHolds().Count)
-            {
-                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Deselect(HoldToGridDictionary[hold]);
-            }
-            else
-            {
-                foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Select(HoldToGridDictionary[hold], false);
-            }
-        }
-
-        // only open the hold menu if some holds were actually loaded in
-        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Tab))
-            ToggleOpen();
+        _addedChangedCallbacks.Add(callback);
     }
 
     /// <summary>
-    /// Clear the hold picker menu, destroying the hold textures in the process.
-    /// </summary>
-    public void Reset()
-    {
-        ClearGrid();
-        
-        _filteredHoldIDs.Clear();
-        _gridStateDictionary.Clear();
-        HoldToGridDictionary.Clear();
-        _gridToHoldDictionary.Clear();
-
-        foreach (var texture in GridTextureDictionary.Values)
-            Destroy(texture);
-        GridTextureDictionary.Clear();
-
-        Close();
-    }
-
-    private readonly List<Action> _addedChangedCallbacks = new();
-
-    /// <summary>
-    /// Add a callback for when the filtered/selected holds were changed.
-    /// </summary>
-    public void AddChangedCallback(Action callback) => _addedChangedCallbacks.Add(callback);
-
-    /// <summary>
-    /// Called when the filtered/selected holds change to invoke their callbacks.
+    ///     Called when the filtered/selected holds change to invoke their callbacks.
     /// </summary>
     private void Changed()
     {
         foreach (var callback in _addedChangedCallbacks)
             callback();
     }
-    
+
 
     /// <summary>
-    /// Return the hold before the current one.
+    ///     Return the hold before the current one.
     /// </summary>
-    public HoldBlueprint GetPreviousHold() => GetFromCurrentByDelta(-1);
-    
-    /// <summary>
-    /// Return the hold after the current one.
-    /// </summary>
-    public HoldBlueprint GetNextHold() => GetFromCurrentByDelta(1);
+    public HoldBlueprint GetPreviousHold()
+    {
+        return GetFromCurrentByDelta(-1);
+    }
 
     /// <summary>
-    /// Move to the previous filtered hold.
+    ///     Return the hold after the current one.
     /// </summary>
-    public void MoveToPreviousHold() => MoveCurrentByDelta(-1);
+    public HoldBlueprint GetNextHold()
+    {
+        return GetFromCurrentByDelta(1);
+    }
 
     /// <summary>
-    /// Move to the next filtered hold.
+    ///     Move to the previous filtered hold.
     /// </summary>
-    public void MoveToNextHold() => MoveCurrentByDelta(1);
+    public void MoveToPreviousHold()
+    {
+        MoveCurrentByDelta(-1);
+    }
 
     /// <summary>
-    /// Get the hold off by delta to the current one.
+    ///     Move to the next filtered hold.
+    /// </summary>
+    public void MoveToNextHold()
+    {
+        MoveCurrentByDelta(1);
+    }
+
+    /// <summary>
+    ///     Get the hold off by delta to the current one.
     /// </summary>
     private HoldBlueprint GetFromCurrentByDelta(int delta)
     {
@@ -523,21 +545,19 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 
         if (pickedHolds.Count == 0)
             return null;
-        
-        int selectedIndex = pickedHolds.IndexOf(CurrentlySelectedHold);
-        int newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
+
+        var selectedIndex = pickedHolds.IndexOf(CurrentlySelectedHold);
+        var newIndex = (selectedIndex + delta + pickedHolds.Count) % pickedHolds.Count;
 
         return pickedHolds[newIndex];
     }
 
     /// <summary>
-    /// Move the current hold by delta units.
+    ///     Move the current hold by delta units.
     /// </summary>
     private void MoveCurrentByDelta(int delta)
     {
         CurrentlySelectedHold = GetFromCurrentByDelta(delta);
         Changed();
     }
-
-    public void Accept() => Close();
 }
