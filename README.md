@@ -17,6 +17,8 @@ To use Cled, you need a wall and holds dataset.
 A dataset example, along with the specification, can be found in `Models/Example`.
 This dataset can then be imported to Cled either by `File > New`, or by pressing `Ctrl+N`.
 
+To generate your own dataset, use [Clis](https://github.com/Climber-Apps/Clis/) to generate the hold and wall models and then use `Scripts/ClisImporter.py` to prepare them for usage.
+
 For additional information, see the [thesis](https://github.com/Climber-Apps/Thesis).
 
 ### Key bindings
