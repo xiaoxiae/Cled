@@ -141,10 +141,9 @@ public class RouteManager : MonoBehaviour, IResetable
     private readonly HashSet<Route> _routes = new();
 
     private readonly List<Action> _routesChangedCallbacks = new();
-
     private readonly List<Action> _selectedRouteChangedCallbacks = new();
-    public readonly HashSet<GameObject> EndingHolds = new();
 
+    public readonly HashSet<GameObject> EndingHolds = new();
     public readonly HashSet<GameObject> StartingHolds = new();
 
     private Route _selectedRoute;
@@ -227,12 +226,14 @@ public class RouteManager : MonoBehaviour, IResetable
         {
             // only update when hold position or rotation changed
             if (customUpdate.LastPosition == hold.transform.position &&
-                customUpdate.LastRotation == hold.transform.rotation) return;
+                customUpdate.LastRotation == hold.transform.rotation && 
+                customUpdate.LastScale == hold.transform.localScale) return;
 
             var holdPosition = hold.transform.position;
 
             customUpdate.LastPosition = holdPosition;
             customUpdate.LastRotation = hold.transform.rotation;
+            customUpdate.LastScale = hold.transform.localScale;
 
             var c1 = hold.GetComponent<MeshCollider>();
             var c2 = markerInstance.transform.GetChild(0).GetComponent<MeshCollider>();
@@ -462,6 +463,7 @@ public class RouteManager : MonoBehaviour, IResetable
     {
         public Vector3 LastPosition;
         public Quaternion LastRotation;
+        public Vector3 LastScale;
 
         private void Update()
         {
