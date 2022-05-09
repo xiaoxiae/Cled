@@ -24,7 +24,7 @@ public class Exporter : MonoBehaviour
     {
         try
         {
-            using var writer = new StreamWriter(path);
+            MemoryStream mem = new MemoryStream(); 
 
             var serializer = new SerializerBuilder().DisableAliases().Build();
 
@@ -51,7 +51,9 @@ public class Exporter : MonoBehaviour
                     Grade = route.Grade
                 });
 
-            serializer.Serialize(writer,
+            var tmpWriter = new StreamWriter(mem);
+
+            serializer.Serialize(tmpWriter,
                 new SerializableState
                 {
                     Version = Application.version,
@@ -81,6 +83,12 @@ public class Exporter : MonoBehaviour
                         ImageSupersize = Preferences.ImageSupersize
                     }
                 });
+            
+            tmpWriter.Flush();
+            mem.Flush();
+            using var fs = new FileStream(path, FileMode.OpenOrCreate);
+            mem.WriteTo(fs);
+            fs.Flush();
 
             return true;
         }
