@@ -151,6 +151,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
             Destroy(texture);
         GridTextureDictionary.Clear();
 
+        Changed();
         Close();
     }
 
@@ -267,8 +268,6 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
             item.style.backgroundImage =
                 new StyleBackground(Background.FromTexture2D(GridTextureDictionary[item]));
         }
-
-        Debug.Log(holdLoader.Holds.Count());
 
         FillGrid(holdLoader.Holds);
 

@@ -529,7 +529,7 @@ MonoBehaviour:
   routeManager: {fileID: 651512647}
   lightManager: {fileID: 665042420}
   popupMenu: {fileID: 547134781}
-  playerController: {fileID: 665042417}
+  movementController: {fileID: 0}
   cameraController: {fileID: 963194229}
 --- !u!4 &609017895
 Transform:
@@ -1650,8 +1650,9 @@ MonoBehaviour:
   lightManager: {fileID: 665042420}
   pauseMenu: {fileID: 816695697}
   popupMenu: {fileID: 547134781}
+  bottomBar: {fileID: 1516719031}
   loadingScreenMenu: {fileID: 1409923718}
-  playerController: {fileID: 665042417}
+  movementController: {fileID: 665042417}
   cameraController: {fileID: 963194229}
 --- !u!1 &2070913818
 GameObject:

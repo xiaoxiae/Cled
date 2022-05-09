@@ -39,7 +39,6 @@ public class Importer : MonoBehaviour, IResetable
         pauseMenu.Reset();
         movementController.Reset();
         cameraController.Reset();
-        bottomBar.Reset();
     }
 
     /// <summary>
