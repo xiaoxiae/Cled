@@ -16,7 +16,7 @@ public class UIKeyboardController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            // else close popups first
+            // accepts popups
             if (pauseMenu.IsTypePaused(PauseType.Popup))
             {
                 popupMenu.Accept();

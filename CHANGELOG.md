@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Fix marker position not updating when flipping hold.
 - Fix save file being overwritten when export exception occurs.
+- Fix escape not triggering popup ok actions.
 
 
 ## [2.3.0] - 2022-05-05

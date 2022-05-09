@@ -24,14 +24,18 @@ public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
     public void Accept()
     {
         if (CurrentOkButton != null)
-            using (var e = new NavigationSubmitEvent { target = CurrentOkButton })
-            {
-                CurrentOkButton.SendEvent(e);
-            }
+        {
+            using var e = new NavigationSubmitEvent { target = CurrentOkButton };
+            CurrentOkButton.SendEvent(e);
+        }
     }
 
     public void Close()
     {
+        // we want to do accept for info popups for things like the loading screen
+        if (_document.visualTreeAsset == InfoPopup)
+            Accept();
+        
         _document.visualTreeAsset = null;
         pauseMenu.UnpauseType(PauseType.Popup);
     }

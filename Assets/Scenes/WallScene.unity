@@ -529,7 +529,7 @@ MonoBehaviour:
   routeManager: {fileID: 651512647}
   lightManager: {fileID: 665042420}
   popupMenu: {fileID: 547134781}
-  movementController: {fileID: 0}
+  movementController: {fileID: 665042417}
   cameraController: {fileID: 963194229}
 --- !u!4 &609017895
 Transform:
