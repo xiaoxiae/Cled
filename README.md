@@ -26,11 +26,11 @@ For additional information, see the [thesis](https://github.com/Climber-Apps/The
 While most of the controls are accessible via the UI, here is a comprehensive list of key bindings for efficiently controlling the editor:
 
 #### Movement
-|         |                                  |
-| ---     | ---                              |
-| `WSAD`  | move forward/backward/left/right |
-| `space` | fly upward                       |
-| `shift` | fly downward                     |
+|         |                |
+| ---     | ---            |
+| `WSAD`  | move `↑/↓/←/→` |
+| `Space` | fly upward     |
+| `Shift` | fly downward   |
 
 #### UI
 |                                        |                          |
@@ -45,13 +45,13 @@ While most of the controls are accessible via the UI, here is a comprehensive li
 | ---                             | ---                                             |
 | left click                      | pick up/place the hovered/held hold             |
 | right click                     | select the hovered route                        |
-| `Ctrl` + click (ROUTE)          | toggle hovered hold as being in the route       |
 | `E`                             | toggle between NORMAL and EDITING               |
 | `H`                             | horizontally flip hovered/held hold             |
 | `R` or `Delete`                 | delete hovered/held hold                        |
 | `Ctrl+R` or `Ctrl+Delete`       | delete hovered route/route containing held hold |
 | middle button (EDITING) + mouse | rotate held hold                                |
 | `T`/`B`                         | toggle hovered hold as ending/starting          |
+| `Ctrl` + click (ROUTE)          | toggle hovered hold as being in the route       |
 | wheel up/down                   | cycle filtered holds                            |
 
 #### Import/Export
