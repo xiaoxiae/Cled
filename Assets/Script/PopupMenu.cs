@@ -48,7 +48,6 @@ public class PopupMenu : MonoBehaviour, IClosable, IAcceptable
         _document.visualTreeAsset = InfoPopup;
 
         var root = _document.rootVisualElement;
-        Utilities.DisableElementFocusable(root);
 
         pauseMenu.PauseType(PauseType.Popup);
 

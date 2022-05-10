@@ -89,19 +89,6 @@ public class Utilities
         return hash.ToString();
     }
 
-    /// <summary>
-    ///     Disable the element being able to be focused.
-    /// </summary>
-    public static void DisableElementFocusable(VisualElement element)
-    {
-        foreach (var child in element.Children())
-        {
-            child.focusable = false;
-
-            DisableElementFocusable(child);
-        }
-    }
-
     public static void SetRendererOpacity(Renderer renderer, float opacity)
     {
         var mtl = renderer.material;

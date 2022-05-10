@@ -77,8 +77,6 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
         _root = GetComponent<UIDocument>().rootVisualElement;
         _root.visible = false;
 
-        Utilities.DisableElementFocusable(_root);
-
         _videoBackground = new StyleBackground(Background.FromRenderTexture(renderTexture));
 
         _grid = _root.Q<VisualElement>("hold-grid");

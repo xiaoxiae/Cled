@@ -17,7 +17,6 @@ public class RouteViewMenu : MonoBehaviour, IClosable
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
-        Utilities.DisableElementFocusable(_root);
 
         // close by default
         Close();

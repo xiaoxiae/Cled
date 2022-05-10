@@ -35,7 +35,6 @@ public class ToolbarMenu : MonoBehaviour
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
-        Utilities.DisableElementFocusable(_root);
 
         // mode label
         var currentModeLabel = _root.Q<Label>("current-mode-label");
