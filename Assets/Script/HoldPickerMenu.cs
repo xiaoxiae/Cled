@@ -111,10 +111,12 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
             // if all of the holds are selected, deselect them instead
             if (_filteredHoldIDs.Count == GetPickedHolds().Count)
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Deselect(HoldToGridDictionary[hold]);
+                    Deselect(HoldToGridDictionary[hold], false);
             else
                 foreach (var hold in OrderBlueprintsToGrid(_filteredHoldIDs))
-                    Select(HoldToGridDictionary[hold], false);
+                    Select(HoldToGridDictionary[hold], false, false);
+            
+            Changed();
         }
 
         // only open the hold menu if some holds were actually loaded in
@@ -308,7 +310,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     /// <summary>
     ///     Select a grid element.
     /// </summary>
-    private void Select(VisualElement item, bool switchHeld = true)
+    private void Select(VisualElement item, bool switchHeld = true, bool performChangedCallback = true)
     {
         var blueprint = _gridToHoldDictionary[item];
 
@@ -328,7 +330,8 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 
         _gridStateDictionary[item] = true;
 
-        Changed();
+        if (performChangedCallback)
+            Changed();
     }
 
     /// <summary>
@@ -369,7 +372,7 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
     /// <summary>
     ///     Deselect a grid element.
     /// </summary>
-    private void Deselect(VisualElement item)
+    private void Deselect(VisualElement item, bool performChangedCallback = true)
     {
         var blueprint = _gridToHoldDictionary[item];
 
@@ -395,7 +398,8 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 
         _gridStateDictionary[item] = false;
 
-        Changed();
+        if (performChangedCallback)
+            Changed();
     }
 
     /// <summary>

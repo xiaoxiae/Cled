@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.3.1] - 2022-05-09
 
 ### Changed
+- Improve Ctrl+A behavior in hold picker.
 - Improve route view click behavior.
 - Fix marker position not updating when flipping hold.
 - Fix save file being overwritten when export exception occurs.
