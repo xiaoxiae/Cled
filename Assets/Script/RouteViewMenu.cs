@@ -44,7 +44,7 @@ public class RouteViewMenu : MonoBehaviour, IClosable
         _listView.makeItem = MakeItem;
         _listView.bindItem = BindItem;
 
-        _listView.onItemsChosen += ChosenItemCallback;
+        _listView.onSelectionChange += ChosenItemCallback;
 
         routeManager.AddRoutesChangedCallback(Rebuild);
         routeManager.AddSelectedRouteChangedCallback(Rebuild);
