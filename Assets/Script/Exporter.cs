@@ -86,7 +86,7 @@ public class Exporter : MonoBehaviour
             
             tmpWriter.Flush();
             mem.Flush();
-            using var fs = new FileStream(path, FileMode.OpenOrCreate);
+            using var fs = new FileStream(path, FileMode.Create);
             mem.WriteTo(fs);
             fs.Flush();
 
