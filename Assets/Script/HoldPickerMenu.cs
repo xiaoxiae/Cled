@@ -149,8 +149,11 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
 
         foreach (var texture in GridTextureDictionary.Values)
             Destroy(texture);
+        
         GridTextureDictionary.Clear();
 
+        CurrentlySelectedHold = null;
+        
         Changed();
         Close();
     }
@@ -482,9 +485,6 @@ public class HoldPickerMenu : MonoBehaviour, IClosable, IAcceptable, IResetable
             _root.visible = true;
             pauseMenu.PauseType(PauseType.HoldPicker);
         }
-
-        // TODO: while this does fix it, it is pretty buggy
-        // Input.ResetInputAxes();
     }
 
     /// <summary>

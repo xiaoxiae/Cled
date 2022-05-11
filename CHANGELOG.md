@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve movement consistency across multiple platforms.
 - Change initial window size.
 - Slightly adjust icon and logo assets.
+- Fix repeated project openings crashing.
 - Fix cursor snapping to application after initialization.
 - Fix marker position not updating when flipping hold.
 - Fix save file being overwritten when export exception occurs.
