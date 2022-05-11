@@ -39,7 +39,7 @@
             </ui:VisualElement>
         </ui:Foldout>
         <ui:Foldout text="View" name="view-foldout" value="false" style="flex-direction: column;">
-            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 172px;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 178px;">
                 <ui:Toggle label="Routes" name="routes-toggle" />
                 <ui:Button display-tooltip-when-elided="true" name="hold-menu-button" focusable="false" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Holds menu" display-tooltip-when-elided="true" name="holds-label" />
@@ -48,7 +48,7 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
-        <ui:Foldout text="Capture" value="false" name="capture-foldout" style="flex-direction: column;">
+        <ui:Foldout text="Capture" value="false" name="capture-foldout" focusable="false" style="flex-direction: column;">
             <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 194px;">
                 <ui:Button display-tooltip-when-elided="true" name="capture-image-button" class="toolbar-button" style="flex-direction: row; flex-grow: 1;">
                     <ui:Label text="Image" display-tooltip-when-elided="true" name="image-label" />
@@ -62,8 +62,8 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:Foldout>
-        <ui:Foldout text="Lighting" value="false" name="lighting-foldout" style="flex-direction: column;">
-            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 180px;">
+        <ui:Foldout text="Lighting" value="false" name="lighting-foldout" focusable="false" style="flex-direction: column;">
+            <ui:VisualElement class="toolbar-panel" style="height: auto; position: absolute; width: 188px;">
                 <ui:Toggle name="player-light-toggle" style="flex-grow: 0;">
                     <ui:Label text="Player light" display-tooltip-when-elided="true" />
                     <ui:VisualElement name="hfill" style="flex-grow: 1; flex-shrink: 0; width: 23px;" />
