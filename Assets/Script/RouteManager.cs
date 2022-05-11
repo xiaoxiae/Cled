@@ -222,11 +222,15 @@ public class RouteManager : MonoBehaviour, IResetable
 
         var customUpdate = markerInstance.AddComponent<MarkerUpdate>();
 
-        void CustomUpdateFuntion()
+        void CustomUpdateFunction()
         {
+            Physics.SyncTransforms();
+            
+            var holdCollider = hold.GetComponent<MeshCollider>();
+            
             // only update when hold position or rotation changed
             if (customUpdate.LastPosition == hold.transform.position &&
-                customUpdate.LastRotation == hold.transform.rotation && 
+                customUpdate.LastRotation == hold.transform.rotation &&
                 customUpdate.LastScale == hold.transform.localScale) return;
 
             var holdPosition = hold.transform.position;
@@ -235,25 +239,35 @@ public class RouteManager : MonoBehaviour, IResetable
             customUpdate.LastRotation = hold.transform.rotation;
             customUpdate.LastScale = hold.transform.localScale;
 
-            var c1 = hold.GetComponent<MeshCollider>();
-            var c2 = markerInstance.transform.GetChild(0).GetComponent<MeshCollider>();
-
             markerInstance.transform.position = holdPosition;
             markerInstance.transform.LookAt(hold.transform.forward + holdPosition, Vector3.up);
 
-            var step = 0.001f;
-            float stepsBack = 30;
+            // raycast from the center of the hold and move the marker accordingly
+            // we have to temporarily allow hitting backfaces
+            var temp = Physics.queriesHitBackfaces;
+            Physics.queriesHitBackfaces = true;
 
-            // a little dangerous but whatever
-            while (Physics.ComputePenetration(c1, c1.transform.position, c1.transform.rotation, c2,
-                       c2.transform.position, c2.transform.rotation, out _, out _))
-                markerInstance.transform.position -= markerInstance.transform.up * step;
+            // the ray must start inside the hold so we move it slightly upward
+            Ray ray = new Ray(holdPosition + hold.transform.forward.normalized / 200,
+                -markerInstance.transform.up);
 
-            markerInstance.transform.position += markerInstance.transform.up * (step * stepsBack);
+            // allow for hitting backfaces, since we're casting from inside the object
+            if (holdCollider.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                markerInstance.transform.position = hit.point;
+                
+                // correct for raycast offset
+                markerInstance.transform.position -= hold.transform.forward.normalized / 200;
+            }
+
+            Physics.queriesHitBackfaces = temp;
+
+            // move up slightly
+            markerInstance.transform.position += markerInstance.transform.up * 0.01f;
         }
 
-        customUpdate.OnUpdate += CustomUpdateFuntion;
-        CustomUpdateFuntion();
+        customUpdate.OnUpdate += CustomUpdateFunction;
+        CustomUpdateFunction();
     }
 
     /// <summary>
@@ -465,10 +479,7 @@ public class RouteManager : MonoBehaviour, IResetable
         public Quaternion LastRotation;
         public Vector3 LastScale;
 
-        private void Update()
-        {
-            OnUpdate?.Invoke();
-        }
+        private void LateUpdate() => OnUpdate?.Invoke();   
 
         public event Action OnUpdate;
     }
