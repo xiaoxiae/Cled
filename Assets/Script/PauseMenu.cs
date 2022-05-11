@@ -44,7 +44,6 @@ public class PauseMenu : MonoBehaviour, IResetable
     private void Awake()
     {
         _document = GetComponent<UIDocument>();
-        Unpause();
     }
 
     private void Start()

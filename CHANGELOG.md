@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve Ctrl+A behavior in hold picker.
 - Improve route view click behavior.
 - Slightly adjust icon and logo assets.
+- Fix cursor snapping to application after initialization.
 - Fix marker position not updating when flipping hold.
 - Fix save file being overwritten when export exception occurs.
 - Fix escape not triggering popup ok actions.
