@@ -8,16 +8,9 @@ using YamlDotNet.Serialization;
 /// </summary>
 public class WallMetadata
 {
-    public WallMetadata()
-    {
-        Grades = new List<string>();
-        Setters = new List<string>();
-        Zones = new List<string>();
-    }
-
-    public List<string> Grades { get; }
-    public List<string> Setters { get; }
-    public List<string> Zones { get; }
+    public List<string> Grades { get; set; }
+    public List<string> Setters { get; set; }
+    public List<string> Zones { get; set; }
 }
 
 public class WallLoader : MonoBehaviour, IResetable
@@ -52,13 +45,15 @@ public class WallLoader : MonoBehaviour, IResetable
         var metadataPath = Path.Combine(wallFolder, wallObjectName + ".yaml");
         if (File.Exists(metadataPath))
         {
-            var yml = File.ReadAllText(metadataPath);
+            var deserializer = new Deserializer();
 
-            Metadata = new Deserializer().Deserialize<WallMetadata>(yml);
+            using var reader = new StreamReader(metadataPath);
+            Metadata = deserializer.Deserialize<WallMetadata>(reader);
         }
         else
         {
-            Metadata = new WallMetadata();
+            Metadata = new WallMetadata
+                { Setters = new List<string>(), Zones = new List<string>(), Grades = new List<string>() };
         }
 
         var mf = Wall.transform.GetChild(0).GetComponent<MeshFilter>();
