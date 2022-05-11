@@ -10,7 +10,7 @@ public class MovementController : MonoBehaviour, IResetable
 
     private const float FallThreshold = -10;
     private const float FlyingSmoothness = 0.15f;
-    private const float FlyingMultiplier = 0.1f;
+    private const float FlyingMultiplier = 5f;
 
     // gravity-related things
     private const float GravityMultiplier = 0.25f;
@@ -120,11 +120,11 @@ public class MovementController : MonoBehaviour, IResetable
         if (!_flying)
         {
             _gravity += 0.981f * Time.deltaTime;
-            controller.Move(move * Time.deltaTime + Vector3.down * (_gravity * GravityMultiplier));
+            controller.Move(move * Time.deltaTime + Vector3.down * _gravity * GravityMultiplier);
         }
         else
         {
-            controller.Move(move * Time.deltaTime + Vector3.up * _flyingSpeed * FlyingMultiplier);
+            controller.Move((move + Vector3.up * _flyingSpeed * FlyingMultiplier) * Time.deltaTime);
         }
     }
 
