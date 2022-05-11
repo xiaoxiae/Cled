@@ -19,7 +19,6 @@ public class Importer : MonoBehaviour, IResetable
     public LightManager lightManager;
     public PauseMenu pauseMenu;
     public PopupMenu popupMenu;
-    public BottomBar bottomBar;
     public LoadingScreenMenu loadingScreenMenu;
 
     public MovementController movementController;
@@ -76,13 +75,13 @@ public class Importer : MonoBehaviour, IResetable
     /// <summary>
     ///     Close the loading screen with a given exception during an action.
     /// </summary>
-    private void CloseWithException(string action, string errorMessage)
+    private void CloseWithException(string action, Exception exception)
     {
         Reset();
         Preferences.Initialized = false;
 
         popupMenu.CreateInfoPopup(
-            $"The following exception occurred while {action}: {errorMessage}",
+            $"The following exception occurred while {action}: {exception.Message}",
             loadingScreenMenu.Close
         );
     }
@@ -109,7 +108,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("loading the wall", e.Message);
+            CloseWithException("loading the wall", e);
             yield break;
         }
 
@@ -124,7 +123,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("loading the holds", e.Message);
+            CloseWithException("loading the holds", e);
             yield break;
         }
 
@@ -171,7 +170,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("populating the wall", e.Message);
+            CloseWithException("populating the wall", e);
             yield break;
         }
 
@@ -211,7 +210,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("configuring", e.Message);
+            CloseWithException("configuring", e);
             yield break;
         }
 
@@ -250,7 +249,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("loading the wall", e.Message);
+            CloseWithException("loading the wall", e);
             yield break;
         }
 
@@ -265,7 +264,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("loading the holds", e.Message);
+            CloseWithException("loading the holds", e);
             yield break;
         }
 
@@ -286,7 +285,7 @@ public class Importer : MonoBehaviour, IResetable
         }
         catch (Exception e)
         {
-            CloseWithException("configuring", e.Message);
+            CloseWithException("configuring", e);
             yield break;
         }
 
