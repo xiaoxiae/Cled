@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Prevent the editor from quitting when not saved.
+- Ignore unmatched properties when loading metadata files.
 
 
 ## [2.3.1] - 2022-05-11

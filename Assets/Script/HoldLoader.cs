@@ -134,7 +134,9 @@ public class HoldLoader : MonoBehaviour, IResetable
     public void Initialize(string path)
     {
         var yml = File.ReadAllText(Path.Combine(path, HoldsYamlName));
-        var holdInformation = new Deserializer().Deserialize<Dictionary<string, HoldMetadata>>(yml);
+        var holdInformation = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties().Build()
+            .Deserialize<Dictionary<string, HoldMetadata>>(yml);
 
         foreach (var pair in holdInformation)
         {

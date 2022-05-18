@@ -45,7 +45,7 @@ public class Importer : MonoBehaviour, IResetable
     /// </summary>
     private static SerializableState Deserialize(string path)
     {
-        var deserializer = new Deserializer();
+        var deserializer = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
 
         using var reader = new StreamReader(path);
         return deserializer.Deserialize<SerializableState>(reader);

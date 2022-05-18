@@ -45,7 +45,7 @@ public class WallLoader : MonoBehaviour, IResetable
         var metadataPath = Path.Combine(wallFolder, wallObjectName + ".yaml");
         if (File.Exists(metadataPath))
         {
-            var deserializer = new Deserializer();
+            var deserializer = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
 
             using var reader = new StreamReader(metadataPath);
             Metadata = deserializer.Deserialize<WallMetadata>(reader);
