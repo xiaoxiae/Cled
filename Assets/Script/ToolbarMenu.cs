@@ -32,6 +32,8 @@ public class ToolbarMenu : MonoBehaviour
 
     private Button _saveButton;
 
+    private bool _wantsToQuit = false;
+
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
@@ -135,6 +137,7 @@ public class ToolbarMenu : MonoBehaviour
             }
         };
 
+        // close one foldout when another is open
         Foldout[] foldouts =
         {
             _root.Q<Foldout>("file-foldout"),
@@ -158,6 +161,21 @@ public class ToolbarMenu : MonoBehaviour
             pauseMenu.AddPausedHook(() => { foldout.value = false; });
             pauseMenu.AddUnpausedHook(() => { foldout.value = false; });
         }
+        
+        // prevent the application from quitting and trigger a save instead
+        Application.wantsToQuit += () =>
+        {
+            if (_wantsToQuit)
+                return true;
+
+            _ensureSavedAction(() =>
+            {
+                _wantsToQuit = true;
+                Application.Quit();
+            });
+
+            return false;
+        };
     }
 
     private void Start()

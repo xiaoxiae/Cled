@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.3.2] - TODO
+
+### Changed
+- Prevent the editor from quitting when not saved.
+
+
 ## [2.3.1] - 2022-05-11
 
 ### Changed
