@@ -189,21 +189,21 @@ public class HoldLoader : MonoBehaviour, IResetable
 
     private static string GetHoldPreviewVideoPath(string id)
     {
-        return Path.Combine(Preferences.CurrentHoldModelsPath, id + "-preview.webm");
+        return Path.Combine(Preferences.HoldModelsPath, id + "-preview.webm");
     }
 
     private static string GetHoldPreviewImagePath(string id)
     {
-        return Path.Combine(Preferences.CurrentHoldModelsPath, id + "-preview.jpg");
+        return Path.Combine(Preferences.HoldModelsPath, id + "-preview.jpg");
     }
 
     private static string GetHoldModelPath(string id)
     {
-        return Path.Combine(Preferences.CurrentHoldModelsPath, id + ".obj");
+        return Path.Combine(Preferences.HoldModelsPath, id + ".obj");
     }
 
     private static string GetHoldMaterialPath(string id)
     {
-        return Path.Combine(Preferences.CurrentHoldModelsPath, id + ".mtl");
+        return Path.Combine(Preferences.HoldModelsPath, id + ".mtl");
     }
 }

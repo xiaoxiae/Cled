@@ -44,7 +44,6 @@ public static class Preferences
 
     /// <summary>
     ///     The path to the last opened wall (including the holds, etc.) path.
-    ///     Used when the editor scene is loaded - if it isn't empty, this path is used.
     /// </summary>
     public static string LastOpenWallPath
     {
@@ -54,22 +53,38 @@ public static class Preferences
 
     /// <summary>
     ///     The current wall model path.
-    ///     Used when the editor scene is loaded and the LastOpenWallPath is empty.
     /// </summary>
-    public static string CurrentWallModelPath
+    public static string WallModelPath
     {
-        get => PlayerPrefs.GetString("CurrentWallModelPath");
-        set => PlayerPrefs.SetString("CurrentWallModelPath", value);
+        get => PlayerPrefs.GetString("WallModelPath");
+        set => PlayerPrefs.SetString("WallModelPath", value);
     }
 
     /// <summary>
     ///     The current hold models path.
-    ///     Again used when the editor scene is loaded and the LastOpenWallPath is empty.
     /// </summary>
-    public static string CurrentHoldModelsPath
+    public static string HoldModelsPath
     {
-        get => PlayerPrefs.GetString("CurrentHoldModelsPath");
-        set => PlayerPrefs.SetString("CurrentHoldModelsPath", value);
+        get => PlayerPrefs.GetString("HoldModelsPath");
+        set => PlayerPrefs.SetString("HoldModelsPath", value);
+    }
+    
+    /// <summary>
+    ///     The relative version of the current wall model path.
+    /// </summary>
+    public static string RelativeWallModelPath
+    {
+        get => PlayerPrefs.GetString("RelativeWallModelPath");
+        set => PlayerPrefs.SetString("RelativeWallModelPath", value);
+    }
+
+    /// <summary>
+    ///     The relative version of the current hold models path.
+    /// </summary>
+    public static string RelativeHoldModelsPath
+    {
+        get => PlayerPrefs.GetString("RelativeHoldModelsPath");
+        set => PlayerPrefs.SetString("RelativeHoldModelsPath", value);
     }
 
     /// <summary>

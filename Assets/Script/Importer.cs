@@ -60,8 +60,11 @@ public class Importer : MonoBehaviour, IResetable
         {
             var obj = Deserialize(path);
 
-            Preferences.CurrentWallModelPath = obj.WallModelPath;
-            Preferences.CurrentHoldModelsPath = obj.HoldModelsPath;
+            Preferences.WallModelPath = obj.WallModelPath;
+            Preferences.HoldModelsPath = obj.HoldModelsPath;
+
+            Preferences.RelativeWallModelPath = obj.RelativeWallModelPath;
+            Preferences.RelativeHoldModelsPath = obj.RelativeHoldModelsPath;
         }
         catch (Exception e)
         {
@@ -75,15 +78,18 @@ public class Importer : MonoBehaviour, IResetable
     /// <summary>
     ///     Close the loading screen with a given exception during an action.
     /// </summary>
-    private void CloseWithException(string action, Exception exception)
+    private void CloseWithException(string action, Exception exception) =>
+        CloseWithMessage($"The following exception occurred while {action}: {exception.Message}");
+
+    /// <summary>
+    ///     Close the loading screen with a given message.
+    /// </summary>
+    private void CloseWithMessage(string message)
     {
         Reset();
         Preferences.Initialized = false;
 
-        popupMenu.CreateInfoPopup(
-            $"The following exception occurred while {action}: {exception.Message}",
-            loadingScreenMenu.Close
-        );
+        popupMenu.CreateInfoPopup(message, loadingScreenMenu.Close);
     }
 
     /// <summary>
@@ -101,10 +107,24 @@ public class Importer : MonoBehaviour, IResetable
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
 
+        // initialize the wall
         try
         {
-            // initialize wall
-            wallLoader.Initialize(Preferences.CurrentWallModelPath);
+            if (File.Exists(Preferences.WallModelPath))
+            {
+                Preferences.RelativeWallModelPath = Utilities.GetRelativePath(Preferences.WallModelPath);
+                wallLoader.Initialize(Preferences.WallModelPath);
+            }
+            else if (File.Exists(Preferences.RelativeWallModelPath))
+            {
+                Preferences.WallModelPath = Utilities.GetAbsolutePath(Preferences.RelativeWallModelPath);
+                wallLoader.Initialize(Preferences.RelativeWallModelPath);
+            }
+            else
+            {
+                CloseWithMessage("Wall model not found, has it been moved?");
+                yield break;
+            }
         }
         catch (Exception e)
         {
@@ -118,8 +138,21 @@ public class Importer : MonoBehaviour, IResetable
 
         try
         {
-            // initialize holds
-            holdLoader.Initialize(Preferences.CurrentHoldModelsPath);
+            if (Directory.Exists(Preferences.HoldModelsPath))
+            {
+                Preferences.RelativeHoldModelsPath = Utilities.GetRelativePath(Preferences.HoldModelsPath);
+                holdLoader.Initialize(Preferences.HoldModelsPath);
+            }
+            else if (Directory.Exists(Preferences.RelativeHoldModelsPath))
+            {
+                Preferences.HoldModelsPath = Utilities.GetAbsolutePath(Preferences.RelativeHoldModelsPath);
+                holdLoader.Initialize(Preferences.RelativeHoldModelsPath);
+            }
+            else
+            {
+                CloseWithMessage("Hold models directory not found, has it been moved?");
+                yield break;
+            }
         }
         catch (Exception e)
         {

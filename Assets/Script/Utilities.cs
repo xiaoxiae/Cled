@@ -89,6 +89,9 @@ public class Utilities
         return hash.ToString();
     }
 
+    /// <summary>
+    /// Set the renderer opacity to some value.
+    /// </summary>
     public static void SetRendererOpacity(Renderer renderer, float opacity)
     {
         var mtl = renderer.material;
@@ -121,6 +124,13 @@ public class Utilities
             mtl.renderQueue = 3000;
         }
     }
+
+    /// <summary>
+    /// Get the relative path (to the editor location).
+    /// </summary>
+    public static string GetRelativePath(string path) => Path.GetRelativePath(Directory.GetCurrentDirectory(), path);
+
+    public static string GetAbsolutePath(string path) => Path.GetFullPath(path, Directory.GetCurrentDirectory());
 }
 
 
@@ -218,32 +228,35 @@ public struct SerializableVector2
 /// </summary>
 public class SerializableState
 {
+    public string Version;
+
+    // player
+    public SerializablePlayer Player;
+    
+    // given a hold instance, store its id and state
+    public Dictionary<string, SerializableHold> Holds;
+    
     // capture
     public SerializableCaptureSettings CaptureSettings;
     public List<string> EndingHoldIDs;
-    public string HoldModelsPath;
-
-    // given a hold instance, store its id and state
-    public Dictionary<string, SerializableHold> Holds;
 
     // lights
     public SerializableLights Lights;
 
-    // player
-    public SerializablePlayer Player;
+    // selected holds
+    public List<string> SelectedHoldBlueprintIDs;
 
     // all routes
     public List<SerializableRoute> Routes;
 
-    // selected holds
-    public List<string> SelectedHoldBlueprintIDs;
-
     // starting/ending holds
     public List<string> StartingHoldIDs;
-    public string Version;
 
     // paths to wall and models
     public string WallModelPath;
+    public string HoldModelsPath;
+    public string RelativeWallModelPath;
+    public string RelativeHoldModelsPath;
 }
 
 public class SerializableCaptureSettings

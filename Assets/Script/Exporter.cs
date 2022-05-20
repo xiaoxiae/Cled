@@ -64,8 +64,10 @@ public class Exporter : MonoBehaviour
                         Flying = movementController.Flying,
                         Light = lightManager.PlayerLightEnabled
                     },
-                    WallModelPath = Preferences.CurrentWallModelPath,
-                    HoldModelsPath = Preferences.CurrentHoldModelsPath,
+                    WallModelPath = Preferences.WallModelPath,
+                    HoldModelsPath = Preferences.HoldModelsPath,
+                    RelativeWallModelPath = Preferences.RelativeWallModelPath,
+                    RelativeHoldModelsPath = Preferences.RelativeHoldModelsPath,
                     Holds = holds,
                     Routes = routes,
                     StartingHoldIDs = routeManager.StartingHolds.Select(Utilities.GetObjectId).ToList(),

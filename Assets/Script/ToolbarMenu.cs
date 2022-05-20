@@ -413,7 +413,8 @@ public class ToolbarMenu : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        Preferences.CurrentWallModelPath = paths[0];
+        Preferences.WallModelPath = paths[0];
+        Preferences.RelativeWallModelPath = Utilities.GetRelativePath(paths[0]);
 
         StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, OnOpenNewHolds);
     }
@@ -426,13 +427,14 @@ public class ToolbarMenu : MonoBehaviour
         if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
             return;
 
-        Preferences.CurrentHoldModelsPath = paths[0];
+        Preferences.HoldModelsPath = paths[0];
+        Preferences.RelativeHoldModelsPath = Utilities.GetRelativePath(paths[0]);
 
         Preferences.LastOpenWallPath = null;
 
         importer.ImportFromNew(
-            Preferences.CurrentWallModelPath,
-            Preferences.CurrentHoldModelsPath
+            Preferences.WallModelPath,
+            Preferences.HoldModelsPath
         );
 
         _forceSaveAs = true;
