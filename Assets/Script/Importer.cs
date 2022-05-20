@@ -20,6 +20,7 @@ public class Importer : MonoBehaviour, IResetable
     public PauseMenu pauseMenu;
     public PopupMenu popupMenu;
     public LoadingScreenMenu loadingScreenMenu;
+    public SaveManager saveManager;
 
     public MovementController movementController;
     public CameraController cameraController;
@@ -38,6 +39,8 @@ public class Importer : MonoBehaviour, IResetable
         pauseMenu.Reset();
         movementController.Reset();
         cameraController.Reset();
+
+        saveManager.ForceSaveAs = true;
     }
 
     /// <summary>
@@ -270,7 +273,13 @@ public class Importer : MonoBehaviour, IResetable
         yield return new WaitForEndOfFrame();
 
         Reset();
-
+        
+        Preferences.WallModelPath = currentHoldModelsPath;
+        Preferences.RelativeWallModelPath = Utilities.GetRelativePath(currentHoldModelsPath);
+        
+        Preferences.HoldModelsPath = currentHoldModelsPath;
+        Preferences.RelativeHoldModelsPath = Utilities.GetRelativePath(currentHoldModelsPath);
+        
         loadingScreenMenu.Show("Loading the wall...");
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -329,8 +338,6 @@ public class Importer : MonoBehaviour, IResetable
     ///     Initialize a new state from a wall model and holds folder.
     ///     Returns true if successful, else false.
     /// </summary>
-    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath)
-    {
+    public void ImportFromNew(string currentWallModelPath, string currentHoldModelsPath) =>
         StartCoroutine(ImportFromNewAsync(currentWallModelPath, currentHoldModelsPath));
-    }
 }

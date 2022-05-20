@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -9,29 +11,43 @@ public class UIKeyboardController : MonoBehaviour
     public RouteSettingsMenu routeSettingsMenu;
     public SettingsMenu settingsMenu;
     public PopupMenu popupMenu;
-
+    public NewProjectDialogue newProjectDialogue;
     public PauseMenu pauseMenu;
+
+    private List<(IAcceptable, PauseType)> acceptingOrder;
+    private List<(IClosable, PauseType)> closingOrder;
+
+    private void Start()
+    {
+        acceptingOrder = new List<(IAcceptable, PauseType)>
+        {
+            (popupMenu, PauseType.Popup),
+            (routeSettingsMenu, PauseType.RouteSettings),
+            (settingsMenu, PauseType.Settings),
+            (newProjectDialogue, PauseType.NewProjectDialogue),
+        };
+
+        closingOrder = new List<(IClosable, PauseType)>
+        {
+            (popupMenu, PauseType.Popup),
+            (holdPickerMenu, PauseType.HoldPicker),
+            (routeSettingsMenu, PauseType.RouteSettings),
+            (settingsMenu, PauseType.Settings),
+            (newProjectDialogue, PauseType.NewProjectDialogue),
+        };
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            // accepts popups
-            if (pauseMenu.IsTypePaused(PauseType.Popup))
+            foreach (var (acceptable, type) in acceptingOrder)
             {
-                popupMenu.Accept();
+                if (!pauseMenu.IsTypePaused(type)) continue;
+                
+                acceptable.Accept();
                 return;
             }
-
-            // then route settings
-            if (pauseMenu.IsTypePaused(PauseType.RouteSettings))
-            {
-                routeSettingsMenu.Accept();
-                return;
-            }
-
-            // then general settings
-            if (pauseMenu.IsTypePaused(PauseType.Settings)) settingsMenu.Accept();
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -42,36 +58,13 @@ public class UIKeyboardController : MonoBehaviour
                 return;
             }
 
-            // else close popups first
-            if (pauseMenu.IsTypePaused(PauseType.Popup))
+            foreach (var (closable, type) in closingOrder)
             {
-                popupMenu.Close();
+                if (!pauseMenu.IsTypePaused(type)) continue;
+                
+                closable.Close();
                 return;
             }
-
-            // then hold picker
-            if (pauseMenu.IsTypePaused(PauseType.HoldPicker))
-            {
-                holdPickerMenu.Close();
-                return;
-            }
-
-            // then route settings
-            if (pauseMenu.IsTypePaused(PauseType.RouteSettings))
-            {
-                routeSettingsMenu.Close();
-                return;
-            }
-
-            // then general settings
-            if (pauseMenu.IsTypePaused(PauseType.Settings))
-            {
-                settingsMenu.Close();
-                return;
-            }
-
-            // then normal pause
-            if (pauseMenu.IsTypePaused(PauseType.Normal)) pauseMenu.UnpauseType(PauseType.Normal);
         }
     }
 }

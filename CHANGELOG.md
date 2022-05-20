@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.3.2] - TODO
 
 ### Changed
+- Add a dialogue for creating a new project.
 - Prevent the editor from quitting when not saved.
 - Ignore unmatched properties when loading metadata files.
 - Remember wall and holds relative path when absolute path changes.

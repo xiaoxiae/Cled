@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SFB;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -18,10 +19,12 @@ public class ToolbarMenu : MonoBehaviour
     public EditorModeManager editorModeManager;
     public RouteViewMenu routeViewMenu;
     public HoldPickerMenu holdPickerMenu;
+    public NewProjectDialogue newProjectDialogue;
+    public SaveManager saveManager;
+    
     private Button _captureImageAsButton;
     private Button _captureImageButton;
 
-    private bool _forceSaveAs;
     private Button _holdMenuButton;
     private Button _newButton;
     private Button _openButton;
@@ -63,10 +66,10 @@ public class ToolbarMenu : MonoBehaviour
 
         // files
         _openButton = _root.Q<Button>("open-button");
-        _openButton.clicked += () => _ensureSavedAction(Open);
+        _openButton.clicked += () => EnsureSavedAction(Open);
 
         _newButton = _root.Q<Button>("new-button");
-        _newButton.clicked += () => _ensureSavedAction(New);
+        _newButton.clicked += () => EnsureSavedAction(newProjectDialogue.Show);
 
         _saveButton = _root.Q<Button>("save-button");
         _saveButton.clicked += () =>
@@ -168,7 +171,7 @@ public class ToolbarMenu : MonoBehaviour
             if (_wantsToQuit)
                 return true;
 
-            _ensureSavedAction(() =>
+            EnsureSavedAction(() =>
             {
                 _wantsToQuit = true;
                 Application.Quit();
@@ -192,41 +195,41 @@ public class ToolbarMenu : MonoBehaviour
         if (!pauseMenu.IsTypePaused(PauseType.Popup))
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S))
-                using (var e = new NavigationSubmitEvent { target = _saveAsButton })
-                {
-                    _saveAsButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _saveAsButton };
+                _saveAsButton.SendEvent(e);
+            }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S))
-                using (var e = new NavigationSubmitEvent { target = _saveButton })
-                {
-                    _saveButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _saveButton };
+                _saveButton.SendEvent(e);
+            }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
-                using (var e = new NavigationSubmitEvent { target = _newButton })
-                {
-                    _newButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _newButton };
+                _newButton.SendEvent(e);
+            }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.O))
-                using (var e = new NavigationSubmitEvent { target = _openButton })
-                {
-                    _openButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _openButton };
+                _openButton.SendEvent(e);
+            }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) &&
                      Input.GetKeyDown(KeyCode.P))
-                using (var e = new NavigationSubmitEvent { target = _captureImageAsButton })
-                {
-                    _captureImageAsButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _captureImageAsButton };
+                _captureImageAsButton.SendEvent(e);
+            }
 
             else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
-                using (var e = new NavigationSubmitEvent { target = _captureImageButton })
-                {
-                    _captureImageButton.SendEvent(e);
-                }
+            {
+                using var e = new NavigationSubmitEvent { target = _captureImageButton };
+                _captureImageButton.SendEvent(e);
+            }
         }
     }
 
@@ -322,22 +325,19 @@ public class ToolbarMenu : MonoBehaviour
 
         Preferences.LastOpenWallPath = path;
 
-        _forceSaveAs = false;
+        saveManager.ForceSaveAs = false;
         return true;
     }
 
     /// <summary>
     ///     Attempt to quit.
     /// </summary>
-    private void Quit()
-    {
-        _ensureSavedAction(Application.Quit);
-    }
+    private void Quit() => EnsureSavedAction(Application.Quit);
 
     /// <summary>
-    ///     Perform the action, making sure that everything is saved in the process.
+    ///     Perform the given action, making sure that everything is saved in the process.
     /// </summary>
-    private void _ensureSavedAction(Action action)
+    private void EnsureSavedAction(Action action)
     {
         // don't actually ensure save when nothing is initialized
         // however, make sure to pause if we're not paused
@@ -348,7 +348,7 @@ public class ToolbarMenu : MonoBehaviour
             return;
         }
 
-        if (_forceSaveAs)
+        if (saveManager.ForceSaveAs)
             popupMenu.CreateSavePopup("Save As",
                 () =>
                 {
@@ -393,50 +393,5 @@ public class ToolbarMenu : MonoBehaviour
         Preferences.LastOpenWallPath = paths[0];
 
         importer.ImportState(Preferences.LastOpenWallPath);
-    }
-
-    /// <summary>
-    ///     Prompt opening a new wall and holds.
-    /// </summary>
-    public void New()
-    {
-        StandaloneFileBrowser.OpenFilePanelAsync("Open wall object", "",
-            new[] { new ExtensionFilter("Object Files (.obj)", "obj") }, false, OnOpenNewWall);
-    }
-
-    /// <summary>
-    ///     Called when opening a new wall.
-    ///     Prompts opening holds if successful.
-    /// </summary>
-    private void OnOpenNewWall(string[] paths)
-    {
-        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
-            return;
-
-        Preferences.WallModelPath = paths[0];
-        Preferences.RelativeWallModelPath = Utilities.GetRelativePath(paths[0]);
-
-        StandaloneFileBrowser.OpenFolderPanelAsync("Open holds directory", "", false, OnOpenNewHolds);
-    }
-
-    /// <summary>
-    ///     Called when opening a new wall.
-    /// </summary>
-    private void OnOpenNewHolds(string[] paths)
-    {
-        if (paths.Length == 0 || string.IsNullOrWhiteSpace(paths[0]))
-            return;
-
-        Preferences.HoldModelsPath = paths[0];
-        Preferences.RelativeHoldModelsPath = Utilities.GetRelativePath(paths[0]);
-
-        Preferences.LastOpenWallPath = null;
-
-        importer.ImportFromNew(
-            Preferences.WallModelPath,
-            Preferences.HoldModelsPath
-        );
-
-        _forceSaveAs = true;
     }
 }

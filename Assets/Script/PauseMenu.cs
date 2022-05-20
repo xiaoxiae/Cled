@@ -15,6 +15,7 @@ public enum PauseType
     Popup,
     HoldPicker,
     RouteSettings,
+    NewProjectDialogue,
     Settings
 }
 
@@ -27,12 +28,14 @@ public class PauseMenu : MonoBehaviour, IResetable
     private readonly List<Action> _pauseHooks = new();
 
     // the positions where the dark pause screen should appear
+    // it should be behind the given menu
     private readonly Dictionary<PauseType, float> _pausePositions = new()
     {
         { global::PauseType.HoldPicker, 4 },
         { global::PauseType.Normal, 0 },
         { global::PauseType.Popup, 14.99f },
         { global::PauseType.Settings, 2 },
+        { global::PauseType.NewProjectDialogue, 11 },
         { global::PauseType.RouteSettings, 2 }
     };
 
