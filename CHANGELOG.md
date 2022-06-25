@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Prevent the editor from quitting when not saved.
 - Ignore unmatched properties when loading metadata files.
 - Remember wall and holds relative path when absolute path changes.
+- Fix a typo in the About section.
 
 
 ## [2.3.1] - 2022-05-11

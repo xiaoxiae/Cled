@@ -96,7 +96,7 @@ public class ToolbarMenu : MonoBehaviour
         {
             popupMenu.CreateInfoPopup(
                 "This program was created in 2022 and maintained by Tomáš Sláma as a part of a bachelor thesis." +
-                $"The project is open source under GLPv3.\n\nCurrent version: <b>{Application.version}</b>",
+                $"The project is open source under GPLv3.\n\nCurrent version: <b>{Application.version}</b>",
                 displayLogo: true);
         };
 
