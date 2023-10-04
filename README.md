@@ -1,26 +1,30 @@
+_Project is **archived** and being reworked into something better. Soon launching at http://climbuddy.com/!_
+
+---
+
 <p align="center" width="100%">
-<img width="50%" src="https://raw.githubusercontent.com/Climber-Apps/Cled/master/logo.svg">
+<img width="50%" src="https://raw.githubusercontent.com/xiaoxiae/Cled/master/logo.svg">
 </p>
 
 <p align="center" width="100%">
 The <strong>cli</strong>mber's <strong>ed</strong>itor – a 3D editor designed for efficient virtual routesetting.
 </p>
 
-This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](https://github.com/Climber-Apps/Clis/), released under the GPLv3 license.
+This repository contains the source code to the Cled editor, along with various scripts used to import assets used from [Clis](https://github.com/xiaoxiae/Clis/), released under the GPLv3 license.
 
 ![Example routes captured using Cled.](captures.png)
 
 ## Running Cled
-First, download the lastest version from the [Releases page](https://github.com/Climber-Apps/Cled/releases).
+First, download the lastest version from the [Releases page](https://github.com/xiaoxiae/Cled/releases).
 
 To use Cled, you need a wall and holds dataset.
 A dataset example, along with the specification, can be found in `Models/Example`.
 This dataset can then be imported to Cled either by `File > New`, or by pressing `Ctrl+N`.
 
-To generate your own dataset, use [Clis](https://github.com/Climber-Apps/Clis/) to generate the hold and wall models and then use `Scripts/ClisImporter.py` to prepare them for usage.
-Note that you will likely need to install a number of Python packages -- to do this, you can follow the [Clis README](https://github.com/Climber-Apps/Clis/) on the \verb|Scripts/requirement.txt| file (see appendix \ref{apx:clissetup}).
+To generate your own dataset, use [Clis](https://github.com/xiaoxiae/Clis/) to generate the hold and wall models and then use `Scripts/ClisImporter.py` to prepare them for usage.
+Note that you will likely need to install a number of Python packages -- to do this, you can follow the [Clis README](https://github.com/xiaoxiae/Clis/) on the \verb|Scripts/requirement.txt| file (see appendix \ref{apx:clissetup}).
 
-For additional information, see the [thesis](https://github.com/Climber-Apps/Thesis).
+For additional information, see the [thesis](https://github.com/xiaoxiae/Thesis).
 
 ### Key bindings
 While most of the controls are accessible via the UI, here is a comprehensive list of key bindings for efficiently controlling the editor:
